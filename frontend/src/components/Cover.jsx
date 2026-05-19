@@ -2,14 +2,110 @@ import React from "react";
 import { motion } from "framer-motion";
 import { CHAPTERS } from "../data/chapters";
 
-const COVER_IMG =
-  "https://static.prod-images.emergentagent.com/jobs/96c7e974-2142-42d0-abc3-a98c4a1da670/images/e77581ed99c3be7b654e4b76d4b216696a1cc8348676155c84455df605dded05.png";
-
 const TODAY = new Date().toLocaleDateString("fr-FR", {
   day: "2-digit",
   month: "long",
   year: "numeric",
 });
+
+// Editorial SVG cover — no AI text, just shapes inspired by the 4 chapter metaphors
+const CoverArt = () => {
+  return (
+    <svg viewBox="0 0 600 800" className="w-full h-full block" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      {/* Halftone background */}
+      <defs>
+        <pattern id="dots" x="0" y="0" width="14" height="14" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="1.4" fill="#1C1C1A" opacity="0.25" />
+        </pattern>
+        <pattern id="dotsDense" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="1.1" fill="#1C1C1A" opacity="0.55" />
+        </pattern>
+        <clipPath id="halfL"><rect x="0" y="0" width="300" height="800" /></clipPath>
+      </defs>
+
+      <rect width="600" height="800" fill="#EAE5DE" />
+      <rect width="600" height="800" fill="url(#dots)" />
+
+      {/* Big blue circle — fountain / simple */}
+      <motion.circle
+        initial={{ scale: 0.6, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 1, delay: 0.2 }}
+        cx="170" cy="220" r="160" fill="#0055FF"
+      />
+      <circle cx="170" cy="220" r="160" fill="url(#dotsDense)" opacity="0.4" clipPath="url(#halfL)" />
+
+      {/* Orange snowball spiral */}
+      <motion.g
+        initial={{ rotate: -20, opacity: 0 }}
+        animate={{ rotate: 0, opacity: 1 }}
+        transition={{ duration: 1, delay: 0.4 }}
+        style={{ transformOrigin: "450px 250px" }}
+      >
+        <circle cx="450" cy="250" r="120" fill="#FF4400" />
+        <circle cx="430" cy="230" r="70" fill="#EAE5DE" />
+        <circle cx="445" cy="245" r="40" fill="#FF4400" />
+        <circle cx="438" cy="238" r="14" fill="#1C1C1A" />
+      </motion.g>
+
+      {/* Linear chart line crossing center */}
+      <motion.path
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 2, delay: 0.6 }}
+        d="M 40 540 L 200 480 L 320 420 L 460 320 L 560 220"
+        fill="none" stroke="#1C1C1A" strokeWidth="3"
+      />
+      {/* Exponential curve */}
+      <motion.path
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 2.2, delay: 0.8 }}
+        d="M 40 620 Q 250 615 380 480 T 560 100"
+        fill="none" stroke="#FF4400" strokeWidth="4"
+      />
+
+      {/* Pink pizza slice */}
+      <motion.g
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.7 }}
+        style={{ transformOrigin: "150px 620px" }}
+      >
+        <path d="M 150 620 L 60 720 L 240 720 Z" fill="#FF00AA" />
+        <path d="M 150 620 L 60 720 L 240 720 Z" fill="url(#dotsDense)" opacity="0.3" />
+        <circle cx="120" cy="685" r="6" fill="#1C1C1A" />
+        <circle cx="170" cy="700" r="6" fill="#1C1C1A" />
+        <circle cx="150" cy="660" r="5" fill="#1C1C1A" />
+      </motion.g>
+
+      {/* Acid green scale */}
+      <motion.g
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.9 }}
+      >
+        <rect x="380" y="600" width="160" height="6" fill="#CCFF00" />
+        <rect x="455" y="606" width="6" height="100" fill="#CCFF00" />
+        <rect x="420" y="700" width="80" height="12" fill="#CCFF00" />
+        <circle cx="400" cy="600" r="22" fill="#CCFF00" stroke="#1C1C1A" strokeWidth="2" />
+        <circle cx="520" cy="600" r="22" fill="#CCFF00" stroke="#1C1C1A" strokeWidth="2" />
+      </motion.g>
+
+      {/* Editorial markings — corner crosses */}
+      {[[20,20],[580,20],[20,780],[580,780]].map(([x,y],i)=>(
+        <g key={i} stroke="#1C1C1A" strokeWidth="1.5">
+          <line x1={x-8} y1={y} x2={x+8} y2={y} />
+          <line x1={x} y1={y-8} x2={x} y2={y+8} />
+        </g>
+      ))}
+
+      {/* Small editorial labels (mono) */}
+      <text x="40" y="60" fontFamily="JetBrains Mono" fontSize="10" fill="#1C1C1A" letterSpacing="2">№ 01 · 02 · 03 · 04</text>
+      <text x="40" y="770" fontFamily="JetBrains Mono" fontSize="10" fill="#1C1C1A" letterSpacing="2" opacity="0.6">FIG · COMPOSITION ORIGINALE</text>
+    </svg>
+  );
+};
 
 export const Cover = () => {
   return (
@@ -79,19 +175,12 @@ export const Cover = () => {
           </motion.div>
         </div>
 
-        {/* RIGHT — Cover image */}
-        <div className="md:col-span-5 relative">
-          <motion.img
-            src={COVER_IMG}
-            alt="Magazine cover"
-            initial={{ scale: 1.05, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1.2, ease: [0.2, 0.8, 0.2, 1] }}
-            className="w-full h-full object-cover min-h-[300px] md:min-h-[600px]"
-          />
-          <div className="absolute bottom-4 left-4 right-4 font-mono text-[10px] uppercase tracking-widest bg-[var(--paper)] border-2 px-3 py-2 flex justify-between" style={{ borderColor: "#1C1C1A" }}>
-            <span>Illustration originale</span>
-            <span>cf. p. 02</span>
+        {/* RIGHT — Editorial SVG composition */}
+        <div className="md:col-span-5 relative bg-[var(--paper-alt)] overflow-hidden min-h-[300px] md:min-h-[600px]">
+          <CoverArt />
+          <div className="absolute bottom-4 left-4 right-4 font-mono text-[10px] uppercase tracking-widest bg-[var(--paper)] border-2 px-3 py-2 flex justify-between z-10" style={{ borderColor: "#1C1C1A" }}>
+            <span>Fig. 00 — Les quatre dossiers</span>
+            <span>cf. p. 03</span>
           </div>
         </div>
       </div>
