@@ -1,19 +1,20 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=JetBrains+Mono:wght@400;700&family=Schibsted+Grotesk:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-    --paper: #F4F0EB;
-    --paper-alt: #EAE5DE;
-    --ink: #1C1C1A;
-    --ink-soft: #4A4A45;
-    --rule: rgba(28, 28, 26, 0.15);
-    --c1: #0055FF;
-    --c2: #FF4400;
-    --c3: #FF00AA;
-    --c4: #CCFF00;
+    --lenny-red: #E50914;
+    --lenny-red-hover: #F40612;
+    --bg: #000000;
+    --bg-soft: #141414;
+    --bg-card: #181818;
+    --bg-card-hover: #232323;
+    --text: #FFFFFF;
+    --text-soft: #B3B3B3;
+    --text-dim: #777777;
+    --rule: #2A2A2A;
 }
 
 * {
@@ -24,139 +25,129 @@
 html, body {
     margin: 0;
     padding: 0;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', 'Helvetica Neue', -apple-system, sans-serif;
     overflow-x: hidden;
 }
 
-::selection {
-    background: var(--ink);
-    color: var(--paper);
+#root { background: var(--bg); min-height: 100vh; }
+
+::selection { background: var(--lenny-red); color: white; }
+
+.font-brand { font-family: 'Anton', 'Bebas Neue', sans-serif; letter-spacing: 0.02em; }
+.font-display-l { font-family: 'Inter', sans-serif; font-weight: 900; letter-spacing: -0.04em; }
+.font-l { font-family: 'Inter', sans-serif; }
+
+/* Hero gradient overlays (Netflix billboard) */
+.hero-fade-bottom {
+    background: linear-gradient(180deg,
+        transparent 0%,
+        transparent 30%,
+        rgba(0,0,0,0.6) 70%,
+        #000 100%);
+}
+.hero-fade-left {
+    background: linear-gradient(90deg,
+        rgba(0,0,0,0.95) 0%,
+        rgba(0,0,0,0.7) 30%,
+        rgba(0,0,0,0.3) 60%,
+        transparent 100%);
 }
 
-/* Paper grain texture overlay */
-.paper-grain {
+/* Card vignette */
+.card-vignette {
+    background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.85) 100%);
+}
+
+/* Row scroll container — hide scrollbar */
+.row-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.row-scroll::-webkit-scrollbar { display: none; }
+
+/* Body scrollbar */
+body::-webkit-scrollbar { width: 8px; }
+body::-webkit-scrollbar-track { background: #000; }
+body::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+body::-webkit-scrollbar-thumb:hover { background: #555; }
+
+/* Brand logo — LENNY style (Netflix-like) */
+.lenny-logo {
+    font-family: 'Anton', sans-serif;
+    color: var(--lenny-red);
+    letter-spacing: 0.1em;
+    text-shadow: 0 4px 14px rgba(229, 9, 20, 0.45);
+}
+
+/* Top-10 numerals (Netflix ranking style) */
+.top-numeral {
+    font-family: 'Anton', sans-serif;
+    font-size: 18rem;
+    line-height: 0.8;
+    color: #000;
+    -webkit-text-stroke: 4px #555;
+    letter-spacing: -0.08em;
+}
+
+/* Subtle grain on dark surfaces */
+.dark-grain {
     position: relative;
 }
-.paper-grain::before {
+.dark-grain::after {
     content: "";
-    position: fixed;
+    position: absolute;
     inset: 0;
     pointer-events: none;
-    z-index: 1;
-    opacity: 0.35;
-    mix-blend-mode: multiply;
-    background-image:
-        radial-gradient(rgba(28, 28, 26, 0.18) 1px, transparent 1px),
-        radial-gradient(rgba(28, 28, 26, 0.12) 1px, transparent 1px);
-    background-size: 3px 3px, 7px 7px;
-    background-position: 0 0, 1px 1px;
+    background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 3px 3px;
+    mix-blend-mode: screen;
+    opacity: 0.5;
 }
 
-.font-display { font-family: 'Schibsted Grotesk', 'Helvetica Neue', sans-serif; font-feature-settings: "ss01" on; }
-.font-serif-ed { font-family: 'Cormorant Garamond', 'Georgia', serif; }
-.font-mono { font-family: 'JetBrains Mono', 'Menlo', monospace; }
-
-/* Brutalist halftone background blob */
-.halftone {
-    background-image: radial-gradient(currentColor 1.5px, transparent 1.5px);
-    background-size: 8px 8px;
-}
-
-/* Custom slider */
-input[type="range"].brutal {
+/* Range slider — dark variant */
+input[type="range"].lenny {
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
     height: 4px;
-    background: var(--ink);
+    background: #2a2a2a;
+    border-radius: 9999px;
     outline: none;
-    border-radius: 0;
 }
-input[type="range"].brutal::-webkit-slider-thumb {
+input[type="range"].lenny::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 20px;
-    height: 28px;
-    background: var(--paper);
-    border: 2px solid var(--ink);
-    cursor: grab;
-    border-radius: 0;
-    transition: transform 120ms ease-out;
+    width: 18px;
+    height: 18px;
+    background: var(--lenny-red);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 0 4px rgba(229,9,20,0.2);
+    transition: transform 120ms;
 }
-input[type="range"].brutal::-webkit-slider-thumb:active {
-    cursor: grabbing;
-    transform: scale(1.1);
-}
-input[type="range"].brutal::-moz-range-thumb {
-    width: 20px;
-    height: 28px;
-    background: var(--paper);
-    border: 2px solid var(--ink);
-    cursor: grab;
-    border-radius: 0;
+input[type="range"].lenny::-webkit-slider-thumb:active { transform: scale(1.15); }
+input[type="range"].lenny::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: var(--lenny-red);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
 }
 
-/* Drop cap */
-.dropcap::first-letter {
-    font-family: 'Schibsted Grotesk', sans-serif;
-    font-weight: 900;
-    float: left;
-    font-size: 6.5rem;
-    line-height: 0.85;
-    padding: 0.4rem 0.7rem 0 0;
-    margin-top: 0.25rem;
-}
+/* 3D card flip */
+.card-3d { perspective: 1200px; }
+.card-3d-inner { transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4,0,0.2,1); }
+.card-3d-inner.flipped { transform: rotateY(180deg); }
+.card-face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.card-back { transform: rotateY(180deg); }
 
-/* Flashcard 3D flip */
-.card-3d {
-    perspective: 1200px;
-}
-.card-3d-inner {
-    transform-style: preserve-3d;
-    transition: transform 0.7s cubic-bezier(0.4, 0.0, 0.2, 1);
-}
-.card-3d-inner.flipped {
-    transform: rotateY(180deg);
-}
-.card-face {
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-}
-.card-back {
-    transform: rotateY(180deg);
-}
+/* Netflix-like ambient red play button shadow */
+.play-shadow:hover { box-shadow: 0 0 0 8px rgba(255,255,255,0.15); transition: box-shadow .2s ease; }
 
-/* Scroll behavior */
-html {
-    scroll-behavior: smooth;
-}
+/* hide scroll-anchored elements */
+html { scroll-behavior: smooth; }
 
-/* Marquee */
-@keyframes marquee {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-}
-.marquee-track {
-    animation: marquee 38s linear infinite;
-}
-
-/* Sharp focus rings */
-:focus-visible {
-    outline: 2px solid var(--ink);
-    outline-offset: 3px;
-}
-
-/* hide default scrollbar styling but keep functional */
-body::-webkit-scrollbar { width: 10px; }
-body::-webkit-scrollbar-track { background: var(--paper); }
-body::-webkit-scrollbar-thumb { background: var(--ink); border-radius: 0; }
-
-/* utility */
-.rule { border-color: var(--ink); }
-.rule-soft { border-color: var(--rule); }
-
-@layer base {
-    * { border-color: var(--rule); }
-}
+:focus-visible { outline: 2px solid var(--lenny-red); outline-offset: 3px; }

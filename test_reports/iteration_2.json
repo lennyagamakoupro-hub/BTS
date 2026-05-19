@@ -1,0 +1,32 @@
+{
+  "summary": "Frontend-only testing of the LENNY Netflix-clone BTS PI revision app at https://interactive-cards-23.preview.emergentagent.com/. All 8 carousel rows render (trending, continue, finance, droit, transaction, gestion, habitat, top10). Hero billboard correctly features 'Intérêts composés' (f02) with L · ORIGINAL badge, 99% recommandé, S1, 11 min, BTS PI badge, tagline, synopsis, Réviser/Plus d'infos/+ buttons. Calculator math verified: f01 simple 5000€@4%/10y = 7 000 €; f02 compound = 7 401 €; f03 proportional 4%/12 (monthly default) = 0.3333 %; f04 equivalent (1.04)^(1/12)-1 = 0.3274 %. Slider live-updates work (rate 4→5 % → 8 144 €). Quiz submit, FlashCard flip+next, Back button, DetailOverlay (open from hero info + card click) and close, Search ('bail' → finds f08), Clear search, nav anchor scroll, Footer all functional. Non-math fiche f05 correctly omits calculator while keeping quiz + memos. Zero console errors during full navigation cycle.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Hero on mobile (390x844)", "issues": ["On mobile viewport the hero shows the title prominently but the synopsis/buttons (Réviser, Plus d'infos, +) appear to be pushed below the visible fold while the page directly jumps from title to the 'Tendance cette semaine' row — consider tightening hero min-height on mobile or shrinking the title block so action buttons remain visible without scrolling."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Optional: improve mobile hero layout so the Réviser / Plus d'infos action buttons remain in the initial viewport on a 390x844 device."
+  ],
+  "critical_code_review_comments": [
+    "data-testid coverage is excellent across NavBar, Hero, Row/Card (incl. hover popout), DetailOverlay, StudyView (calc/quiz/memos with per-fiche ids).",
+    "Calculator math implementation correct for all 4 finance fiches and gracefully absent for non-math fiches (no broken UI).",
+    "Search filter in App.js is well-implemented with title/tagline/tags/synopsis matching; clearing input returns to Browse view without state leakage.",
+    "Top 10 row uses dedicated rankNum + 'top-numeral' style for the Netflix outlined-numeral effect.",
+    "Card hover popout (Row.jsx) is desktop-only (`hidden md:block`) — quick play from card on mobile requires opening DetailOverlay first then Réviser; intentional and fine.",
+    "BrowserRouter is set up but only the Browse route is used — minor overhead, harmless.",
+    "REACT_APP_BACKEND_URL is present in frontend/.env but unused (pure frontend app, expected)."
+  ],
+  "updated_files": [],
+  "success_rate": { "backend": "N/A (not tested per request)", "frontend": "100%" },
+  "test_credentials": "N/A — no auth",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "LENNY Netflix-clone React frontend (pure frontend, no backend). All 17 fiches across 5 categories (finance/droit/transaction/gestion/habitat) render through 8 carousel rows. Featured hero fiche is f02 'Intérêts composés'. Calculators only exist for finance fiches f01-f04 (calc-linear/exp/prop/equiv). Math validations confirmed: f01=7000€, f02=7401€, f03=0.3333%, f04=0.3274%. Selectors: nav-logo, nav-search-btn, nav-search-input, hero, hero-play, hero-info, hero-add, card-{id}, card-{id}-play (hover), card-{id}-info (hover), row-{id}, row-{id}-prev/next, detail-overlay, detail-close, detail-play, detail-related-{id}, study-view, study-back, calc-{id}-{capital|rate|years|result}, quiz-{id}-q{qi}-c{ci}, quiz-{id}-submit/reset, memos-{id}-flip/prev/next/toggle, search-result-{id}. Card hover popout is desktop-only (md:block).",
+  "rca of the issue": "No functional bugs found. Single minor mobile-layout design observation noted above."
+}
