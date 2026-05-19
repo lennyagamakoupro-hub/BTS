@@ -1,10 +1,15 @@
 import React, { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Play, Plus, ThumbsUp, ChevronDown } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play, Plus, Check, ThumbsUp, ChevronDown } from "lucide-react";
 import { Thumb } from "./Hero";
+import { useStore } from "../hooks/useStore";
 
 const Card = ({ fiche, onPlay, onInfo, rankNum }) => {
   const [hover, setHover] = useState(false);
+  const { inList, toggleList, scores, progress } = useStore();
+  const added = inList(fiche.id);
+  const sc = scores[fiche.id];
+  const pr = progress[fiche.id];
   return (
     <motion.div
       className="relative shrink-0 cursor-pointer group"
@@ -23,13 +28,29 @@ const Card = ({ fiche, onPlay, onInfo, rankNum }) => {
           <div className="absolute top-2 left-2 font-brand text-[10px] tracking-widest px-1.5 py-0.5" style={{ background: fiche.accent, color: "#000" }}>
             L · ORIGINAL
           </div>
+          {/* Progress badges (top-right) */}
+          {pr?.status === "completed" && (
+            <div className="absolute top-2 right-2 bg-green-500 text-black text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+              <Check size={10} /> Vu
+            </div>
+          )}
+          {sc && (
+            <div className="absolute top-2 right-2 mt-7 bg-black/70 backdrop-blur text-white text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ marginTop: pr?.status === "completed" ? "1.6rem" : 0 }}>
+              ★ {sc.score}/{sc.total}
+            </div>
+          )}
+          {added && (
+            <div className="absolute bottom-9 right-2 bg-white text-black text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+              <Check size={10} /> Liste
+            </div>
+          )}
           <div className="absolute bottom-2 left-2 right-2 z-10">
             <div className="text-xs font-bold drop-shadow leading-tight">{fiche.title}</div>
           </div>
         </div>
       </div>
 
-      {/* Hover popout — Netflix style */}
+      {/* Hover popout */}
       <AnimatePresence>
         {hover && (
           <motion.div
@@ -52,8 +73,13 @@ const Card = ({ fiche, onPlay, onInfo, rankNum }) => {
                 >
                   <Play size={16} fill="black" />
                 </button>
-                <button className="w-9 h-9 rounded-full border-2 border-white/40 hover:border-white flex items-center justify-center">
-                  <Plus size={16} />
+                <button
+                  onClick={(e) => { e.stopPropagation(); toggleList(fiche.id); }}
+                  className={`w-9 h-9 rounded-full border-2 flex items-center justify-center ${added ? "border-white bg-white text-black" : "border-white/40 hover:border-white"}`}
+                  data-testid={`card-${fiche.id}-list`}
+                  title={added ? "Retirer de Ma Liste" : "Ajouter à Ma Liste"}
+                >
+                  {added ? <Check size={16} /> : <Plus size={16} />}
                 </button>
                 <button className="w-9 h-9 rounded-full border-2 border-white/40 hover:border-white flex items-center justify-center">
                   <ThumbsUp size={14} />
@@ -70,6 +96,7 @@ const Card = ({ fiche, onPlay, onInfo, rankNum }) => {
                 <span className="text-green-500 font-semibold">{fiche.match}% reco</span>
                 <span className="border border-white/40 px-1 text-[10px]">{fiche.year}</span>
                 <span className="text-[#aaa]">{fiche.duration}</span>
+                {sc && <span className="text-yellow-400 font-bold">★ {sc.score}/{sc.total}</span>}
               </div>
               <div className="text-xs text-[#ddd] leading-snug line-clamp-3">
                 {fiche.tagline}

@@ -1,39 +1,17 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Play, Info, Plus } from "lucide-react";
+import { Play, Info, Plus, Check } from "lucide-react";
+import { Illustration } from "./Illustration";
+import { useStore } from "../hooks/useStore";
 
-// Thumbnail background — abstract gradient + big initial / icon, no AI image needed
+// Thumbnail = bespoke SVG illustration per fiche
 export const Thumb = ({ fiche, className = "" }) => {
-  const initial = fiche.title.charAt(0);
-  return (
-    <div
-      className={`relative w-full h-full overflow-hidden ${className}`}
-      style={{
-        background: `radial-gradient(circle at 70% 30%, ${fiche.accent}88, transparent 60%), linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)`,
-      }}
-    >
-      {/* Big initial */}
-      <div
-        className="absolute -right-4 -bottom-8 font-brand select-none opacity-80 leading-none"
-        style={{ fontSize: "10rem", color: fiche.accent, letterSpacing: "-0.05em" }}
-      >
-        {initial}
-      </div>
-      {/* halftone dots */}
-      <div
-        className="absolute inset-0 opacity-25"
-        style={{
-          backgroundImage: `radial-gradient(${fiche.accent} 1px, transparent 1px)`,
-          backgroundSize: "10px 10px",
-        }}
-      />
-      {/* gradient overlay bottom */}
-      <div className="absolute inset-0 card-vignette" />
-    </div>
-  );
+  return <Illustration fiche={fiche} className={className} />;
 };
 
 export const Hero = ({ fiche, onPlay, onInfo }) => {
+  const { inList, toggleList } = useStore();
+  const added = inList(fiche.id);
   return (
     <section className="relative h-[78vh] md:h-[88vh] min-h-[520px] md:min-h-[600px] w-full overflow-hidden" data-testid="hero">
       {/* Background */}
@@ -116,11 +94,12 @@ export const Hero = ({ fiche, onPlay, onInfo }) => {
               <Info size={22} /> Plus d'infos
             </button>
             <button
-              className="hidden md:flex items-center justify-center w-12 h-12 rounded-full border-2 border-white/40 hover:border-white text-white transition-colors"
+              onClick={() => toggleList(fiche.id)}
+              className={`hidden md:flex items-center justify-center w-12 h-12 rounded-full border-2 transition-colors ${added ? "border-white bg-white text-black" : "border-white/40 hover:border-white text-white"}`}
               data-testid="hero-add"
-              title="Ajouter à ma liste"
+              title={added ? "Retirer de Ma Liste" : "Ajouter à Ma Liste"}
             >
-              <Plus size={22} />
+              {added ? <Check size={22} /> : <Plus size={22} />}
             </button>
           </motion.div>
         </div>

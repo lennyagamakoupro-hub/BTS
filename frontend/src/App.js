@@ -7,12 +7,16 @@ import { Row } from "./components/Row";
 import { DetailOverlay } from "./components/DetailOverlay";
 import { StudyView } from "./components/StudyView";
 import { Footer } from "./components/Footer";
+import { BingeMode } from "./components/BingeMode";
+import { StoreProvider, useStore } from "./hooks/useStore";
 import { FICHES, ROWS, getFiche } from "./data/lenny";
 
 const Browse = () => {
   const [detailFiche, setDetailFiche] = useState(null);
   const [playingFiche, setPlayingFiche] = useState(null);
+  const [bingeOpen, setBingeOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const { list, progress } = useStore();
 
   const featured = useMemo(() => FICHES.find((f) => f.featured) || FICHES[0], []);
 
@@ -32,22 +36,44 @@ const Browse = () => {
     );
   }, [query]);
 
+  // Dynamic rows from user data
+  const myListIds = list;
+  const startedIds = Object.entries(progress)
+    .filter(([, p]) => p.status === "started")
+    .sort((a, b) => b[1].at - a[1].at)
+    .map(([id]) => id);
+
+  // Build dynamic rows list
+  const dynamicRows = useMemo(() => {
+    const out = [];
+    if (myListIds.length > 0) {
+      out.push({ id: "mylist", title: "Ma Liste", ids: myListIds });
+    }
+    if (startedIds.length > 0) {
+      out.push({ id: "continue", title: "Reprendre la révision", ids: startedIds });
+    }
+    // Other rows excluding the static "continue" placeholder
+    ROWS.filter((r) => r.id !== "continue").forEach((r) => out.push(r));
+    return out;
+  }, [myListIds, startedIds]);
+
   return (
     <div className="App" id="top">
-      <NavBar onSearch={setQuery} />
+      <NavBar onSearch={setQuery} onBinge={() => setBingeOpen(true)} />
 
       {!searched && (
         <>
           <Hero fiche={featured} onPlay={handlePlay} onInfo={handleInfo} />
 
           <div className="relative -mt-24 z-10 space-y-2 md:space-y-4 pb-12">
-            {ROWS.map((row) => {
-              const list = row.ids.map(getFiche).filter(Boolean);
+            {dynamicRows.map((row) => {
+              const listFiches = row.ids.map(getFiche).filter(Boolean);
+              if (listFiches.length === 0) return null;
               return (
                 <Row
                   key={row.id}
                   row={row}
-                  fiches={list}
+                  fiches={listFiches}
                   onPlay={handlePlay}
                   onInfo={handleInfo}
                   isTop10={row.id === "top10"}
@@ -93,18 +119,21 @@ const Browse = () => {
 
       <DetailOverlay fiche={detailFiche} onClose={handleCloseDetail} onPlay={handlePlay} />
       <StudyView fiche={playingFiche} onClose={() => setPlayingFiche(null)} />
+      <BingeMode open={bingeOpen} onClose={() => setBingeOpen(false)} />
     </div>
   );
 };
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Browse />} />
-        <Route path="*" element={<Browse />} />
-      </Routes>
-    </BrowserRouter>
+    <StoreProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Browse />} />
+          <Route path="*" element={<Browse />} />
+        </Routes>
+      </BrowserRouter>
+    </StoreProvider>
   );
 }
 

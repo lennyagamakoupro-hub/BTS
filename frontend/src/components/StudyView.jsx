@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Play, ChevronLeft, RotateCcw, Check } from "lucide-react";
 import { Thumb } from "./Hero";
+import { useStore } from "../hooks/useStore";
 
 // === Interactive widgets (dark themed) ===
 
@@ -207,9 +208,15 @@ const SectionBlock = ({ section, accent }) => {
 };
 
 const Quiz = ({ questions, accent, fid }) => {
+  const { saveScore } = useStore();
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const score = Object.entries(answers).reduce((acc, [qi, ci]) => acc + (questions[qi].answer === ci ? 1 : 0), 0);
+
+  const onSubmit = () => {
+    setSubmitted(true);
+    saveScore(fid, score, questions.length);
+  };
 
   return (
     <div className="bg-[#0f0f0f] rounded-lg border border-white/10 p-6 md:p-8" data-testid={`quiz-${fid}`}>
@@ -250,7 +257,7 @@ const Quiz = ({ questions, accent, fid }) => {
       <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between">
         {!submitted ? (
           <button
-            onClick={() => setSubmitted(true)}
+            onClick={onSubmit}
             disabled={Object.keys(answers).length < questions.length}
             className="bg-white text-black px-6 py-2 rounded font-semibold disabled:opacity-30"
             data-testid={`quiz-${fid}-submit`}
@@ -312,6 +319,16 @@ const FlashCards = ({ memos, accent, fid }) => {
 };
 
 export const StudyView = ({ fiche, onClose }) => {
+  const { markStarted, markCompleted } = useStore();
+  useEffect(() => {
+    if (fiche) markStarted(fiche.id);
+  }, [fiche, markStarted]);
+
+  const handleClose = () => {
+    if (fiche) markCompleted(fiche.id);
+    onClose();
+  };
+
   if (!fiche) return null;
 
   return (
@@ -323,7 +340,7 @@ export const StudyView = ({ fiche, onClose }) => {
       >
         {/* Top bar */}
         <div className="sticky top-0 z-30 bg-gradient-to-b from-black/95 to-transparent px-4 md:px-12 py-4 flex items-center justify-between">
-          <button onClick={onClose} className="flex items-center gap-2 text-white hover:text-gray-300" data-testid="study-back">
+          <button onClick={handleClose} className="flex items-center gap-2 text-white hover:text-gray-300" data-testid="study-back">
             <ChevronLeft size={22} /> <span className="text-sm">Retour</span>
           </button>
           <div className="text-xs font-brand tracking-[0.3em]" style={{ color: fiche.accent }}>L · {fiche.year}</div>

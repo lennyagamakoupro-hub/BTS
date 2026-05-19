@@ -1,16 +1,20 @@
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Play, Plus, ThumbsUp, Volume2 } from "lucide-react";
+import { X, Play, Plus, Check, ThumbsUp, Volume2 } from "lucide-react";
 import { Thumb } from "./Hero";
 import { FICHES } from "../data/lenny";
+import { useStore } from "../hooks/useStore";
 
 export const DetailOverlay = ({ fiche, onClose, onPlay }) => {
+  const { inList, toggleList, scores } = useStore();
   useEffect(() => {
     if (fiche) document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = ""; };
   }, [fiche]);
 
   if (!fiche) return null;
+  const added = inList(fiche.id);
+  const bestScore = scores[fiche.id];
 
   // related = same category, exclude current, limit 4
   const related = FICHES.filter((f) => f.category === fiche.category && f.id !== fiche.id).slice(0, 4);
@@ -59,8 +63,13 @@ export const DetailOverlay = ({ fiche, onClose, onPlay }) => {
                 >
                   <Play size={20} fill="black" /> Réviser
                 </button>
-                <button className="w-10 h-10 rounded-full border-2 border-white/60 hover:border-white flex items-center justify-center">
-                  <Plus size={18} />
+                <button
+                  onClick={() => toggleList(fiche.id)}
+                  className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${added ? "border-white bg-white text-black" : "border-white/60 hover:border-white"}`}
+                  data-testid="detail-list"
+                  title={added ? "Retirer de Ma Liste" : "Ajouter à Ma Liste"}
+                >
+                  {added ? <Check size={18} /> : <Plus size={18} />}
                 </button>
                 <button className="w-10 h-10 rounded-full border-2 border-white/60 hover:border-white flex items-center justify-center">
                   <ThumbsUp size={16} />
@@ -80,6 +89,11 @@ export const DetailOverlay = ({ fiche, onClose, onPlay }) => {
                 <span>{fiche.year}</span>
                 <span className="border border-white/40 px-1.5 py-0.5 text-xs">{fiche.duration}</span>
                 <span className="border border-white/40 px-1.5 py-0.5 text-xs">BTS PI</span>
+                {bestScore && (
+                  <span className="border px-1.5 py-0.5 text-xs font-bold" style={{ background: fiche.accent, color: "#000", borderColor: fiche.accent }} data-testid="detail-best-score">
+                    ★ Meilleur score {bestScore.score}/{bestScore.total}
+                  </span>
+                )}
               </div>
               <div className="text-2xl italic font-light" style={{ color: fiche.accent }}>
                 « {fiche.tagline} »

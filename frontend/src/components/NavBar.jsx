@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Bell, ChevronDown } from "lucide-react";
+import { Search, Bell, ChevronDown, Zap } from "lucide-react";
 
-export const NavBar = ({ onSearch }) => {
+export const NavBar = ({ onSearch, onBinge }) => {
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [q, setQ] = useState("");
@@ -38,6 +38,14 @@ export const NavBar = ({ onSearch }) => {
         </div>
 
         <div className="flex items-center gap-4 md:gap-5">
+          <button
+            onClick={onBinge}
+            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#E50914] hover:bg-[#F40612] text-white text-xs font-bold uppercase tracking-widest transition-colors"
+            data-testid="nav-binge"
+            title="Mode Binge — 5 questions aléatoires"
+          >
+            <Zap size={14} /> Binge
+          </button>
           <div className="flex items-center" data-testid="nav-search">
             {searchOpen ? (
               <motion.div
