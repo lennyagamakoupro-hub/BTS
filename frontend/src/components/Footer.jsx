@@ -15,7 +15,7 @@ export const Footer = () => {
         <a href="#" className="hover:underline">Nous contacter</a>
       </div>
       <div className="text-xs">
-        © {new Date().getFullYear()} LENNY · La plateforme de révision BTS Professions Immobilières.
+        © {new Date().getFullYear()} LENNY · La plateforme de révision BTS Transaction · 10 modules, plus de 200 questions.
       </div>
     </footer>
   );

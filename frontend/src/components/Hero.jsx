@@ -107,7 +107,7 @@ export const Hero = ({ fiche, onPlay, onInfo }) => {
 
       {/* Age badge bottom-right (Netflix style) */}
       <div className="absolute right-0 bottom-32 z-10 border-l-4 border-white/70 px-4 py-1.5 bg-black/40 font-semibold text-sm hidden md:block">
-        BTS Professions Immobilières · {fiche.year}
+        BTS Transaction · {fiche.tag}
       </div>
     </section>
   );

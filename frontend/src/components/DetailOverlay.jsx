@@ -16,8 +16,8 @@ export const DetailOverlay = ({ fiche, onClose, onPlay }) => {
   const added = inList(fiche.id);
   const bestScore = scores[fiche.id];
 
-  // related = same category, exclude current, limit 4
-  const related = FICHES.filter((f) => f.category === fiche.category && f.id !== fiche.id).slice(0, 4);
+  // related = sibling modules (not current), limit 4
+  const related = FICHES.filter((f) => f.id !== fiche.id).slice(0, 4);
 
   return (
     <AnimatePresence>
@@ -120,20 +120,20 @@ export const DetailOverlay = ({ fiche, onClose, onPlay }) => {
             </aside>
           </div>
 
-          {/* Episodes */}
+          {/* Programme summary */}
           <div className="px-8 pb-8">
-            <h3 className="text-xl font-bold mb-4">Le programme</h3>
-            <div className="border-t border-white/10">
-              {fiche.sections.map((s, i) => (
-                <div key={s.id} className="border-b border-white/10 py-4 flex items-center gap-5">
-                  <div className="text-2xl font-light text-[#777] w-8">{i + 1}</div>
-                  <div className="flex-1">
-                    <div className="font-semibold">{s.title}</div>
-                    <div className="text-sm text-[#aaa] line-clamp-2 mt-1">
-                      {s.body || (s.steps && s.steps.map((st) => st.label).join(" · "))}
-                    </div>
-                  </div>
-                  <div className="text-xs text-[#777]">~{2 + i} min</div>
+            <h3 className="text-xl font-bold mb-4">Au programme</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { label: "Mémos clés", n: fiche.memos?.length || 0, sub: "formules · règles · acronymes" },
+                { label: "Explorations", n: fiche.deepdive?.length || 0, sub: "thèmes approfondis" },
+                { label: "Flash cards", n: fiche.flashcards?.length || 0, sub: "Q/R rapides" },
+                { label: "Quiz", n: Math.min(10, fiche.quiz?.length || 0), sub: "avec explication" },
+              ].map((s, i) => (
+                <div key={i} className="bg-[#2a2a2a] rounded-md p-4">
+                  <div className="font-display-l text-4xl" style={{ color: fiche.accent }}>{s.n}</div>
+                  <div className="text-sm font-semibold mt-1">{s.label}</div>
+                  <div className="text-xs text-[#aaa] mt-0.5">{s.sub}</div>
                 </div>
               ))}
             </div>

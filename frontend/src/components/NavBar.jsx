@@ -26,13 +26,12 @@ export const NavBar = ({ onSearch, onBinge }) => {
           </a>
           <nav className="hidden md:flex items-center gap-5 text-sm">
             <a href="#top" className="text-white hover:text-gray-300 transition-colors" data-testid="nav-accueil">Accueil</a>
-            <a href="#row-finance" className="text-[#e5e5e5] hover:text-gray-400 transition-colors">Finance</a>
-            <a href="#row-droit" className="text-[#e5e5e5] hover:text-gray-400 transition-colors">Droit</a>
-            <a href="#row-transaction" className="text-[#e5e5e5] hover:text-gray-400 transition-colors">Transaction</a>
-            <a href="#row-gestion" className="text-[#e5e5e5] hover:text-gray-400 transition-colors">Gestion</a>
-            <a href="#row-habitat" className="text-[#e5e5e5] hover:text-gray-400 transition-colors">Habitat</a>
+            <a href="#row-modules-1" className="text-[#e5e5e5] hover:text-gray-400 transition-colors">Modules 1-4</a>
+            <a href="#row-modules-2" className="text-[#e5e5e5] hover:text-gray-400 transition-colors">Modules 5-8</a>
+            <a href="#row-modules-3" className="text-[#e5e5e5] hover:text-gray-400 transition-colors">Module 11 + Synthèse</a>
+            <a href="#row-lois" className="text-[#e5e5e5] hover:text-gray-400 transition-colors">Lois</a>
             <a href="#row-top10" className="text-[#e5e5e5] hover:text-gray-400 transition-colors flex items-center gap-1">
-              Catégories <ChevronDown size={14} />
+              Top 10 <ChevronDown size={14} />
             </a>
           </nav>
         </div>

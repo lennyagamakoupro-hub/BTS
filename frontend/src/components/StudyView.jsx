@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Play, ChevronLeft, RotateCcw, Check } from "lucide-react";
+import { X, Play, ChevronLeft, RotateCcw, Check, ChevronDown } from "lucide-react";
 import { Thumb } from "./Hero";
 import { useStore } from "../hooks/useStore";
 
@@ -211,21 +211,23 @@ const Quiz = ({ questions, accent, fid }) => {
   const { saveScore } = useStore();
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
-  const score = Object.entries(answers).reduce((acc, [qi, ci]) => acc + (questions[qi].answer === ci ? 1 : 0), 0);
+  // Limit to 10 questions to keep manageable
+  const qs = useMemo(() => questions.slice(0, 10), [questions]);
+  const score = Object.entries(answers).reduce((acc, [qi, ci]) => acc + (qs[qi].answer === ci ? 1 : 0), 0);
 
   const onSubmit = () => {
     setSubmitted(true);
-    saveScore(fid, score, questions.length);
+    saveScore(fid, score, qs.length);
   };
 
   return (
     <div className="bg-[#0f0f0f] rounded-lg border border-white/10 p-6 md:p-8" data-testid={`quiz-${fid}`}>
-      <h3 className="font-brand text-sm tracking-[0.3em] mb-4" style={{ color: accent }}>QUIZ · TESTE-TOI</h3>
+      <h3 className="font-brand text-sm tracking-[0.3em] mb-4" style={{ color: accent }}>QUIZ · TESTE-TOI · {qs.length} QUESTIONS</h3>
       <div className="space-y-8">
-        {questions.map((q, qi) => (
+        {qs.map((q, qi) => (
           <div key={qi}>
             <div className="flex items-baseline gap-3 mb-3">
-              <span className="font-display-l text-3xl" style={{ color: accent }}>0{qi + 1}</span>
+              <span className="font-display-l text-3xl" style={{ color: accent }}>{String(qi + 1).padStart(2, "0")}</span>
               <h4 className="text-lg font-medium">{q.q}</h4>
             </div>
             <div className="grid gap-2">
@@ -251,6 +253,11 @@ const Quiz = ({ questions, accent, fid }) => {
                 );
               })}
             </div>
+            {submitted && q.explanation && (
+              <div className="mt-3 text-sm text-[#bbb] italic leading-relaxed pl-4 border-l-2" style={{ borderColor: accent }}>
+                {q.explanation}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -258,7 +265,7 @@ const Quiz = ({ questions, accent, fid }) => {
         {!submitted ? (
           <button
             onClick={onSubmit}
-            disabled={Object.keys(answers).length < questions.length}
+            disabled={Object.keys(answers).length < qs.length}
             className="bg-white text-black px-6 py-2 rounded font-semibold disabled:opacity-30"
             data-testid={`quiz-${fid}-submit`}
           >
@@ -268,7 +275,7 @@ const Quiz = ({ questions, accent, fid }) => {
           <>
             <div className="flex items-baseline gap-3">
               <span className="text-sm text-[#aaa]">Score</span>
-              <span className="font-display-l text-4xl" style={{ color: accent }}>{score}/{questions.length}</span>
+              <span className="font-display-l text-4xl" style={{ color: accent }}>{score}/{qs.length}</span>
             </div>
             <button
               onClick={() => { setAnswers({}); setSubmitted(false); }}
@@ -280,6 +287,101 @@ const Quiz = ({ questions, accent, fid }) => {
           </>
         )}
       </div>
+    </div>
+  );
+};
+
+// Memos — display-only cards (formulas, dates, rules, acronyms, tables)
+const Memos = ({ cards, accent, fid }) => {
+  if (!cards || cards.length === 0) return null;
+  const ICON_MAP = { rule: "RÈGLE", acronym: "ACRONYME", formula: "FORMULE", numbers: "REPÈRES CHIFFRÉS", dates: "DATES CLÉS", table: "TABLEAU" };
+  return (
+    <div className="space-y-4" data-testid={`memos-${fid}`}>
+      <h3 className="font-brand text-sm tracking-[0.3em] mb-2" style={{ color: accent }}>MÉMOS · À RETENIR PAR CŒUR</h3>
+      <div className="grid md:grid-cols-2 gap-4">
+        {cards.map((card, ci) => (
+          <motion.div
+            key={ci}
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ delay: ci * 0.05 }}
+            className="rounded-lg p-5 border"
+            style={{ background: "#0f0f0f", borderColor: `${accent}33` }}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="font-bold text-lg">{card.h}</h4>
+              <span className="font-mono text-[10px] uppercase tracking-widest px-2 py-0.5 rounded" style={{ background: `${accent}22`, color: accent }}>
+                {ICON_MAP[card.type] || card.type}
+              </span>
+            </div>
+            <ul className="space-y-1.5 text-sm text-[#e5e5e5]">
+              {card.items.map((it, i) => (
+                <li key={i} className="flex gap-2">
+                  <span className="opacity-50" style={{ color: accent }}>▸</span>
+                  <span>{it}</span>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// DeepDive — rich content per topic, expandable
+const DeepDive = ({ topics, accent, fid }) => {
+  const [open, setOpen] = useState(topics?.[0]?.slug || null);
+  if (!topics || topics.length === 0) return null;
+  return (
+    <div className="space-y-3" data-testid={`deepdive-${fid}`}>
+      <h3 className="font-brand text-sm tracking-[0.3em] mb-2" style={{ color: accent }}>EXPLORATIONS · POUR ALLER PLUS LOIN</h3>
+      {topics.map((t) => {
+        const isOpen = open === t.slug;
+        return (
+          <div key={t.slug} className="rounded-lg border overflow-hidden" style={{ background: "#0f0f0f", borderColor: isOpen ? accent : "rgba(255,255,255,0.1)" }}>
+            <button
+              onClick={() => setOpen(isOpen ? null : t.slug)}
+              className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-white/5 transition-colors"
+              data-testid={`deepdive-${fid}-${t.slug}`}
+            >
+              <div>
+                <div className="font-bold">{t.title}</div>
+                {t.lede && <div className="text-sm text-[#aaa] italic mt-1">{t.lede}</div>}
+              </div>
+              <ChevronDown size={20} style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }} />
+            </button>
+            <AnimatePresence>
+              {isOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="overflow-hidden"
+                >
+                  <div className="px-5 pb-5 pt-1 space-y-4 border-t border-white/5">
+                    {t.sections.map((s, si) => (
+                      <div key={si}>
+                        <h5 className="font-bold text-base mb-2" style={{ color: accent }}>{s.h}</h5>
+                        {s.b && <p className="text-[#ddd] leading-relaxed">{s.b}</p>}
+                        {s.list && (
+                          <ul className="space-y-1.5 mt-2 text-[#ddd]">
+                            {s.list.map((li, i) => (
+                              <li key={i} className="flex gap-2"><span style={{ color: accent }}>—</span><span>{li}</span></li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        );
+      })}
     </div>
   );
 };
@@ -358,32 +460,33 @@ export const StudyView = ({ fiche, onClose }) => {
         </div>
 
         {/* Content */}
-        <div className="px-4 md:px-12 lg:px-24 py-12 max-w-5xl mx-auto space-y-6">
+        <div className="px-4 md:px-12 lg:px-24 py-12 max-w-5xl mx-auto space-y-10">
           {/* Synopsis */}
           <div className="border-l-4 pl-5 py-2" style={{ borderColor: fiche.accent }}>
-            <div className="text-xs uppercase tracking-widest text-[#777] mb-2">Synopsis</div>
+            <div className="text-xs uppercase tracking-widest text-[#777] mb-2">Synopsis · {fiche.tag}</div>
             <p className="text-xl text-[#e5e5e5] leading-relaxed">{fiche.synopsis}</p>
           </div>
-
-          {/* Episodes */}
-          {fiche.sections.map((s) => (
-            <SectionBlock key={s.id} section={s} accent={fiche.accent} />
-          ))}
 
           {/* Interactive calculator if applicable */}
           {fiche.interactive && (
             <LiveCalculator mode={fiche.interactive} accent={fiche.accent} fiche={fiche} />
           )}
 
+          {/* Mémos — formulas/dates/rules */}
+          <Memos cards={fiche.memos} accent={fiche.accent} fid={fiche.id} />
+
+          {/* Deep dive */}
+          <DeepDive topics={fiche.deepdive} accent={fiche.accent} fid={fiche.id} />
+
+          {/* Flash cards */}
+          <FlashCards memos={fiche.flashcards} accent={fiche.accent} fid={fiche.id} />
+
           {/* Quiz */}
           <Quiz questions={fiche.quiz} accent={fiche.accent} fid={fiche.id} />
 
-          {/* Memos */}
-          <FlashCards memos={fiche.memos} accent={fiche.accent} fid={fiche.id} />
-
           <div className="pt-8 pb-16 text-center">
             <div className="font-brand text-xs tracking-[0.3em] text-[#555] mb-2">FIN DE L'ÉPISODE</div>
-            <button onClick={onClose} className="text-white/70 hover:text-white text-sm underline">Retour au catalogue</button>
+            <button onClick={handleClose} className="text-white/70 hover:text-white text-sm underline" data-testid="study-finish">Retour au catalogue</button>
           </div>
         </div>
       </motion.div>
