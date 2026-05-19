@@ -1,64 +1,58 @@
-# PRD — Maths Financières · Le Magazine
+# PRD — LENNY · Le Netflix de la révision BTS PI
 
-## Problem Statement (verbatim)
-> je veux que tu améliore mes fiches de révision d'une manière plus intéractive avec des animations et de manière la plus moins IA possible /frontend-design /design shotgun /design consultation /design review /polish /animate /bolder /typeset /colorize /hyperframes
+## Problem Statement (latest, verbatim)
+> non je veux un style netflix mais je veux que l'on travaille uniquement à partir du dernier dossier que je viens de t'envoyer et reprendre le style netflix le but étant de faire des fiches de révision je veux écris LENNY comme logo mais je veux que tu reprenne complètement la direction de netflix en tout point
 
-Source artifact: comic-style HTML revision sheet covering BTS Maths Financières (4 chapters).
+Original vision: "Le Netflix de l'immobilier" — plateforme de révision style streaming pour BTS Professions Immobilières.
 
 ## User Choices (Feb 2026)
-- Output: **React app** interactive
-- Art direction: **Editorial magazine** (large typography, asymmetric layout)
-- Interactions: **all** — quiz/flashcards, calculators, scroll animations, animated graphs
-- Content: free to enrich
-- Scope: **4 existing chapters** only (no new chapters yet)
-
-## Target Persona
-BTS first-year students revising financial mathematics — needs memorable, beautiful, interactive content that doesn't feel AI-generated.
+- **Brand**: LENNY (logo rouge style Netflix)
+- **Style**: Netflix complet (fond noir, rouge #E50914, hero billboard, carrousels horizontaux, hover popout, modal détail, watch page)
+- **Content scope**: BTS Professions Immobilières — 4 fiches existantes (maths) + nouvelles fiches droit/transaction/gestion/habitat
 
 ## Architecture
-- Frontend-only React SPA (CRA), Tailwind, Framer Motion 12
-- Backend template unused (no API calls)
-- No auth, no DB persistence
+- Frontend-only React SPA (CRA + Tailwind + Framer Motion 12 + lucide-react)
+- Routes: `/` Browse (unique)
+- Pas de backend, pas d'auth, pas de DB
 
-## Design System (delivered)
-- Brutalist editorial / Swiss high-contrast variant
-- Typography: Schibsted Grotesk (display), Cormorant Garamond (serif italic), JetBrains Mono (technical)
-- Palette: ink #1C1C1A on cream #F4F0EB paper + 4 chapter accent colors (#0055FF / #FF4400 / #FF00AA / #CCFF00)
-- Paper-grain overlay, 1-2px solid brutalist borders, no rounded corners on widgets
+## Design System (LENNY)
+- **Palette**: noir `#000` / surfaces `#141414`-`#181818` / rouge `#E50914` / texte `#FFF` / secondaire `#B3B3B3`
+- **Couleurs catégorie**: Finance `#FF4400`, Droit `#0EA5E9`, Transaction `#E50914`, Gestion `#A855F7`, Habitat `#22C55E`
+- **Typography**: Anton (logo / numéros Top 10 / labels brand), Inter 900 (display titles), Inter (body)
+- Card thumbnails generated procedurally (gradient radial + halftone + big initial)
 
-## Implemented (Feb 19, 2026)
-- **Cover spread**: masthead, hero typography "Maths financières", deck, CTAs, custom SVG composition (no AI imagery)
-- **Sticky nav** with 4-chapter chips + scroll progress bar + active-section highlight
-- **Editorial Marquee** between sections
-- **Table of Contents** with hover-translate + accent numerals
-- **4 chapter spreads** — each with:
-  - Giant accent-color chapter number
-  - Two-line bold/italic title
-  - Editorial deck
-  - Drop-cap narrative with marginalia (metaphor box)
-  - Side illustration (halftone risograph PNG)
-  - Black full-bleed pull quote
-  - Typeset Formula card (sym + label + unit grid)
-  - Cas d'école — step strip
-  - Interactive **Calculator** (sliders / frequency buttons, live result)
-  - Animated **SVG growth Graph** (linear vs exponential comparison)
-  - Point clé (real-world application)
-  - **Quiz** (3 questions, multi-choice, scored)
-  - **FlashCards** (3D-flip with prev/next)
-- **Colophon** footer with chapter recap
-- All elements have `data-testid` attributes
-- Testing agent: 100% frontend tests passing
+## Implemented (Feb 19, 2026 — Pivot)
+### Composants
+- **NavBar**: transparent → noir au scroll, logo LENNY rouge, liens catégories, recherche pliable, cloche, avatar
+- **Hero billboard**: 78-88vh, vignette catégorie, badge L · ORIGINAL, titre énorme, tagline italique, synopsis, boutons Réviser/Plus d'infos/+Liste, badge BTS PI à droite
+- **Row** carrousel horizontal avec flèches qui apparaissent au hover de la rangée
+- **Card** (260×150) avec badge L · ORIGINAL + lettrine, **hover popout** qui grandit (1.18) et révèle Play/+/Like/Down arrow + meta
+- **Top 10 row**: numéros 1-10 outline géants façon Netflix
+- **DetailOverlay**: modal centré, hero header, programme (épisodes), À voir aussi
+- **StudyView** (watch page): hero, synopsis bordé accent, sections (avec formule highlight), Calculator interactif (fiches finance), Quiz, FlashCards 3D-flip, retour
+- **Footer**: liens + copyright
 
-## P1 / Backlog
-- Persist quiz scores + progress per chapter (localStorage)
-- Print/PDF stylesheet for impression
-- Add more advanced exercises (annuity, present value)
-- Audio narration of metaphors
-- Share / export progress to friends
-- Add more chapters (annuités, emprunts indivis, escompte commercial)
-- Open Graph cards for social sharing
+### Contenu (17 fiches BTS PI)
+- **Finance** (4): Intérêts simples, Intérêts composés (vedette hero), Taux proportionnel, Taux équivalent
+- **Droit** (4): Loi Hoguet, Mandat de vente, Copropriété, Bail d'habitation
+- **Transaction** (4): Compromis vs Promesse, Diagnostics, Plus-value, Financement
+- **Gestion locative** (3): État des lieux, Charges récupérables, Encadrement des loyers
+- **Habitat durable** (2): RE 2020, Passoires thermiques
 
-## P2
-- Spaced repetition algorithm on flashcards
-- Dark "night reading" theme
-- Multi-language (English/Spanish)
+### Rangées catalogue (8)
+Tendance · Reprendre · Maths · Droit · Transaction · Gestion · Habitat · Top 10
+
+### Test Results
+- testing_agent_v3 iteration 2: **100% frontend pass**, math vérifiée (5000 €/4%/10y → 7000 € simple, 7401 € composé), zéro erreur console.
+
+## Backlog
+- **P1**: Persistance progression (localStorage), favoris "Ma liste", historique de lecture
+- **P1**: Plus de fiches BTS PI (annuités, emprunt indivis, SCI, IFI, urbanisme, marketing immobilier)
+- **P1**: Vrais visuels par catégorie (illustrations sur mesure pour chaque fiche)
+- **P2**: Player mobile dédié + swipe latéral
+- **P2**: Mode "binge revision" — enchaîne quiz × N fiches
+- **P2**: Recommandations algo selon scores
+- **P3**: Compte étudiant + sync multi-device
+
+## Anciennes pistes (déprouvées)
+- Style brutaliste éditorial (livré en iter 1, pivoté en iter 2)

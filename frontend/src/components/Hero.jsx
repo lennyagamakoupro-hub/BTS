@@ -35,7 +35,7 @@ export const Thumb = ({ fiche, className = "" }) => {
 
 export const Hero = ({ fiche, onPlay, onInfo }) => {
   return (
-    <section className="relative h-[88vh] min-h-[600px] w-full overflow-hidden" data-testid="hero">
+    <section className="relative h-[78vh] md:h-[88vh] min-h-[520px] md:min-h-[600px] w-full overflow-hidden" data-testid="hero">
       {/* Background */}
       <div className="absolute inset-0">
         <Thumb fiche={fiche} className="!h-full" />
@@ -63,7 +63,7 @@ export const Hero = ({ fiche, onPlay, onInfo }) => {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="font-display-l text-[clamp(3rem,7vw,6rem)] leading-[0.95] mb-4"
+            className="font-display-l text-[clamp(2.25rem,7vw,6rem)] leading-[0.95] mb-4"
             data-testid="hero-title"
           >
             {fiche.title}
@@ -85,7 +85,7 @@ export const Hero = ({ fiche, onPlay, onInfo }) => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35, duration: 0.6 }}
-            className="text-lg md:text-xl text-[#e5e5e5] leading-snug mb-8 max-w-xl"
+            className="text-base md:text-xl text-[#e5e5e5] leading-snug mb-5 md:mb-8 max-w-xl line-clamp-4 md:line-clamp-none"
             style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.6)" }}
             data-testid="hero-synopsis"
           >
