@@ -95,11 +95,11 @@ export const Hero = ({ fiche, onPlay, onInfo }) => {
             </button>
             <button
               onClick={() => toggleList(fiche.id)}
-              className={`hidden md:flex items-center justify-center w-12 h-12 rounded-full border-2 transition-colors ${added ? "border-white bg-white text-black" : "border-white/40 hover:border-white text-white"}`}
+              className={`flex items-center justify-center w-11 h-11 md:w-12 md:h-12 rounded-full border-2 transition-colors ${added ? "border-white bg-white text-black" : "border-white/40 hover:border-white text-white"}`}
               data-testid="hero-add"
               title={added ? "Retirer de Ma Liste" : "Ajouter à Ma Liste"}
             >
-              {added ? <Check size={22} /> : <Plus size={22} />}
+              {added ? <Check size={20} /> : <Plus size={20} />}
             </button>
           </motion.div>
         </div>

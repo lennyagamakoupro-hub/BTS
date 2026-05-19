@@ -208,7 +208,7 @@ const SectionBlock = ({ section, accent }) => {
 };
 
 const Quiz = ({ questions, accent, fid }) => {
-  const { saveScore } = useStore();
+  const { saveScore, markCompleted } = useStore();
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   // Limit to 10 questions to keep manageable
@@ -218,6 +218,7 @@ const Quiz = ({ questions, accent, fid }) => {
   const onSubmit = () => {
     setSubmitted(true);
     saveScore(fid, score, qs.length);
+    markCompleted(fid);
   };
 
   return (
@@ -296,7 +297,7 @@ const Memos = ({ cards, accent, fid }) => {
   if (!cards || cards.length === 0) return null;
   const ICON_MAP = { rule: "RÈGLE", acronym: "ACRONYME", formula: "FORMULE", numbers: "REPÈRES CHIFFRÉS", dates: "DATES CLÉS", table: "TABLEAU" };
   return (
-    <div className="space-y-4" data-testid={`memos-${fid}`}>
+    <div className="space-y-4" data-testid={`memocards-${fid}`}>
       <h3 className="font-brand text-sm tracking-[0.3em] mb-2" style={{ color: accent }}>MÉMOS · À RETENIR PAR CŒUR</h3>
       <div className="grid md:grid-cols-2 gap-4">
         {cards.map((card, ci) => (
@@ -394,12 +395,12 @@ const FlashCards = ({ memos, accent, fid }) => {
   const prev = () => { setFlipped(false); setTimeout(() => setIdx((i) => (i - 1 + memos.length) % memos.length), 200); };
 
   return (
-    <div className="bg-[#0f0f0f] rounded-lg border border-white/10 p-6 md:p-8" data-testid={`memos-${fid}`}>
+    <div className="bg-[#0f0f0f] rounded-lg border border-white/10 p-6 md:p-8" data-testid={`flashcards-${fid}`}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-brand text-sm tracking-[0.3em]" style={{ color: accent }}>MÉMOS · CLIQUE POUR RETOURNER</h3>
         <span className="text-xs text-[#777] font-mono">{idx + 1} / {memos.length}</span>
       </div>
-      <div className="card-3d w-full max-w-md mx-auto aspect-[5/3] cursor-pointer" onClick={() => setFlipped((f) => !f)} data-testid={`memos-${fid}-flip`}>
+      <div className="card-3d w-full max-w-md mx-auto aspect-[5/3] cursor-pointer" onClick={() => setFlipped((f) => !f)} data-testid={`flashcards-${fid}-flip`}>
         <div className={`card-3d-inner relative w-full h-full ${flipped ? "flipped" : ""}`}>
           <div className="card-face absolute inset-0 rounded-lg flex flex-col items-center justify-center p-6 text-center" style={{ background: "#1a1a1a", border: `1px solid ${accent}33` }}>
             <div className="text-xs uppercase tracking-widest mb-3" style={{ color: accent }}>Question</div>
@@ -412,22 +413,21 @@ const FlashCards = ({ memos, accent, fid }) => {
         </div>
       </div>
       <div className="flex gap-3 justify-center mt-6">
-        <button onClick={prev} className="px-4 py-2 rounded border border-white/20 hover:border-white text-sm" data-testid={`memos-${fid}-prev`}>← Préc.</button>
+        <button onClick={prev} className="px-4 py-2 rounded border border-white/20 hover:border-white text-sm" data-testid={`flashcards-${fid}-prev`}>← Préc.</button>
         <button onClick={() => setFlipped((f) => !f)} className="px-4 py-2 rounded border border-white/20 hover:border-white text-sm">Retourner</button>
-        <button onClick={next} className="px-4 py-2 rounded border border-white/20 hover:border-white text-sm" data-testid={`memos-${fid}-next`}>Suiv. →</button>
+        <button onClick={next} className="px-4 py-2 rounded border border-white/20 hover:border-white text-sm" data-testid={`flashcards-${fid}-next`}>Suiv. →</button>
       </div>
     </div>
   );
 };
 
 export const StudyView = ({ fiche, onClose }) => {
-  const { markStarted, markCompleted } = useStore();
+  const { markStarted } = useStore();
   useEffect(() => {
     if (fiche) markStarted(fiche.id);
   }, [fiche, markStarted]);
 
   const handleClose = () => {
-    if (fiche) markCompleted(fiche.id);
     onClose();
   };
 

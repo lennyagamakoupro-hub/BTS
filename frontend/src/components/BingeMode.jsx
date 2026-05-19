@@ -54,8 +54,8 @@ export const BingeMode = ({ open, onClose }) => {
     setPickedChoice(null);
     if (idx + 1 >= questions.length) {
       setDone(true);
-      // Save aggregated binge score under a special key
-      saveScore("binge:latest", score + (answers[idx]?.correct ? 0 : 0), questions.length);
+      // Save aggregated binge score
+      saveScore("binge:latest", score, questions.length);
     } else {
       setIdx(idx + 1);
     }
