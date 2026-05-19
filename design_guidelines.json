@@ -1,0 +1,138 @@
+{
+  "theme": "LIGHT",
+  "archetype": "Swiss & High-Contrast (Brutalist Editorial Variant)",
+  "vibe": "High-end print magazine meets brutalist interactive web. Escape AI-slop completely. Inspired by Bloomberg Businessweek, FT Weekend, and Apartamento. Real depth with paper textures, ink-bleed aesthetics, and striking typography.",
+  "typography": {
+    "fonts": {
+      "display": {
+        "family": "'Schibsted Grotesk', sans-serif",
+        "weights": ["400", "700", "900"],
+        "usage": "Massive chapter numbers, brutalist headlines, and data-heavy structural elements."
+      },
+      "serif": {
+        "family": "'Cormorant Garamond', serif",
+        "weights": ["400", "500", "600", "700"],
+        "style": ["normal", "italic"],
+        "usage": "Subheads, pull quotes, metaphors, marginalia, and long-form reading paragraphs. Crucial for the 'Financial Times' contrast."
+      },
+      "mono": {
+        "family": "'JetBrains Mono', monospace",
+        "weights": ["400", "700"],
+        "usage": "Formulas, interactive calculators, numerical inputs, and small technical labels."
+      }
+    },
+    "scales": {
+      "h1_hero": "text-6xl md:text-8xl font-black tracking-tighter leading-none uppercase",
+      "h2_chapter": "text-5xl md:text-7xl font-black tracking-tighter leading-none uppercase",
+      "h3_editorial": "text-3xl md:text-5xl font-serif font-bold italic tracking-tight leading-tight",
+      "body_main": "text-lg md:text-xl font-serif leading-relaxed",
+      "quote": "text-2xl md:text-4xl font-serif italic leading-tight border-l-4 pl-6",
+      "caption": "text-xs md:text-sm font-mono tracking-widest uppercase",
+      "formula": "text-2xl md:text-4xl font-mono font-bold tracking-tight"
+    },
+    "installation": "Import from Google Fonts: @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=JetBrains+Mono:wght@400;700&family=Schibsted+Grotesk:wght@400;700;900&display=swap');"
+  },
+  "colors": {
+    "background": {
+      "base": "#F4F0EB",
+      "alt": "#EAE5DE",
+      "description": "Warm newsprint / raw cream paper texture. NEVER use pure white."
+    },
+    "text": {
+      "primary": "#1C1C1A",
+      "secondary": "#4A4A45",
+      "inverse": "#F4F0EB",
+      "description": "Rich black ink (never #000000) for highest contrast."
+    },
+    "borders": {
+      "default": "#1C1C1A",
+      "light": "rgba(28, 28, 26, 0.15)"
+    },
+    "chapter_accents": {
+      "ch1_simple": {
+        "color": "#0055FF",
+        "name": "Electric Blue",
+        "usage": "Primary accent for 'Intérêts simples'. Use for graph lines, highlights, and drop caps."
+      },
+      "ch2_compound": {
+        "color": "#FF4400",
+        "name": "Neon Orange",
+        "usage": "Primary accent for 'Intérêts composés'."
+      },
+      "ch3_proportional": {
+        "color": "#FF00AA",
+        "name": "Bright Pink",
+        "usage": "Primary accent for 'Taux proportionnel'."
+      },
+      "ch4_equivalent": {
+        "color": "#CCFF00",
+        "name": "Acid Green",
+        "usage": "Primary accent for 'Taux équivalent'."
+      }
+    }
+  },
+  "layout_and_spacing": {
+    "grid_system": "Asymmetrical 12-column grid. Elements should explicitly span columns (e.g., col-span-4 vs col-span-8). Break symmetry constantly.",
+    "spacing_scale": "Extremely generous. Use p-12, p-16, p-24 for section padding to emulate print margins.",
+    "borders": "Brutalist. Use 1px or 2px solid #1C1C1A borders for structural division, exactly like a newspaper layout. No soft shadows. Only harsh dropshadows if any.",
+    "components": {
+      "calculators": "Should look like technical widgets. Solid borders, mono typography, stark input fields with no radius (rounded-none).",
+      "flashcards": "Physical paper feel. 1px solid border, pale background, 3D flip on click using Framer Motion.",
+      "marginalia": "Definitions and side notes should hang in the margins on desktop (absolute positioning or grid offset).",
+      "drop_caps": "First letter of chapter paragraphs should be massive (float-left, text-6xl, font-serif, mt-2 mr-4)."
+    }
+  },
+  "motion": {
+    "library": "framer-motion",
+    "page_transitions": "Hyperframes style: smooth vertical slide reveals overlapping the previous chapter, simulating a physical page turn or continuous print scroll.",
+    "scroll_animations": {
+      "text_reveal": "Words staggered reveal from bottom up using clip-path or overflow-hidden wrappers.",
+      "images": "Parallax effect (y: [-20, 20] on scroll).",
+      "graphs": "SVG path drawing on view (strokeDasharray and pathLength from 0 to 1) to visually show mathematical growth curves."
+    },
+    "hover_states": "Magnetic button hovers (small x/y displacement). Invert colors on hover (Black bg, cream text) for CTAs."
+  },
+  "media_and_assets": {
+    "style": "Halftone, risograph, high contrast duotone ink over cream paper. Geometric, striking, and slightly abstract.",
+    "images": [
+      {
+        "category": "magazine_cover",
+        "url": "https://static.prod-images.emergentagent.com/jobs/96c7e974-2142-42d0-abc3-a98c4a1da670/images/e77581ed99c3be7b654e4b76d4b216696a1cc8348676155c84455df605dded05.png",
+        "description": "Cover art featuring abstract geometric charts overlapping in risograph textures."
+      },
+      {
+        "category": "chapter_1_fountain",
+        "url": "https://static.prod-images.emergentagent.com/jobs/96c7e974-2142-42d0-abc3-a98c4a1da670/images/36935f147862332a8959496c5024b3e37da1d27dcf21effd6541020ff138ac75.png",
+        "description": "Halftone fountain illustration for simple interest metaphor (Electric Blue duotone)."
+      },
+      {
+        "category": "chapter_2_snowball",
+        "url": "https://static.prod-images.emergentagent.com/jobs/96c7e974-2142-42d0-abc3-a98c4a1da670/images/00dbdcbe20d9309db90812a4635075902710b1ac8e5f07ee0d1eeddc3ce945b0.png",
+        "description": "Halftone massive snowball illustration for compound interest metaphor (Neon Orange duotone)."
+      },
+      {
+        "category": "chapter_3_pizza",
+        "url": "https://static.prod-images.emergentagent.com/jobs/96c7e974-2142-42d0-abc3-a98c4a1da670/images/d2452379b2a9a5d3b1153310bcb6078e19c0ad5a6749b309f1e243cf20a7b87f.png",
+        "description": "Halftone pizza sliced by scalpel illustration for proportional rate metaphor (Bright Pink duotone)."
+      },
+      {
+        "category": "chapter_4_scale",
+        "url": "https://static.prod-images.emergentagent.com/jobs/96c7e974-2142-42d0-abc3-a98c4a1da670/images/85dea29e662a6b9a4fbe58759ca28942eb1138536419c9e9a040216f9c2b4e19.png",
+        "description": "Halftone balanced brass scale illustration for equivalent rate metaphor (Acid Green duotone)."
+      }
+    ]
+  },
+  "instructions_to_main_agent": [
+    "Build a single-page React application with an editorial table of contents acting as the 'Magazine Cover'.",
+    "Use 'Schibsted Grotesk' for chapter numbers (make them huge, overlapping content) and structural headers.",
+    "Use 'Cormorant Garamond' for the narrative text, pull quotes, and metaphors.",
+    "Use 'JetBrains Mono' for all formulas, numbers in the calculators, and variable definitions.",
+    "For formulas, you can use KaTeX or styled spans, but it MUST look typeset beautifully, not like raw code.",
+    "Each chapter MUST use its assigned spot color (from chapter_accents) for UI highlights, graph lines, and hover states to give visual distinction.",
+    "Calculators must be highly interactive (sliders). Output updates in real-time. Use stark, solid borders (rounded-none) for the inputs.",
+    "Graphs should be implemented with Framer Motion SVGs to show the line drawing across the chart (linear for simple interest, exponential for compound interest).",
+    "Include a 'Flashcard / Quiz' section at the end of each chapter with 3D flip animations.",
+    "DO NOT use generic Shadcn cards with soft shadows. Strip Shadcn components to their bare bones and apply the brutalist 1px solid border style.",
+    "Apply 'data-testid' to all interactive elements."
+  ]
+}
