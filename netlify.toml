@@ -1,5 +1,5 @@
 [build]
-  command = "yarn build"
+  command = "cd frontend && yarn build"
     publish = "frontend/build"
 
     [[redirects]]
