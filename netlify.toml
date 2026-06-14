@@ -1,9 +1,8 @@
 [build]
-  base = "frontend"
   publish = "build"
-  command = "yarn install && yarn build"
+    command = "yarn build"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+    [[redirects]]
+      from = "/*"
+        to = "/index.html"
+          status = 200
