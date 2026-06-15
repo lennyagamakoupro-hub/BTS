@@ -1,0 +1,10 @@
+Repository cleanup completed: unnecessary files and directories removed.
+
+Removed:
+- 2 .zip files (BTS TRANSACTION (16).zip, BTS TRANSACTION (2).zip)
+- 3 directories (memory, test_reports, tests)
+- Files: design_guidelines.json, test_result.md, yarn.lock (root), DEPLOY.md, accueil-decouverte.mp4
+
+Preserved:
+- index.html, netlify.toml, .claude/, backend/, manifest.webmanifest, _headers, .gitignore
+- All 6 .zip files: code-reviewer.zip, frontend-design-direction.zip, pptx-html-fidelity-audit.zip, senior-backend.zip, superpowers.zip, ui-ux-pro-max.zip
