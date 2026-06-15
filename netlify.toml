@@ -1,6 +1,6 @@
 [build]
-  command = ""
-  publish = "site-light"
+  command = "echo no-build-needed"
+  publish = "."
 
 [[redirects]]
   from = "/*"
