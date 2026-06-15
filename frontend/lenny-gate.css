@@ -1,0 +1,273 @@
+/* ============================================
+   LENNY — Portail d'accès « Entrez dans le monde de l'immobilier »
+   Diaporama cinématique plein écran + panneau éditorial + saisie en tuiles.
+   IDs conservés (gate-input/btn/msg/field/eye) pour ne rien casser côté auth.
+   ============================================ */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap');
+#lenny-gate {
+  position: fixed; inset: 0; z-index: 2147483000;
+  height: 100vh; height: 100dvh;
+  display: grid; grid-template-columns: 1.15fr 1fr;
+  background: #0b0a09; color: #fff;
+  font-family: "Inter", system-ui, sans-serif;
+  opacity: 1; transition: opacity .7s ease;
+  overflow: hidden;
+}
+#lenny-gate.hidden { opacity: 0; pointer-events: none; }
+
+/* ---------- scène : diaporama Ken Burns ---------- */
+.gate-stage { position: relative; overflow: hidden; }
+.gate-slides { position: absolute; inset: 0; }
+.gslide {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  opacity: 0; will-change: transform, opacity;
+  animation: gateKen 64s linear infinite;
+}
+.gslide-1 { background-image: url("images/gate-villa.jpg");      animation-delay: 0s; }
+.gslide-2 { background-image: url("images/hero-int.jpg");        animation-delay: 8s; }
+.gslide-3 { background-image: url("images/gate-sea.jpg");        animation-delay: 16s; }
+.gslide-4 { background-image: url("images/gate-provence.jpg");   animation-delay: 24s; }
+.gslide-5 { background-image: url("images/gate-interior2.jpg"); animation-delay: 32s; }
+.gslide-6 { background-image: url("images/gate-interior.jpg");   animation-delay: 40s; }
+.gslide-7 { background-image: url("images/gate-provence2.jpg"); animation-delay: 48s; }
+.gslide-8 { background-image: url("images/hero-ext.jpg");       animation-delay: 56s; }
+@keyframes gateKen {
+  0%   { opacity: 0; transform: scale(1.06) translate(0, 0); }
+  2%   { opacity: 1; }
+  11%  { opacity: 1; }
+  13.5% { opacity: 0; transform: scale(1.13) translate(-1.6%, -1.2%); }
+  100% { opacity: 0; transform: scale(1.13) translate(-1.6%, -1.2%); }
+}
+/* voile pour fondre l'image vers le panneau + lisibilité */
+.gate-veil {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, rgba(11,10,9,0) 40%, rgba(11,10,9,.55) 78%, #0b0a09 100%),
+    linear-gradient(0deg, rgba(11,10,9,.6) 0%, rgba(11,10,9,0) 45%),
+    radial-gradient(120% 90% at 30% 30%, rgba(229,9,20,.10), transparent 60%);
+}
+/* légende discrète qui situe l'image */
+.gate-stage::after {
+  content: "Votre futur terrain de jeu.";
+  position: absolute; left: 40px; bottom: 34px;
+  font: 500 13px/1.4 "Inter", system-ui, sans-serif;
+  letter-spacing: .04em; color: rgba(255,255,255,.62);
+  padding-left: 16px; border-left: 2px solid var(--red, #e50914);
+}
+
+/* ---------- panneau ---------- */
+.gate-panel {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column;
+  padding: 46px 56px;
+  background: linear-gradient(180deg, #0d0b0a 0%, #100c0b 100%);
+}
+.gate-top { display: flex; align-items: baseline; gap: 14px; }
+.gate-brand {
+  font-family: "Anton", "Bebas Neue", sans-serif;
+  font-size: 30px; letter-spacing: .14em; color: var(--red, #e50914);
+  line-height: 1;
+}
+.gate-kicker {
+  font: 600 11px/1 "IBM Plex Mono", monospace;
+  letter-spacing: .28em; text-transform: uppercase;
+  color: rgba(255,255,255,.5);
+  padding: 5px 9px; border: 1px solid rgba(255,255,255,.16); border-radius: 999px;
+}
+
+.gate-hero { margin-top: auto; }
+.gate-h1 {
+  font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+  font-style: italic; font-weight: 600;
+  font-size: clamp(34px, 4.4vw, 66px);
+  line-height: 1.12; letter-spacing: -.005em; color: #fdfbf7;
+  margin-bottom: 16px; max-width: 18ch;
+  white-space: normal; text-wrap: pretty;
+  min-height: 3.4em;
+  text-shadow: 0 2px 30px rgba(0,0,0,.45);
+  animation: gateRise .8s cubic-bezier(.2,.7,.2,1) both;
+}
+.gate-h1 .gtw { font: inherit; color: inherit; }
+/* effet machine à écrire (le JS découpe la phrase en <span class="gc">) */
+.gate-h1[data-split] { animation: none; }
+.gate-h1 .gc {
+  opacity: 0;
+  animation: gcType .01s linear forwards;
+  animation-delay: calc(var(--i) * .034s + .15s);
+}
+@keyframes gcType { to { opacity: 1; } }
+/* 2ᵉ ligne (la suite) : un peu plus petite et atténuée */
+.gate-h1 .gc.l2 { font-size: .62em; opacity: 0; }
+.gate-h1 .gcaret {
+  display: inline-block; width: .055em; height: .82em;
+  background: var(--red, #e50914); margin-left: .04em;
+  transform: translateY(.1em);
+  animation: gcaretBlink 1.05s steps(1) infinite;
+}
+@keyframes gcaretBlink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+.gate-lead {
+  font-size: 15.5px; line-height: 1.6; color: rgba(255,255,255,.66);
+  max-width: 30ch; margin-bottom: 30px;
+  animation: gateRise .8s .08s cubic-bezier(.2,.7,.2,1) both;
+}
+@keyframes gateRise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* ---------- formulaire ---------- */
+.gate-form { animation: gateRise .8s .16s cubic-bezier(.2,.7,.2,1) both; }
+.gate-field {
+  position: relative;
+  display: flex; align-items: center;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 14px; padding: 6px 6px 6px 16px;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.gate-field.focus {
+  border-color: rgba(229,9,20,.55);
+  background: rgba(255,255,255,.06);
+  box-shadow: 0 0 0 4px rgba(229,9,20,.1);
+}
+.gate-field.err { animation: gateShake .42s cubic-bezier(.36,.07,.19,.97) both; border-color: #e5484d; }
+@keyframes gateShake { 10%,90%{transform:translateX(-1px)} 20%,80%{transform:translateX(2px)} 30%,50%,70%{transform:translateX(-4px)} 40%,60%{transform:translateX(4px)} }
+
+/* tuiles lumineuses (sous le texte saisi) */
+.gate-tiles { position: absolute; left: 16px; right: 56px; bottom: 9px; display: flex; gap: 7px; pointer-events: none; }
+.gtile {
+  flex: 1; max-width: 30px; height: 4px; border-radius: 3px;
+  background: rgba(255,255,255,.12);
+  transition: background .18s ease, box-shadow .25s ease, transform .25s ease;
+}
+.gtile.on { background: var(--red, #e50914); }
+.gtile.head { box-shadow: 0 0 10px rgba(229,9,20,.8); transform: scaleY(1.5); }
+
+.gate-input {
+  flex: 1; min-width: 0;
+  background: transparent; border: 0; outline: none;
+  color: #fff; font: 600 18px/1 "IBM Plex Mono", monospace;
+  letter-spacing: .22em; padding: 14px 6px 18px;
+}
+.gate-input::placeholder { color: transparent; }
+
+.gate-eye {
+  flex: none; width: 40px; height: 40px; border-radius: 10px;
+  display: grid; place-items: center; cursor: pointer;
+  background: transparent; border: 0; color: rgba(255,255,255,.5);
+  transition: color .15s ease, background .15s ease;
+}
+.gate-eye:hover { color: #fff; background: rgba(255,255,255,.08); }
+.gate-eye svg { width: 20px; height: 20px; }
+.gate-eye .gate-eye-off { display: none; }
+.gate-eye[aria-pressed="true"] .gate-eye-on { display: none; }
+.gate-eye[aria-pressed="true"] .gate-eye-off { display: block; }
+
+/* bouton */
+.gate-btn {
+  position: relative; width: 100%; margin-top: 14px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 16px 20px; border: 0; border-radius: 13px; cursor: pointer;
+  background: var(--red, #e50914); color: #fff;
+  font: 700 15px/1 "Inter", system-ui, sans-serif; letter-spacing: .01em;
+  transition: filter .16s ease, transform .16s ease, box-shadow .16s ease;
+  box-shadow: 0 14px 36px -14px rgba(229,9,20,.7);
+}
+.gate-btn:hover { filter: brightness(1.06); transform: translateY(-1px); box-shadow: 0 20px 44px -14px rgba(229,9,20,.8); }
+.gate-btn:active { transform: translateY(0); }
+.gate-btn-arrow { width: 19px; height: 19px; transition: transform .2s ease; }
+.gate-btn:hover .gate-btn-arrow { transform: translateX(4px); }
+.gate-btn.loading { pointer-events: none; }
+.gate-btn.loading .gate-btn-tx { opacity: .7; }
+.gate-btn.loading .gate-btn-arrow { display: none; }
+.gate-btn-spin {
+  display: none; width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.35); border-top-color: #fff;
+  animation: gateSpin .7s linear infinite;
+}
+.gate-btn.loading .gate-btn-spin { display: inline-block; }
+@keyframes gateSpin { to { transform: rotate(360deg); } }
+
+.gate-msg { min-height: 20px; margin-top: 12px; font: 600 13px/1.4 "Inter", system-ui, sans-serif; color: #ff9a94; }
+.gate-msg.ok { color: #5ed98a; }
+
+.gate-foot { margin-top: 26px; }
+.gate-foot-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  font: 600 11.5px/1 "Inter", system-ui, sans-serif; color: rgba(255,255,255,.42);
+}
+.gate-foot-badge svg { width: 14px; height: 14px; color: rgba(255,255,255,.4); }
+
+/* succès : porte qui s'ouvre (les deux colonnes s'écartent) */
+#lenny-gate.ok .gate-field.focus { border-color: rgba(70,211,105,.55); box-shadow: 0 0 0 4px rgba(70,211,105,.12); }
+#lenny-gate.ok .gtile.on { background: #46d369; }
+#lenny-gate.ok .gate-btn { background: #2f9e4f; box-shadow: 0 14px 36px -14px rgba(47,158,79,.7); }
+
+/* ---------- responsive ---------- */
+
+/* tablette paysage / petit laptop : on garde 2 colonnes mais on resserre */
+@media (max-width: 1100px) and (min-width: 901px) {
+  #lenny-gate { grid-template-columns: 1.04fr .96fr; }
+  .gate-panel { padding: 40px 42px; }
+  .gate-h1 { font-size: clamp(30px, 4.2vw, 46px); }
+  .gate-lead { max-width: 34ch; }
+}
+
+/* tablette portrait (iPad) + mobile : la photo passe en fond plein écran */
+@media (max-width: 900px) {
+  #lenny-gate { grid-template-columns: 1fr; }
+  .gate-stage { position: absolute; inset: 0; }
+  .gate-veil { background:
+    linear-gradient(0deg, #0b0a09 6%, rgba(11,10,9,.72) 38%, rgba(11,10,9,.32) 72%, rgba(11,10,9,.18) 100%),
+    radial-gradient(120% 70% at 50% 16%, rgba(229,9,20,.12), transparent 60%); }
+  .gate-stage::after { display: none; }
+  .gate-panel {
+    position: relative; z-index: 2;
+    justify-content: flex-end;
+    background: transparent;
+    padding: 44px 30px max(36px, env(safe-area-inset-bottom));
+    overflow-y: auto;
+  }
+  .gate-top { margin-bottom: 6px; }
+  .gate-hero { margin-top: auto; }
+  .gate-h1 { font-size: clamp(32px, 7vw, 48px); }
+  .gate-lead { max-width: 44ch; font-size: 16px; }
+  /* champ + bouton plus larges au doigt */
+  .gate-input { font-size: 17px; padding: 16px 6px 20px; }
+  .gate-btn { padding: 17px 20px; font-size: 16px; }
+}
+
+/* tablette portrait pure (iPad 768–1024) : on centre et on élargit le contenu */
+@media (min-width: 700px) and (max-width: 900px) {
+  .gate-panel { padding: 0 12% max(48px, env(safe-area-inset-bottom)); }
+  .gate-h1 { font-size: clamp(36px, 6vw, 54px); }
+  .gate-lead { font-size: 18px; max-width: 50ch; }
+}
+
+/* écran bas en paysage (téléphone couché) : tout doit tenir sans scroll */
+@media (max-height: 560px) and (orientation: landscape) {
+  .gate-panel { justify-content: center; padding: 16px 30px; }
+  .gate-hero { margin-top: 0; }
+  .gate-h1 { font-size: clamp(24px, 5vw, 32px); margin-bottom: 6px; }
+  .gate-lead { display: none; }
+  .gate-form { margin-top: 2px; }
+  .gate-btn { margin-top: 10px; padding: 12px 18px; }
+  .gate-foot { margin-top: 12px; }
+  .gate-top { display: none; }
+}
+
+/* téléphones étroits */
+@media (max-width: 420px) {
+  .gate-panel { padding: 34px 20px max(26px, env(safe-area-inset-bottom)); }
+  .gate-brand { font-size: 24px; }
+  .gate-kicker { font-size: 10px; padding: 4px 8px; letter-spacing: .2em; }
+  .gate-h1 { margin-bottom: 12px; }
+  .gate-lead { margin-bottom: 22px; }
+  .gate-foot { margin-top: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gslide { animation: none; }
+  .gslide-1 { opacity: 1; }
+  .gate-h1, .gate-lead, .gate-form { animation: none; }
+  .gate-h1 .gc { animation: none; opacity: 1; }
+  .gate-h1 .gcaret { display: none; }
+}
