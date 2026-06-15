@@ -1,8 +1,8 @@
 [build]
-  command = "cd frontend && yarn install && yarn build"
-    publish = "frontend/build"
+  command = ""
+  publish = "site-light"
 
-    [[redirects]]
-      from = "/*"
-        to = "/index.html"
-          status = 200
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
