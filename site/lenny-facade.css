@@ -1,0 +1,163 @@
+/* ============================================
+   LENNY — Façade haussmannienne (progression signature)
+   ============================================ */
+
+.facade-home { padding: 8px clamp(16px, 4vw, 56px) 4px; }
+.fc-wrap {
+  background: linear-gradient(180deg, #14110f, #100d0b);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 18px;
+  padding: 26px clamp(18px, 3vw, 34px) 0;
+  overflow: hidden;
+}
+
+.fc-head {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 24px;
+  flex-wrap: wrap; margin-bottom: 24px;
+}
+.fc-kicker {
+  font: 700 11px/1 "IBM Plex Mono", monospace; letter-spacing: .14em; text-transform: uppercase;
+  color: #d7a13c; margin-bottom: 10px;
+}
+.fc-h { font: 800 23px/1.15 "Inter", system-ui, sans-serif; color: #f5efe4; margin: 0 0 8px; max-width: 22ch; text-wrap: balance; }
+.fc-sub { font: 400 13.5px/1.5 "Inter", system-ui, sans-serif; color: rgba(255,255,255,.55); margin: 0; max-width: 48ch; }
+.fc-meter { flex-shrink: 0; min-width: 180px; }
+.fc-meter-pct { font: 800 40px/1 "Inter", system-ui, sans-serif; color: #f6c451; text-align: right; }
+.fc-meter-pct small { font-size: 18px; color: rgba(246,196,81,.6); }
+.fc-meter-bar { height: 7px; border-radius: 5px; background: rgba(255,255,255,.1); overflow: hidden; margin-top: 8px; }
+.fc-meter-bar i { display: block; height: 100%; border-radius: 5px; background: linear-gradient(90deg,#e8a020,#f6c451); transition: width .7s cubic-bezier(.2,.8,.2,1); }
+
+/* ---------- immeuble ---------- */
+.fc-building { max-width: 760px; margin: 0 auto; filter: drop-shadow(0 -10px 40px rgba(0,0,0,.4)); }
+
+/* toit mansardé (ardoise) */
+.fc-roof {
+  position: relative; height: 46px;
+  margin: 0 26px;
+  background: linear-gradient(180deg, #2a2d33, #1d2024);
+  border-radius: 12px 12px 0 0;
+  box-shadow: inset 0 3px 0 rgba(255,255,255,.05);
+  clip-path: polygon(8% 100%, 0 100%, 12% 0, 88% 0, 100% 100%, 92% 100%);
+}
+.fc-chimney {
+  position: absolute; top: -14px; left: 22%; width: 16px; height: 22px;
+  background: linear-gradient(180deg,#7a4a38,#5e3526); border-radius: 2px 2px 0 0;
+}
+.fc-chimney.c2 { left: auto; right: 24%; height: 18px; }
+.fc-dormer {
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  width: 40px; height: 26px; background: #14110f;
+  border: 2px solid #2f3338; border-bottom: none; border-radius: 18px 18px 0 0;
+  box-shadow: inset 0 0 0 3px rgba(246,196,81,.12);
+}
+
+/* corniche dorée */
+.fc-cornice {
+  height: 12px; margin: 0 6px;
+  background: linear-gradient(180deg,#caa24f,#9c7a34);
+  border-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.3);
+}
+
+/* pierre de taille */
+.fc-facade {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 63px, rgba(0,0,0,.22) 63px 65px),
+    repeating-linear-gradient(90deg, transparent 0 calc(25% - 1px), rgba(0,0,0,.16) calc(25% - 1px) 25%),
+    linear-gradient(180deg, #d9cdb8, #c8baa0);
+  padding: 26px clamp(16px, 3vw, 34px);
+  border-left: 6px solid #b3a585; border-right: 6px solid #b3a585;
+}
+.fc-windows {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px clamp(14px, 3vw, 30px);
+}
+
+/* fenêtre à la française + balcon */
+.fc-win {
+  position: relative; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+  background: none; border: none; padding: 0;
+}
+.fc-win-pane {
+  position: relative; width: 100%; max-width: 72px; aspect-ratio: 3/4.4;
+  display: flex; gap: 3px;
+  background: linear-gradient(180deg, #1a1c20, #0f1013);
+  border: 3px solid #ada081;
+  border-radius: 7px 7px 0 0;
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,.4);
+  overflow: hidden;
+  transition: background .5s ease, box-shadow .5s ease;
+}
+.fc-win-pane i {
+  flex: 1; border-radius: 2px;
+  background: linear-gradient(155deg, rgba(255,255,255,.04), rgba(255,255,255,0));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
+  transition: background .5s ease;
+}
+.fc-win-glow {
+  position: absolute; inset: -8px -8px 18px; border-radius: 12px;
+  background: radial-gradient(ellipse at 50% 45%, rgba(255,196,90,.55), transparent 70%);
+  opacity: 0; transition: opacity .6s ease; pointer-events: none;
+}
+.fc-win-rail {
+  position: relative; width: calc(100% + 8px); height: 16px; margin-top: -2px;
+  background:
+    repeating-linear-gradient(90deg, #8c8068 0 1.5px, transparent 1.5px 8px),
+    linear-gradient(180deg, rgba(140,128,104,.0), rgba(140,128,104,.0));
+  border-top: 2px solid #b3a585; border-bottom: 3px solid #9c8e6f;
+}
+.fc-win-label {
+  margin-top: 7px;
+  font: 600 10px/1.1 "Inter", system-ui, sans-serif; color: #6b5f49;
+  text-align: center; max-width: 78px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  transition: color .4s ease;
+}
+
+/* allumée */
+.fc-win.on .fc-win-pane {
+  background: linear-gradient(180deg, #ffd98a, #f4ac3e);
+  box-shadow: inset 0 0 12px rgba(255,160,40,.7), 0 0 18px rgba(255,170,60,.35);
+  border-color: #cdbc8f;
+}
+.fc-win.on .fc-win-pane i { background: linear-gradient(155deg, rgba(255,255,255,.6), rgba(255,220,140,.15)); }
+.fc-win.on .fc-win-glow { opacity: 1; animation: fc-flicker 5s ease-in-out infinite; }
+.fc-win.on .fc-win-label { color: #c9a24a; font-weight: 700; }
+.fc-win:hover .fc-win-pane { border-color: var(--wc, #d7a13c); }
+.fc-win:hover .fc-win-label { color: #8a7c5f; }
+@keyframes fc-flicker { 0%,100% { opacity: 1; } 45% { opacity: .82; } 70% { opacity: .92; } }
+
+/* rez-de-chaussée commerce */
+.fc-ground {
+  position: relative; height: 56px; margin: 0 6px;
+  background: linear-gradient(180deg,#3a2f26,#2a211a);
+  border-radius: 0 0 10px 10px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: inset 0 2px 0 rgba(0,0,0,.4);
+}
+.fc-door {
+  position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
+  width: 44px; height: 40px; background: linear-gradient(180deg,#5e3526,#3e2114);
+  border: 2px solid #caa24f; border-bottom: none; border-radius: 22px 22px 0 0;
+}
+.fc-awning {
+  position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+  width: 78%; height: 12px;
+  background: repeating-linear-gradient(90deg, #9c2f2a 0 14px, #e8ddc6 14px 28px);
+  border-radius: 3px; opacity: .85;
+}
+.fc-shop {
+  position: relative; z-index: 2; align-self: flex-start; margin-top: 24px;
+  font: 800 10px/1 "IBM Plex Mono", monospace; letter-spacing: .22em; color: #f0d9a8;
+  text-shadow: 0 1px 2px rgba(0,0,0,.6);
+}
+
+@media (max-width: 720px) {
+  .fc-windows { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .fc-h { font-size: 19px; }
+  .fc-meter { min-width: 130px; }
+  .fc-meter-pct { font-size: 32px; }
+}
+@media (max-width: 460px) {
+  .fc-windows { grid-template-columns: repeat(2, 1fr); }
+  .fc-win-label { font-size: 9px; }
+}
