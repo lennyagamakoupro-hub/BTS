@@ -373,15 +373,15 @@
     /* ============ M5 — Diagnostics ============ */
     m5: [
       {
-        q: "Un appartement en copro de 1980 vendu — diagnostics OBLIGATOIRES :",
+        q: "Un appartement en copropriété construit en 1980, mis en vente — diagnostics OBLIGATOIRES :",
         c: [
           "DPE + ERP uniquement",
-          "DPE + ERP + amiante",
-          "DPE + ERP + gaz/élec si install. > 15 ans",
-          "Toutes les réponses sauf la 1ère",
+          "DPE + ERP + amiante + gaz/élec (si install. > 15 ans) + Loi Carrez",
+          "DPE + ERP + plomb (CREP)",
+          "DPE seul",
         ],
-        r: 3,
-        e: "Construit en 1980 → après 1949 (pas de plomb), avant 1997 (amiante obligatoire). Plus DPE + ERP toujours. Et gaz/élec si install. > 15 ans. Réponse complète.",
+        r: 1,
+        e: "Construit en 1980 → après 1949 (pas de plomb), avant 1997 (amiante obligatoire). Toujours DPE + ERP, gaz/élec si installation > 15 ans, et mesurage Loi Carrez en copropriété.",
       },
       {
         q: "L'audit énergétique (obligatoire depuis 2023) concerne :",

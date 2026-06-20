@@ -18,8 +18,13 @@
 
   // état d'animation
   var rot = 0, vel = 0;          // rotation du carrousel (rad) + vélocité
-  var AUTO = -0.0032;            // dérive automatique douce
   var pxTarget = 0, pxv = 0;     // parallaxe souris
+  var mxNorm = 0;                // position X souris normalisée (-1..1, avec zone morte)
+  var overStage = false;         // la souris est-elle au-dessus de la scène
+  var velTarget = 0;             // vitesse visée (pilotée par la souris)
+  var mode = "idle";             // idle | snap (calage sur un module via flèches)
+  var targetRot = 0;             // rotation visée quand mode === "snap"
+  var MAXV = 0.05;               // vitesse max sous contrôle souris (rad / frame)
   var hoverIdx = -1, frontIdx = -1;
   var dragging = false, dragX0 = 0, rot0 = 0, lastDx = 0, moved = 0;
   var W = 0, H = 0, slice = 0;
@@ -147,9 +152,19 @@
     var n = cards.length;
 
     // dynamique de rotation après l'entrée
-    if (t > ENTRY) {
-      if (!dragging) { vel += (AUTO - vel) * 0.03; rot += vel; }
-      if (hoverIdx >= 0 && !dragging) { rot -= vel * 0.6; } // ralentit au survol
+    if (t > ENTRY && !dragging) {
+      if (mode === "snap") {
+        // calage doux sur le module choisi via les flèches
+        rot += (targetRot - rot) * 0.16;
+        vel = 0;
+        if (Math.abs(targetRot - rot) < 0.0008) { rot = targetRot; mode = "idle"; }
+      } else {
+        // rotation pilotée par la souris : la position X règle la vitesse (jog)
+        velTarget = overStage ? mxNorm * MAXV : 0;
+        vel += (velTarget - vel) * 0.10;
+        if (!overStage && Math.abs(vel) < 0.00002) vel = 0;
+        rot += vel;
+      }
     }
     pxv += (pxTarget - pxv) * 0.08;
 
@@ -171,7 +186,20 @@
     raf = requestAnimationFrame(frame);
   }
 
-  function step(dir) { vel = dir * 0.055; }
+  // cale la rotation sur le cran (module) voisin -> choix précis via les flèches
+  function step(dir) {
+    if (!cards.length) return;
+    var unit = Math.round(rot / slice);
+    targetRot = (unit + dir) * slice;
+    mode = "snap";
+    overStage = false;          // la souris ne reprendra la main qu'au prochain mouvement
+    velTarget = 0;
+  }
+  // ouvre le module actuellement en avant
+  function openFront() {
+    var f = cards[computeFront(cards.length)];
+    if (f) openMod(f.id);
+  }
 
   function bindDrag(el) {
     var captured = false;
@@ -193,10 +221,16 @@
     el.addEventListener("pointerup", up);
     el.addEventListener("pointercancel", up);
     el.addEventListener("mousemove", function (e) {
+      if (dragging) return;
       var r = el.getBoundingClientRect();
-      pxTarget = (((e.clientX - r.left) / r.width) * 2 - 1) * 38;
+      var n0 = (((e.clientX - r.left) / r.width) * 2 - 1); // -1 (gauche) .. 1 (droite)
+      pxTarget = n0 * 30;
+      var s = n0 < 0 ? -1 : 1, a = Math.abs(n0), dead = 0.10;
+      mxNorm = a < dead ? 0 : s * Math.pow((a - dead) / (1 - dead), 1.4);
+      overStage = true;
+      if (mode === "snap") mode = "idle"; // la souris reprend la main sur les flèches
     });
-    el.addEventListener("mouseleave", function () { pxTarget = 0; });
+    el.addEventListener("mouseleave", function () { pxTarget = 0; overStage = false; mxNorm = 0; });
   }
 
   function build() {
@@ -248,7 +282,7 @@
     cap.innerHTML =
       '<div class="modpick-cap-tag"></div>' +
       '<div class="modpick-cap-title"></div>' +
-      '<div class="modpick-cap-hint">Glissez pour parcourir · cliquez pour ouvrir</div>';
+      '<div class="modpick-cap-hint">Bougez la souris pour tourner · ← → pour choisir · cliquez pour ouvrir</div>';
     stage.appendChild(cap);
     capTag = cap.querySelector(".modpick-cap-tag");
     capTitle = cap.querySelector(".modpick-cap-title");
@@ -300,6 +334,7 @@
     }
 
     rot = 0; vel = 0; pxv = 0; pxTarget = 0; frontIdx = -1; hoverIdx = -1;
+    mode = "idle"; targetRot = 0; overStage = false; mxNorm = 0; velTarget = 0;
     startTime = performance.now();
     active = true;
     cancelAnimationFrame(raf);
@@ -318,6 +353,17 @@
     // reconstruire dès que le routeur regénère les cartes du secteur
     new MutationObserver(scheduleBuild).observe(grid, { childList: true });
     window.addEventListener("resize", function () { measure(); });
+    // navigation clavier : flèches pour choisir, Entrée pour ouvrir
+    document.addEventListener("keydown", function (e) {
+      if (!active) return;
+      var host = document.getElementById("view-sector");
+      if (!host || host.hidden) return;
+      var tg = (e.target && e.target.tagName) || "";
+      if (/INPUT|TEXTAREA|SELECT/.test(tg) || (e.target && e.target.isContentEditable)) return;
+      if (e.key === "ArrowLeft") { step(1); e.preventDefault(); }
+      else if (e.key === "ArrowRight") { step(-1); e.preventDefault(); }
+      else if (e.key === "Enter" || e.key === " ") { openFront(); e.preventDefault(); }
+    });
     // construction initiale si on arrive directement sur un secteur
     var host = document.getElementById("view-sector");
     if (host && !host.hidden && grid.querySelector("a.card[data-mod]")) scheduleBuild();

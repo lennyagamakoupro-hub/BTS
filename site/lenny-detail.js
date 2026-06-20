@@ -317,6 +317,7 @@
           <div class="ld-card-face back">
             <div class="ld-card-eyebrow">Réponse</div>
             <div class="ld-card-text">${escapeHtml(cur.a)}</div>
+            ${cur.ex ? `<div class="ld-card-ex"><span class="ld-card-ex-tag">Exemple</span>${escapeHtml(cur.ex)}</div>` : ""}
             <div class="ld-card-hint">Cliquer pour revenir à la question</div>
           </div>
         </div>
