@@ -401,7 +401,9 @@
   /* ---------------------------------------------------------
      6) Interface
      --------------------------------------------------------- */
-  var root, fab, panel, body, input, sendBtn, nudge, modeBar;
+  var root, fab, panel, body, input, sendBtn, nudge, modeBar, backdrop;
+  var robotLoaded = false, robotViewer = null, robotPoll = null, robotScriptLoaded = false;
+  var SPLINE_SCENE = "https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode";
   var history = [];        // [{ role:'me'|'bot', html }]
   var pendingForward = null; // texte en attente de confirmation de transmission
   var forwardMode = null;    // 'avis' | 'idee' | null  (saisie dédiée)
@@ -454,6 +456,7 @@
   function pushHistory(role, html) { history.push({ role: role, html: html }); saveHistory(); }
 
   function showTyping() {
+    robotSay("thinking", "Hmm… laisse-moi réfléchir 🤔");
     var wrap = el("div", "lag-msg bot lag-typing-wrap");
     wrap.appendChild(el("div", "lag-msg-ava", MARK));
     var bubble = el("div", "lag-bubble", '<div class="lag-typing"><span></span><span></span><span></span></div>');
@@ -473,6 +476,7 @@
   ];
 
   function answerFromKB(top, query) {
+    robotSay("found", "Tiens, j'ai ça pour toi 💡");
     var best = top[0].e;
     var kicker = "";
     if (best.cat === "formule") kicker = pick(OPEN_FORMULE);
@@ -497,6 +501,7 @@
   }
 
   function offerForward(query) {
+    robotSay("miss", "Là tu me colles… 🤷");
     var html = pick(OPEN_MISS) + " Tu veux que je <b>transmette ta question à Lenny</b> ? Il pourra te répondre / compléter la fiche.";
     renderMsg("bot", html, {
       chips: [
@@ -511,6 +516,7 @@
     var t = showTyping();
     await forwardToLenny(text, kind);
     t.remove();
+    robotSay("forwarded", "C'est noté pour Lenny ✅");
     var html = "C'est transmis à Lenny ✅ Il a ton message" + (kind === "question" ? " et ta question" : "") + ". En attendant, je reste là si tu veux réviser autre chose.";
     renderMsg("bot", html);
     pushHistory("bot", html);
@@ -529,7 +535,7 @@
       return;
     }
 
-    if (!skipEcho) { renderMsg("me", esc(query)); pushHistory("me", esc(query)); }
+    if (!skipEcho) { renderMsg("me", esc(query)); pushHistory("me", esc(query)); robotSay("listen", "Je t'écoute… 👂"); }
 
     var top = search(query);
     var strong = top.length && top[0].score >= STRONG;
@@ -558,6 +564,7 @@
     t.remove();
 
     if (ai.ok) {
+      robotSay("found", "Voilà ce que j'en pense ✨");
       var html = renderInline(ai.reply);
       var opts = {};
       // si une fiche correspondait un peu, on garde le lien module
@@ -637,16 +644,26 @@
     // Panneau
     panel = el("div", "lag-panel");
     panel.innerHTML =
+      '<div class="lag-chatcol">' +
       '<div class="lag-head">' +
         '<div class="lag-ava">' + MARK + '</div>' +
         '<div class="lag-head-tx"><div class="lag-name">Lenny-agent</div><div class="lag-status">révise avec toi · en ligne</div></div>' +
         '<button class="lag-head-btn lag-head-idea" title="Une idée / un avis pour Lenny" aria-label="Transmettre un avis">' +
           '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5a5 5 0 0 0-3 9v1.5h6V11.5a5 5 0 0 0-3-9Z"/><path d="M8 16h4M8.5 18h3"/></svg>' +
         '</button>' +
+        '<button class="lag-head-btn lag-head-expand" title="Agrandir — voir le robot" aria-label="Agrandir">' +
+          '<svg class="i-grow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4h4v4M16 4l-5 5M8 16H4v-4M4 16l5-5"/></svg>' +
+          '<svg class="i-shrink" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 9h-4V5M11 9l5-5M5 11h4v4M9 11l-5 5"/></svg>' +
+        '</button>' +
         '<button class="lag-head-btn lag-head-min" title="Réduire" aria-label="Réduire">' +
           '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 10h10"/></svg>' +
         '</button>' +
       '</div>' +
+      '<button class="lag-robot-cta" type="button" aria-label="Parler en face du robot">' +
+        '<span class="lag-cta-bot"><span class="lag-cta-face"><i class="lag-cta-eye"></i><i class="lag-cta-eye"></i></span></span>' +
+        '<span class="lag-cta-tx"><b>Parle en face du robot</b><span>Il te suit du regard pendant que tu révises</span></span>' +
+        '<span class="lag-cta-go"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4h4v4M16 4l-5 5M8 16H4v-4M4 16l5-5"/></svg></span>' +
+      '</button>' +
       '<div class="lag-body"></div>' +
       '<div class="lag-foot">' +
         '<div class="lag-mode">' +
@@ -661,6 +678,18 @@
           '</button>' +
         '</div>' +
         '<div class="lag-hint">Lenny-agent peut se tromper — vérifie les infos importantes.</div>' +
+      '</div>' +
+      '</div>' + /* /lag-chatcol */
+      '<div class="lag-robot" aria-hidden="true">' +
+        '<div class="lag-robot-spot"></div>' +
+        '<div class="lag-robot-stage">' +
+          '<div class="lag-robot-load"><span class="lag-robot-spin"></span><span class="lag-robot-load-tx">Réveil du robot…</span></div>' +
+        '</div>' +
+        '<div class="lag-robot-cap">' +
+          '<div class="lag-robot-title">Lenny te suit du regard 👀</div>' +
+          '<div class="lag-robot-sub">Bouge ta souris — il te regarde. Pose ta question à gauche.</div>' +
+        '</div>' +
+        '<div class="lag-robot-wm"></div>' +
       '</div>';
 
     root.appendChild(nudge);
@@ -674,6 +703,13 @@
     modeBar = panel.querySelector(".lag-mode");
 
     panel.querySelector(".lag-head-min").addEventListener("click", closePanel);
+    panel.querySelector(".lag-head-expand").addEventListener("click", toggleExpand);
+    panel.querySelector(".lag-robot-cta").addEventListener("click", function () { setExpanded(true); });
+
+    // backdrop (clic en dehors → on rétrécit)
+    backdrop = el("div", "lag-backdrop");
+    backdrop.addEventListener("click", function () { setExpanded(false); });
+    root.appendChild(backdrop);
     panel.querySelector(".lag-head-idea").addEventListener("click", function () {
       setForwardMode("idee"); input.focus();
     });
@@ -728,28 +764,148 @@
     root.classList.add("lag-seen");
     setTimeout(function () { if (window.innerWidth > 640) input && input.focus(); scrollDown(); }, 280);
   }
-  function closePanel() { root.classList.remove("is-open"); }
+  function closePanel() { root.classList.remove("is-open", "lag-expanded"); destroyRobot(); }
   function togglePanel() { root.classList.contains("is-open") ? closePanel() : openPanel(); }
+
+  /* — Mode élargi : conversation à gauche + robot 3D qui suit la souris à droite — */
+  function ensureRobot() {
+    if (robotLoaded) return;
+    robotLoaded = true;
+    var stage = panel.querySelector(".lag-robot-stage");
+    if (!stage) return;
+    panel.classList.remove("robot-ready", "robot-fail");
+    var loadEl = panel.querySelector(".lag-robot-load");
+    if (loadEl) loadEl.style.display = "";
+
+    var viewer = document.createElement("spline-viewer");
+    viewer.setAttribute("url", SPLINE_SCENE);
+    viewer.className = "lag-spline";
+    robotViewer = viewer;
+    var ctxBound = false;
+
+    function hideBranding() {
+      try {
+        var sr = viewer.shadowRoot;
+        if (!sr) return;
+        var logo = sr.querySelector("#logo, a[href*='spline']");
+        if (logo) logo.style.display = "none";
+      } catch (e) {}
+    }
+    // récupération auto si le GPU perd le contexte WebGL (cause n°1 des « bugs après un moment »)
+    function bindContext() {
+      if (ctxBound) return;
+      try {
+        var canv = viewer.shadowRoot && viewer.shadowRoot.querySelector("canvas");
+        if (!canv) return;
+        ctxBound = true;
+        canv.addEventListener("webglcontextlost", function (ev) {
+          ev.preventDefault();
+          // on reconstruit proprement le robot
+          destroyRobot();
+          if (root.classList.contains("lag-expanded")) setTimeout(ensureRobot, 400);
+        });
+      } catch (e) {}
+    }
+    function reveal() {
+      panel.classList.add("robot-ready");
+      var l = panel.querySelector(".lag-robot-load");
+      if (l) l.style.display = "none";
+      hideBranding();
+      bindContext();
+    }
+    viewer.addEventListener("load", reveal);
+    stage.appendChild(viewer);
+    // révèle dès qu'un canvas apparaît (au cas où l'event 'load' ne se déclenche pas)
+    var tries = 0;
+    robotPoll = setInterval(function () {
+      tries++;
+      hideBranding();                       // le logo Spline peut apparaître après le canvas
+      bindContext();
+      var canv = viewer.shadowRoot && viewer.shadowRoot.querySelector("canvas");
+      if (canv) reveal();
+      if (tries > 40) { clearInterval(robotPoll); robotPoll = null; }
+    }, 400);
+    // repli si le robot ne charge pas (hors-ligne / CDN bloqué)
+    setTimeout(function () { if (robotLoaded && !panel.classList.contains("robot-ready")) panel.classList.add("robot-fail"); }, 14000);
+    if (!robotScriptLoaded) {
+      robotScriptLoaded = true;
+      var s = document.createElement("script");
+      s.type = "module";
+      s.src = "https://unpkg.com/@splinetool/viewer@1.9.48/build/spline-viewer.js";
+      document.head.appendChild(s);
+    }
+  }
+  // libère le robot 3D (stoppe le rendu WebGL) — appelé quand on réduit la fenêtre
+  function destroyRobot() {
+    if (robotPoll) { clearInterval(robotPoll); robotPoll = null; }
+    if (robotViewer) {
+      try { if (typeof robotViewer.dispose === "function") robotViewer.dispose(); } catch (e) {}
+      try { robotViewer.remove(); } catch (e) {}
+      robotViewer = null;
+    }
+    if (panel) {
+      panel.classList.remove("robot-ready", "robot-fail");
+      var l = panel.querySelector(".lag-robot-load");
+      if (l) l.style.display = "";
+    }
+    robotLoaded = false;
+  }
+  /* — Réactions du robot au fil de la conversation (légende + ambiance) — */
+  var ROBOT_IDLE = "Lenny te suit du regard 👀";
+  var ROBOT_HINT = "Bouge ta souris — il te regarde. Pose ta question à gauche.";
+  function robotSay(mood, msg, hint) {
+    if (!panel) return;
+    var pane = panel.querySelector(".lag-robot");
+    if (!pane) return;
+    pane.setAttribute("data-mood", mood || "idle");
+    var t = pane.querySelector(".lag-robot-title");
+    var sub = pane.querySelector(".lag-robot-sub");
+    if (t) {
+      t.textContent = msg || ROBOT_IDLE;
+      t.classList.remove("lag-pop"); void t.offsetWidth; t.classList.add("lag-pop");
+    }
+    if (sub && hint != null) sub.textContent = hint;
+  }
+
+  function setExpanded(on) {
+    if (!root) return;
+    if (on) { openPanel(); ensureRobot(); root.classList.add("lag-expanded"); robotSay("hello", "Salut 👋 je t'écoute", ROBOT_HINT); }
+    else { root.classList.remove("lag-expanded"); setTimeout(function () { if (!root.classList.contains("lag-expanded")) destroyRobot(); }, 300); }
+    setTimeout(scrollDown, 320);
+  }
+  function toggleExpand() { setExpanded(!root.classList.contains("lag-expanded")); }
 
   function showNudge() { nudge && nudge.classList.add("show"); }
   function hideNudge() { nudge && nudge.classList.remove("show"); }
 
   // Echap pour fermer
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && root && root.classList.contains("is-open")) closePanel();
+    if (e.key === "Escape" && root && root.classList.contains("is-open")) {
+      if (root.classList.contains("lag-expanded")) setExpanded(false);
+      else closePanel();
+    }
   });
 
   /* — API publique éventuelle — */
   window.LennyAgent = {
     open: function () { openPanel(); },
     close: function () { closePanel(); },
+    expand: function () { setExpanded(true); },
     ask: function (q) { openPanel(); setTimeout(function () { answerQuery(q); }, 200); }
   };
 
   /* — Démarrage (après le gate / chargement) — */
+  function wireRobotLaunchers() {
+    // bouton « Réviser avec le robot » + tout élément [data-open-robot]
+    document.addEventListener("click", function (e) {
+      var trg = e.target.closest && e.target.closest("#hero-robot, [data-open-robot]");
+      if (trg) { e.preventDefault(); setExpanded(true); }
+    });
+  }
   function boot() {
     if (document.querySelector(".lag-root")) return;
     build();
+    wireRobotLaunchers();
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", function () { setTimeout(boot, 600); });

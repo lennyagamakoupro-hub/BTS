@@ -95,6 +95,150 @@
 }
 .lag-root.is-open .lag-panel { transform: translateY(0) scale(1); opacity: 1; pointer-events: auto; }
 
+/* colonne conversation (enveloppe head + body + foot) */
+.lag-chatcol { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
+
+/* ---------- Bannière « Parle en face du robot » (haut du chat) ---------- */
+.lag-robot-cta {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 11px; text-align: left;
+  margin: 11px 12px 2px; padding: 9px 11px; width: calc(100% - 24px);
+  border-radius: 14px; cursor: pointer; color: #fff; position: relative; overflow: hidden;
+  background: linear-gradient(120deg, rgba(229,9,20,.2), rgba(229,9,20,.05));
+  border: 1px solid rgba(229,9,20,.36);
+  box-shadow: 0 6px 20px rgba(229,9,20,.16), inset 0 1px 0 rgba(255,255,255,.12);
+  transition: transform .15s ease, border-color .15s ease, box-shadow .2s ease;
+}
+.lag-robot-cta:hover { transform: translateY(-1px); border-color: rgba(229,9,20,.62); box-shadow: 0 10px 26px rgba(229,9,20,.3); }
+.lag-robot-cta:active { transform: translateY(0) scale(.99); }
+.lag-robot-cta > * { position: relative; z-index: 1; }
+/* reflet qui balaie */
+.lag-robot-cta::after {
+  content: ""; position: absolute; inset: 0; z-index: 0;
+  background: linear-gradient(110deg, transparent 32%, rgba(255,255,255,.15) 50%, transparent 68%);
+  transform: translateX(-120%);
+}
+.lag-root.is-open:not(.lag-expanded) .lag-robot-cta::after { animation: lagSheen 2.8s ease-in-out 1.1s infinite; }
+@keyframes lagSheen { 0% { transform: translateX(-120%); } 55%, 100% { transform: translateX(120%); } }
+/* entrée rejouée à chaque ouverture du chat */
+.lag-root.is-open:not(.lag-expanded) .lag-robot-cta { animation: lagCtaIn .5s cubic-bezier(.2,.9,.3,1.25) both; }
+@keyframes lagCtaIn { 0% { opacity: 0; transform: translateY(-10px) scale(.96); } 100% { opacity: 1; transform: none; } }
+/* déjà en face du robot → on masque l'invitation */
+.lag-root.lag-expanded .lag-robot-cta { display: none; }
+
+/* mini-robot animé */
+.lag-cta-bot {
+  flex: 0 0 auto; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+  background: radial-gradient(120% 120% at 50% 0%, #2a1416, #120c0b);
+  border: 1px solid rgba(255,255,255,.16);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 0 14px rgba(229,9,20,.3);
+  position: relative; animation: lagBotBob 3s ease-in-out infinite;
+}
+.lag-cta-bot::before { content: ""; position: absolute; top: -5px; width: 2px; height: 5px; background: rgba(255,255,255,.45); }
+.lag-cta-bot::after { content: ""; position: absolute; top: -8px; width: 4px; height: 4px; border-radius: 50%; background: #e50914; box-shadow: 0 0 8px #e50914; }
+@keyframes lagBotBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+.lag-cta-face { display: flex; gap: 5px; animation: lagEyeLook 3.6s ease-in-out infinite; }
+.lag-cta-eye { width: 6px; height: 6px; border-radius: 50%; background: #fff; box-shadow: 0 0 6px rgba(255,255,255,.85); animation: lagEyeBlink 3.6s steps(1, end) infinite; }
+@keyframes lagEyeLook { 0%, 18% { transform: translateX(-1.6px); } 42%, 64% { transform: translateX(1.6px); } 86%, 100% { transform: translateX(0); } }
+@keyframes lagEyeBlink { 0%, 90%, 100% { transform: scaleY(1); } 94% { transform: scaleY(.12); } }
+
+.lag-cta-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
+.lag-cta-tx b { font-size: 13.5px; font-weight: 800; color: #fff; }
+.lag-cta-tx span { font-size: 11.5px; color: rgba(255,255,255,.62); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lag-cta-go {
+  flex: 0 0 auto; width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center;
+  color: #ffb3b6; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
+  transition: background .15s ease, color .15s ease;
+}
+.lag-cta-go svg { width: 15px; height: 15px; }
+.lag-robot-cta:hover .lag-cta-go { background: rgba(229,9,20,.32); color: #fff; }
+
+/* bouton agrandir : icône "rétrécir" cachée par défaut */
+.lag-head-expand .i-shrink { display: none; }
+.lag-root.lag-expanded .lag-head-expand .i-grow { display: none; }
+.lag-root.lag-expanded .lag-head-expand .i-shrink { display: block; }
+
+/* voile derrière le panneau agrandi */
+.lag-backdrop {
+  position: fixed; inset: 0; z-index: 1400;
+  background: radial-gradient(120% 120% at 70% 30%, rgba(40,8,10,.4), rgba(0,0,0,.66));
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  opacity: 0; pointer-events: none; transition: opacity .26s ease;
+}
+.lag-root.is-open.lag-expanded .lag-backdrop { opacity: 1; pointer-events: auto; }
+
+/* ---------- Mode agrandi : chat à gauche + robot 3D à droite ---------- */
+.lag-root.lag-expanded .lag-panel {
+  flex-direction: row;
+  right: 50%; bottom: 50%;
+  width: min(1080px, 94vw); height: min(680px, 90vh);
+  max-width: 94vw; max-height: 90vh;
+  border-radius: 22px;
+  transform: translate(50%, 50%) scale(.97);
+}
+.lag-root.is-open.lag-expanded .lag-panel { transform: translate(50%, 50%) scale(1); }
+.lag-root.lag-expanded .lag-chatcol {
+  flex: 0 0 410px; width: 410px; max-width: 46%;
+  border-right: 1px solid rgba(255,255,255,.09);
+}
+
+.lag-robot {
+  display: none; position: relative; flex: 1 1 auto; min-width: 0;
+  background: radial-gradient(110% 90% at 60% 18%, #1a0f10 0%, #0b0807 58%, #060404 100%);
+  overflow: hidden;
+}
+.lag-root.lag-expanded .lag-robot { display: block; }
+.lag-robot-spot {
+  position: absolute; left: 12%; top: -22%; width: 86%; height: 92%;
+  background: radial-gradient(closest-side, rgba(255,255,255,.16), rgba(229,9,20,.08) 45%, transparent 72%);
+  filter: blur(6px); pointer-events: none; z-index: 1;
+  transition: background .45s ease;
+}
+.lag-robot-stage { position: absolute; inset: 0; z-index: 2; }
+.lag-robot-stage .lag-spline,
+.lag-robot-stage spline-viewer { width: 100%; height: 100%; display: block; }
+.lag-panel.robot-ready .lag-robot-load { opacity: 0; pointer-events: none; }
+
+.lag-robot-load {
+  position: absolute; inset: 0; z-index: 3; display: flex; gap: 12px;
+  flex-direction: column; align-items: center; justify-content: center;
+  color: rgba(255,255,255,.55); font-size: 13px; font-weight: 600;
+  transition: opacity .4s ease;
+}
+.lag-robot-spin {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 3px solid rgba(255,255,255,.16); border-top-color: #e50914;
+  animation: lagSpin 1s linear infinite;
+}
+@keyframes lagSpin { to { transform: rotate(360deg); } }
+.lag-panel.robot-fail .lag-robot-spin { display: none; }
+.lag-panel.robot-fail .lag-robot-load-tx::after {
+  content: " — connexion requise pour l'afficher"; color: rgba(255,255,255,.4);
+}
+
+/* légende en bas du robot */
+.lag-robot-cap {
+  position: absolute; left: 22px; right: 22px; bottom: 20px; z-index: 4;
+  pointer-events: none;
+}
+.lag-robot-title { font-size: 17px; font-weight: 800; color: #fff; letter-spacing: -.01em; text-shadow: 0 2px 12px rgba(0,0,0,.7); transition: color .25s ease; }
+.lag-robot-title.lag-pop { animation: lagPop .42s cubic-bezier(.2,.9,.3,1.2); }
+@keyframes lagPop { 0% { transform: translateY(7px); opacity: .15; } 100% { transform: none; opacity: 1; } }
+/* ambiance lumineuse + couleur selon l'humeur du robot */
+.lag-robot[data-mood="thinking"] .lag-robot-spot { background: radial-gradient(closest-side, rgba(255,205,130,.24), rgba(230,150,30,.08) 45%, transparent 72%); }
+.lag-robot[data-mood="found"] .lag-robot-spot,
+.lag-robot[data-mood="forwarded"] .lag-robot-spot { background: radial-gradient(closest-side, rgba(125,255,175,.22), rgba(25,200,120,.08) 45%, transparent 72%); }
+.lag-robot[data-mood="miss"] .lag-robot-spot { background: radial-gradient(closest-side, rgba(255,255,255,.15), rgba(255,255,255,.05) 45%, transparent 72%); }
+.lag-robot[data-mood="thinking"] .lag-robot-title { color: #ffd9a8; }
+.lag-robot[data-mood="found"] .lag-robot-title,
+.lag-robot[data-mood="forwarded"] .lag-robot-title { color: #9cffc4; }
+.lag-robot-sub { font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,.6); margin-top: 3px; text-shadow: 0 1px 8px rgba(0,0,0,.7); }
+/* masque le filigrane Spline (coin bas-droit) */
+.lag-robot-wm {
+  position: absolute; right: 6px; bottom: 6px; z-index: 5;
+  width: 150px; height: 46px; pointer-events: none;
+  background: linear-gradient(135deg, transparent, #060404 55%);
+}
+
 /* ---------- Header ---------- */
 .lag-head {
   display: flex; align-items: center; gap: 11px;
@@ -260,6 +404,13 @@
 .lag-send svg { width: 18px; height: 18px; }
 .lag-hint { text-align: center; font-size: 10.5px; color: rgba(255,255,255,.3); margin-top: 7px; }
 
+/* ---------- Agrandi : tablette / petit écran ---------- */
+@media (max-width: 860px) {
+  .lag-root.lag-expanded .lag-robot { display: none; }
+  .lag-root.lag-expanded .lag-chatcol { flex: 1 1 auto; width: 100%; max-width: 100%; border-right: 0; }
+  .lag-root.lag-expanded .lag-panel { width: min(560px, 94vw); flex-direction: column; }
+}
+
 /* ---------- Mobile ---------- */
 @media (max-width: 640px) {
   /* Sur téléphone, le chatbot s'ouvre via le bouton central de la barre d'app → on masque la bulle flottante */
@@ -275,5 +426,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .lag-fab, .lag-panel, .lag-msg, .lag-nudge { transition: none; animation: none; }
+  .lag-robot-cta, .lag-robot-cta::after, .lag-cta-bot, .lag-cta-face, .lag-cta-eye { animation: none; }
   .lag-ping { display: none; }
 }
