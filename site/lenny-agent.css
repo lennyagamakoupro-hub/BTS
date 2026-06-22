@@ -196,6 +196,10 @@
 .lag-robot-stage { position: absolute; inset: 0; z-index: 2; }
 .lag-robot-stage .lag-spline,
 .lag-robot-stage spline-viewer { width: 100%; height: 100%; display: block; }
+/* Desktop (vue côte à côte) : on descend le robot pour qu'il soit bien visible/centré */
+@media (min-width: 861px) {
+  .lag-root.lag-expanded .lag-robot-stage spline-viewer { transform: translateY(32%); }
+}
 .lag-panel.robot-ready .lag-robot-load { opacity: 0; pointer-events: none; }
 
 .lag-robot-load {
@@ -404,11 +408,19 @@
 .lag-send svg { width: 18px; height: 18px; }
 .lag-hint { text-align: center; font-size: 10.5px; color: rgba(255,255,255,.3); margin-top: 7px; }
 
-/* ---------- Agrandi : tablette / petit écran ---------- */
+/* ---------- Agrandi : tablette / petit écran → robot EN HAUT, chat en bas ---------- */
 @media (max-width: 860px) {
-  .lag-root.lag-expanded .lag-robot { display: none; }
-  .lag-root.lag-expanded .lag-chatcol { flex: 1 1 auto; width: 100%; max-width: 100%; border-right: 0; }
-  .lag-root.lag-expanded .lag-panel { width: min(560px, 94vw); flex-direction: column; }
+  .lag-root.lag-expanded .lag-panel { flex-direction: column; width: min(560px, 94vw); }
+  .lag-root.lag-expanded .lag-robot {
+    display: block; order: -1; flex: 0 0 38%; min-height: 200px;
+    border-bottom: 1px solid rgba(255,255,255,.09);
+  }
+  .lag-root.lag-expanded .lag-chatcol {
+    flex: 1 1 auto; width: 100%; max-width: 100%; border-right: 0; min-height: 0;
+  }
+  /* légende plus compacte sur petit écran */
+  .lag-root.lag-expanded .lag-robot-title { font-size: 15px; }
+  .lag-root.lag-expanded .lag-robot-sub { font-size: 11.5px; }
 }
 
 /* ---------- Mobile ---------- */
@@ -422,6 +434,17 @@
     height: 86vh; max-height: 86vh;
     border-radius: 20px 20px 0 0;
   }
+  /* En grand (face-à-face) : plein écran bottom-sheet, robot en haut */
+  .lag-root.lag-expanded .lag-panel,
+  .lag-root.is-open.lag-expanded .lag-panel {
+    right: 0; left: 0; bottom: 0; top: auto;
+    transform: none !important;
+    transition: opacity .2s ease !important;
+    width: 100%; max-width: 100%;
+    height: 94vh; max-height: 94vh;
+    border-radius: 20px 20px 0 0;
+  }
+  .lag-root.lag-expanded .lag-robot { flex-basis: 38%; min-height: 190px; order: 1; border-bottom: 0; border-top: 1px solid rgba(255,255,255,.09); }
 }
 
 @media (prefers-reduced-motion: reduce) {

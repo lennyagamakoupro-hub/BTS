@@ -5,6 +5,10 @@
    nouvelle ; réutilise les variables existantes.
    ============================================ */
 
+/* ---------- Footer retiré (desktop + mobile) — la déconnexion reste
+   accessible via le menu « Plus » sur mobile (bouton conservé, masqué). ---------- */
+.footer { display: none !important; }
+
 /* ---------- cartes de module : coins arrondis + définition ---------- */
 .card {
   border-radius: 12px;

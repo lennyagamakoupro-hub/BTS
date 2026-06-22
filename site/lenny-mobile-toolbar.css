@@ -54,21 +54,27 @@
   }
   .mtb-badge[hidden] { display: none; }
 
-  /* --- 4. Bouton central « Formule » surélevé, accent doré --- */
+  /* --- 4. Bouton central « Lenny » surélevé et bien visible (remonté) --- */
   .mtb-center { position: relative; }
-  .mtb-center .mtb-l { color: #ff8b90; }
+  .mtb-center .mtb-l { color: #ff8b90; font-weight: 700; }
   .mtb-center-disc {
     position: relative;
-    width: 52px; height: 52px; margin-top: -22px; margin-bottom: 1px;
+    width: 58px; height: 58px; margin-top: -30px; margin-bottom: 2px;
     display: grid; place-items: center; border-radius: 50%;
     color: #fff;
     background: linear-gradient(155deg, #ff3a42 0%, #e50914 48%, #a8060d 100%);
     border: 3px solid rgba(10, 9, 8, 1);
-    box-shadow: 0 6px 18px rgba(229, 9, 20, .5), inset 0 1px 0 rgba(255,255,255,.35);
+    box-shadow: 0 10px 26px rgba(229, 9, 20, .6), 0 0 0 6px rgba(229,9,20,.12), inset 0 1px 0 rgba(255,255,255,.4);
+    animation: mtbLennyPulse 2.6s ease-in-out infinite;
   }
-  .mtb-center-disc svg { width: 26px; height: 26px; filter: drop-shadow(0 1px 3px rgba(0,0,0,.45)); }
-  .mtb-center:active .mtb-center-disc { filter: brightness(1.08); }
+  @keyframes mtbLennyPulse {
+    0%, 100% { box-shadow: 0 10px 26px rgba(229,9,20,.6), 0 0 0 6px rgba(229,9,20,.1), inset 0 1px 0 rgba(255,255,255,.4); }
+    50% { box-shadow: 0 12px 30px rgba(229,9,20,.75), 0 0 0 11px rgba(229,9,20,.06), inset 0 1px 0 rgba(255,255,255,.4); }
+  }
+  .mtb-center-disc svg { width: 28px; height: 28px; filter: drop-shadow(0 1px 3px rgba(0,0,0,.45)); }
+  .mtb-center:active .mtb-center-disc { filter: brightness(1.08); animation: none; }
   .mtb-badge-center { top: -4px; right: -4px; left: auto; transform: none; border-color: rgba(10, 9, 8, 1); }
+  @media (prefers-reduced-motion: reduce) { .mtb-center-disc { animation: none; } }
 
   /* --- 5. Feuille « Plus » --- */
   .mtb-sheet-wrap { position: fixed; inset: 0; z-index: 1300; }

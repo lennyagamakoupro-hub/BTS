@@ -4,6 +4,85 @@
    sans modifier l'affichage ordinateur.
    ============================================ */
 
+/* ---- Pôles (cases Transaction / Syndic / Droit) : mobile uniquement ----
+   Sur ordinateur la nav du haut donne déjà accès aux pôles → on masque. */
+.msec { display: none; }
+
+@media (max-width: 640px) {
+  .msec {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 4px 16px 18px;
+    margin-top: -8px;
+  }
+  .msec-card {
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; align-items: center; gap: 7px;
+    padding: 16px 6px 13px; cursor: pointer;
+    border-radius: 16px; color: #fff;
+    background: linear-gradient(168deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.1);
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 8px 20px -12px rgba(0,0,0,.8);
+    animation: msecIn .5s cubic-bezier(.2,.9,.3,1.2) both;
+    animation-delay: calc(var(--i, 0) * 90ms + 120ms);
+    transition: transform .14s ease, border-color .2s ease, box-shadow .2s ease;
+  }
+  .msec-card:active { transform: scale(.95); }
+  /* halo coloré propre à chaque pôle */
+  .msec-card::before {
+    content: ""; position: absolute; inset: 0; z-index: 0; opacity: .5;
+    background: radial-gradient(80% 60% at 50% -10%, var(--glow, rgba(229,9,20,.5)), transparent 70%);
+    transition: opacity .2s ease;
+  }
+  .msec-card:active::before { opacity: .9; }
+  .msec-transaction { --glow: rgba(229,9,20,.55); }
+  .msec-syndic      { --glow: rgba(45,140,255,.5); }
+  .msec-droit       { --glow: rgba(70,200,140,.5); }
+
+  .msec-card > * { position: relative; z-index: 1; }
+  .msec-ic {
+    width: 42px; height: 42px; display: grid; place-items: center;
+    border-radius: 13px; color: #fff;
+    background: linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.04));
+    border: 1px solid rgba(255,255,255,.16);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.22);
+    animation: msecFloat 4s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * 320ms);
+  }
+  .msec-ic svg { width: 23px; height: 23px; }
+  .msec-t { font-size: 13.5px; font-weight: 800; letter-spacing: -.01em; line-height: 1; }
+  .msec-s {
+    font-size: 9.5px; font-weight: 600; line-height: 1.2; text-align: center;
+    color: rgba(255,255,255,.5); max-width: 100%;
+  }
+  /* reflet qui balaie à l'apparition */
+  .msec-card::after {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 2;
+    background: linear-gradient(115deg, transparent 38%, rgba(255,255,255,.18) 50%, transparent 62%);
+    transform: translateX(-130%);
+    animation: msecSheen 3.4s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * 260ms + 700ms);
+    pointer-events: none;
+  }
+}
+@keyframes msecIn { 0% { opacity: 0; transform: translateY(14px) scale(.92); } 100% { opacity: 1; transform: none; } }
+@keyframes msecFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes msecSheen { 0% { transform: translateX(-130%); } 42%, 100% { transform: translateX(130%); } }
+@media (prefers-reduced-motion: reduce) {
+  .msec-card, .msec-ic, .msec-card::after { animation: none; }
+}
+@media (max-width: 360px) {
+  .msec-s { display: none; }
+  .msec-card { padding: 14px 4px 12px; }
+}
+
+/* ---- Accueil mobile épuré : on garde le hero + les 3 pôles, on retire les rangées ---- */
+@media (max-width: 640px) {
+  #view-home .row { display: none !important; }
+}
+
 /* --- 1. Aucun débordement horizontal --- */
 html, body {
   max-width: 100%;
