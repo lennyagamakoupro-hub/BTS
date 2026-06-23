@@ -1,0 +1,253 @@
+/* ============================================
+   LENNY — Ajustements mobile / tactile
+   Chargé en dernier : corrige le rendu sur téléphone
+   sans modifier l'affichage ordinateur.
+   ============================================ */
+
+/* ---- Pôles (cases Transaction / Syndic / Droit) : mobile uniquement ----
+   Sur ordinateur la nav du haut donne déjà accès aux pôles → on masque. */
+.msec { display: none; }
+
+@media (max-width: 640px) {
+  .msec {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 4px 16px 18px;
+    margin-top: -8px;
+  }
+  .msec-card {
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; align-items: center; gap: 7px;
+    padding: 16px 6px 13px; cursor: pointer;
+    border-radius: 16px; color: #fff;
+    background: linear-gradient(168deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.1);
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 8px 20px -12px rgba(0,0,0,.8);
+    animation: msecIn .5s cubic-bezier(.2,.9,.3,1.2) both;
+    animation-delay: calc(var(--i, 0) * 90ms + 120ms);
+    transition: transform .14s ease, border-color .2s ease, box-shadow .2s ease;
+  }
+  .msec-card:active { transform: scale(.95); }
+  /* halo coloré propre à chaque pôle */
+  .msec-card::before {
+    content: ""; position: absolute; inset: 0; z-index: 0; opacity: .5;
+    background: radial-gradient(80% 60% at 50% -10%, var(--glow, rgba(229,9,20,.5)), transparent 70%);
+    transition: opacity .2s ease;
+  }
+  .msec-card:active::before { opacity: .9; }
+  .msec-transaction { --glow: rgba(229,9,20,.55); }
+  .msec-syndic      { --glow: rgba(45,140,255,.5); }
+  .msec-droit       { --glow: rgba(70,200,140,.5); }
+
+  .msec-card > * { position: relative; z-index: 1; }
+  .msec-ic {
+    width: 42px; height: 42px; display: grid; place-items: center;
+    border-radius: 13px; color: #fff;
+    background: linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.04));
+    border: 1px solid rgba(255,255,255,.16);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.22);
+    animation: msecFloat 4s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * 320ms);
+  }
+  .msec-ic svg { width: 23px; height: 23px; }
+  .msec-t { font-size: 13.5px; font-weight: 800; letter-spacing: -.01em; line-height: 1; }
+  .msec-s {
+    font-size: 9.5px; font-weight: 600; line-height: 1.2; text-align: center;
+    color: rgba(255,255,255,.5); max-width: 100%;
+  }
+  /* reflet qui balaie à l'apparition */
+  .msec-card::after {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 2;
+    background: linear-gradient(115deg, transparent 38%, rgba(255,255,255,.18) 50%, transparent 62%);
+    transform: translateX(-130%);
+    animation: msecSheen 3.4s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * 260ms + 700ms);
+    pointer-events: none;
+  }
+}
+@keyframes msecIn { 0% { opacity: 0; transform: translateY(14px) scale(.92); } 100% { opacity: 1; transform: none; } }
+@keyframes msecFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes msecSheen { 0% { transform: translateX(-130%); } 42%, 100% { transform: translateX(130%); } }
+@media (prefers-reduced-motion: reduce) {
+  .msec-card, .msec-ic, .msec-card::after { animation: none; }
+}
+@media (max-width: 360px) {
+  .msec-s { display: none; }
+  .msec-card { padding: 14px 4px 12px; }
+}
+
+/* ---- Accueil mobile épuré : on garde le hero + les 3 pôles, on retire les rangées ---- */
+@media (max-width: 640px) {
+  #view-home .row { display: none !important; }
+
+  /* L'accueil remplit tout l'écran visible (au-dessus de la barre du bas).
+     Le hero s'étire et se centre ; les 3 cases se posent juste au-dessus de
+     la barre, en laissant le disque rouge Lenny (surélevé) entièrement visible. */
+  #view-home {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 64px - env(safe-area-inset-bottom, 0px));
+    min-height: calc(100svh - 64px - env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
+  }
+  #view-home .hero {
+    flex: 1 1 auto;
+    min-height: 0;
+    justify-content: flex-end;
+    padding-top: calc(var(--nav-h) + 14px);
+    padding-bottom: 18px;
+  }
+  /* on resserre le rythme vertical du hero et on raccourcit la description */
+  #view-home .hero-tag    { margin-bottom: 8px; }
+  #view-home .hero-title  { font-size: clamp(28px, 9vw, 42px); margin-bottom: 8px; }
+  #view-home .hero-stats  { margin-bottom: 8px; }
+  #view-home .hero-quote  { font-size: 13px; line-height: 1.35; margin-bottom: 8px; }
+  #view-home .hero-desc {
+    font-size: 13px; line-height: 1.4; margin-bottom: 14px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  #view-home .hero-actions { flex-wrap: wrap; gap: 8px; }
+  /* les 3 cases collées en bas, avec un dégagement pour le disque rouge surélevé */
+  #view-home .msec { flex: 0 0 auto; margin-top: 0; margin-bottom: 30px; }
+}
+
+/* --- 1. Aucun débordement horizontal --- */
+html, body {
+  max-width: 100%;
+  overflow-x: clip;
+}
+* { -webkit-tap-highlight-color: transparent; }
+
+/* --- 2. Écrans tactiles : pas de zoom « collé » au tap ---
+   On limite cette neutralisation aux petits écrans (téléphones).
+   Sur un ordinateur — même tactile / large — le survol souris
+   reste actif et les cartes zooment normalement. */
+@media (hover: none) and (max-width: 640px) {
+  /* on neutralise l'agrandissement au survol (qui restait bloqué au tap) */
+  .card:hover,
+  .card:first-child:hover,
+  .card:last-child:hover {
+    transform: none;
+    z-index: 1;
+    box-shadow: 0 14px 30px -12px rgba(0,0,0,.6);
+  }
+  .card:hover .card-art { filter: none; }
+
+  /* l'overlay (titre + boutons) reste visible en permanence,
+     puisqu'il n'y a pas de survol sur tactile */
+  .card-overlay {
+    opacity: 1;
+    transform: none;
+    background: linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.35) 55%, transparent 100%);
+  }
+
+  /* L'overlay affiche déjà le titre en permanence : on masque le
+     titre gravé sur la vignette pour éviter qu'il apparaisse deux fois. */
+  .art-title-top,
+  .card-art .art-title,
+  .top-art .art-title { display: none; }
+}
+
+/* --- 3. Téléphones (≤ 640px) --- */
+@media (max-width: 640px) {
+  /* Hero : titre et espacements adaptés */
+  .hero { min-height: auto; padding: calc(var(--nav-h) + 26px) 20px 36px; }
+  .hero-title { font-size: clamp(34px, 11vw, 52px); margin-bottom: 18px; }
+  .hero-content { max-width: 100%; }
+  .hero-sub { font-size: 15px; margin-bottom: 22px; }
+  .hero-actions { flex-wrap: wrap; gap: 10px; }
+  .hero-dots { left: 20px; bottom: 70px; }
+
+  /* Rangées : un peu plus serrées, cartes plus visibles */
+  .row { padding-left: 20px; margin-bottom: 8px; }
+  .row-scroll { padding-right: 20px; gap: 10px; }
+  .row-title { font-size: 18px; }
+  .card { width: 220px; }
+  .card.top10 { width: 200px; }
+
+  /* L'overlay reste lisible sur petite carte */
+  .card-overlay { padding: 12px; }
+  .card-overlay-title { font-size: 13.5px; }
+
+  /* Barre de navigation */
+  .nav { padding: 0 20px; gap: 12px; }
+
+  /* Le wordmark LENNY ne doit jamais se couper (le « Y » passait à la ligne) */
+  .nav .brand { flex-shrink: 0; white-space: nowrap; }
+
+  /* Bouton « Quiz général » réduit à son icône sur mobile :
+     le libellé prenait trop de place et poussait le logo. */
+  .nav-right { gap: 10px; }
+  .nav-right .quiz-launch {
+    font-size: 0;                 /* masque le texte « Quiz général » */
+    gap: 0;
+    padding: 8px;
+    width: 34px; height: 34px;
+    justify-content: center;
+  }
+  .nav-right .quiz-launch svg { width: 15px; height: 15px; }
+
+  /* Pied de page sur une colonne */
+  .footer-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* --- 4. Très petits écrans (≤ 380px) --- */
+@media (max-width: 380px) {
+  .hero-title { font-size: clamp(30px, 12vw, 44px); }
+  .card { width: 200px; }
+  .footer-grid { grid-template-columns: 1fr; }
+}
+
+/* --- 5. Filigrane plus discret sur mobile (lisibilité) --- */
+@media (max-width: 640px) {
+  #lenny-wm { opacity: .6; }
+}
+
+/* ============================================
+   6. Centrage & débordements — correctifs ciblés
+   (ce fichier est chargé en dernier : il a le dernier mot
+   sur les grilles dont l'override mobile était neutralisé
+   par une règle de base plus loin dans le code.)
+   ============================================ */
+@media (max-width: 640px) {
+  /* --- Anti-débordement horizontal : les conteneurs plein écran
+         clippent l'axe X. Les animations qui glissent depuis la
+         droite/gauche ne créent plus de scroll horizontal. --- */
+  #lp, .lp-stage,
+  .ld-modal, .ld-sheet,
+  .lex, .lex-scene,
+  .ls-modal, .ls-sheet,
+  .lq-modal, .lq-shell,
+  #view-sector {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* La fiche occupe 100% (et non 100vw) : pas de débordement dû
+     à la largeur de la barre de défilement sur certains navigateurs. */
+  .ld-sheet { width: 100%; }
+
+  /* --- Fiche module (le « 2 colonnes » débordait à droite) --- */
+  .ld-ess-grid { grid-template-columns: 1fr !important; }
+  .ld-memos    { grid-template-columns: 1fr; }
+  .ld-ess-numbers { grid-template-columns: repeat(2, 1fr); row-gap: 18px; }
+
+  /* --- Lecteur : commentaires/colonnes empilés --- */
+  .lp-chap-r.cols-2 { grid-template-columns: 1fr; }
+
+  /* --- Explainer plein écran : piliers lisibles (3-4 col → 2).
+         !important car le <style> de l'explainer est injecté par JS
+         APRÈS cette feuille → il gagnerait à spécificité égale. --- */
+  .lex-pillars[data-n="3"],
+  .lex-pillars[data-n="4"] { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* --- Très petits écrans : on aère encore --- */
+@media (max-width: 420px) {
+  .ld-ess-numbers { grid-template-columns: repeat(2, 1fr); }
+  .lex-pillars[data-n="2"],
+  .lex-pillars[data-n="3"],
+  .lex-pillars[data-n="4"] { grid-template-columns: 1fr !important; }
+}
