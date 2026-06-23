@@ -16,6 +16,7 @@
     calc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8 6.5h8M8 11h0M12 11h0M16 11v6.5M8 14.5h0M12 14.5h0M8 18h0M12 18h0"/></svg>',
     exam: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.6 1.6M9 2.5h6"/></svg>',
     devoir: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2.5h8.5L19 8v13.5H5z"/><path d="M13 2.8V8h5M8 12h8M8 15.5h8M8 19h5"/></svg>',
+    exos: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5h11M4 9h11M4 13.5h7"/><path d="M16.5 14.5l2 2 3.5-4"/><path d="M4 18h6"/></svg>',
     sheet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1.6"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4"/></svg>',
     search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>',
     bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V10a6 6 0 0 1 12 0v6l1.5 2.5H4.5z"/><path d="M9.5 21a2.6 2.6 0 0 0 5 0"/></svg>',
@@ -96,7 +97,7 @@
       tab("mtb-home", "home", "Accueil", "") +
       tab("mtb-quiz", "quiz", "Quiz", "") +
       centerTab() +
-      tab("mtb-devoir-t", "devoir", "Devoir", "") +
+      tab("mtb-revise", "revise", "Réviser", "") +
       tab("mtb-more", "more", "Plus", "");
     document.body.appendChild(bar);
 
@@ -124,7 +125,7 @@
     document.getElementById("mtb-home").addEventListener("click", goHome);
     document.getElementById("mtb-quiz").addEventListener("click", () => { closeSheet(); window.LennyQuiz && callApi(() => LennyQuiz.open()); });
     document.getElementById("mtb-chat").addEventListener("click", () => { closeSheet(); window.LennyAgent && callApi(() => LennyAgent.open()); });
-    document.getElementById("mtb-devoir-t").addEventListener("click", () => { closeSheet(); window.LennyDevoir && callApi(() => LennyDevoir.open("general")); });
+    document.getElementById("mtb-revise").addEventListener("click", () => { closeSheet(); window.LennyMoment && callApi(() => LennyMoment.open()); });
     document.getElementById("mtb-more").addEventListener("click", toggleSheet);
 
     const items = moreItems();

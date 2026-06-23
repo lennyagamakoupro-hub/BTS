@@ -166,6 +166,11 @@
       '<h2 class="mf-map-title">Parcours des formules</h2>' +
       '<p class="mf-map-sub">Réussis un thème pour débloquer le suivant. Vise les 3 étoiles ⭐</p>' +
       '<div class="mf-map-score">' + star(true) + '<span>' + tot + ' / ' + max + '</span></div>' +
+      '<button class="mf-exos-cta" id="mf-exos-cta" type="button">' +
+        '<span class="mf-exos-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5h11M4 9h11M4 13.5h7"/><path d="M16.5 14.5l2 2 3.5-4"/></svg></span>' +
+        '<span class="mf-exos-txt"><strong>Exercices types corrigés</strong><span>21 dossiers complets + entraînement aux formules</span></span>' +
+        '<span class="mf-exos-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>' +
+      '</button>' +
     '</div>';
 
     order.forEach(pole => {
@@ -199,6 +204,10 @@
     shell.innerHTML = html;
     shell.scrollTop = 0;
     document.getElementById("mf-close").addEventListener("click", close);
+    var exosCta = document.getElementById("mf-exos-cta");
+    if (exosCta) exosCta.addEventListener("click", function () {
+      if (window.LennyExos) { close(); setTimeout(function () { LennyExos.open(); }, 180); }
+    });
     shell.querySelectorAll(".mf-node").forEach(btn => btn.addEventListener("click", () => {
       const i = parseInt(btn.dataset.li, 10);
       if (!isUnlocked(i, L)) { btn.classList.remove("shake"); void btn.offsetWidth; btn.classList.add("shake"); return; }
