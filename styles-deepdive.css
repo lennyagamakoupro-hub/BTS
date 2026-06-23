@@ -1,0 +1,276 @@
+/* ============ Deep Dive Drawer ============ */
+
+.dd-scrim {
+  position: fixed; inset: 0;
+  background: rgba(20, 18, 15, .35);
+  backdrop-filter: blur(6px);
+  z-index: 99;
+  animation: dd-fade .25s ease;
+}
+@keyframes dd-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.dd-drawer {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: min(560px, 100vw);
+  z-index: 100;
+  background: var(--paper);
+  border-left: 1px solid var(--rule);
+  box-shadow: -30px 0 60px -10px rgba(0,0,0,.3);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  animation: dd-slide .35s cubic-bezier(.2,.7,.2,1);
+}
+@keyframes dd-slide {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+/* Accent stripe at top */
+.dd-drawer::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--mc);
+  z-index: 1;
+}
+
+.dd-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 28px 28px 18px;
+  gap: 16px;
+  border-bottom: 1px solid var(--rule);
+}
+.dd-head-l { flex: 1; }
+.dd-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--mc);
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+.dd-eyebrow-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--mc);
+}
+.dd-title {
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.15;
+  letter-spacing: -.015em;
+  color: var(--ink);
+  margin: 0;
+}
+
+.dd-close {
+  flex: 0 0 36px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  display: grid; place-items: center;
+  transition: all .2s ease;
+}
+.dd-close:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.dd-close svg { width: 14px; height: 14px; }
+
+.dd-lede {
+  padding: 18px 28px;
+  font-family: "Inter", system-ui, sans-serif;
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.45;
+  color: var(--ink-2);
+  border-left: 3px solid var(--mc);
+  margin: 14px 28px 0;
+  background: color-mix(in oklab, var(--mc) 6%, transparent);
+  border-radius: 0 8px 8px 0;
+}
+
+.dd-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px 32px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule) transparent;
+}
+.dd-body::-webkit-scrollbar { width: 6px; }
+.dd-body::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+
+.dd-section {
+  margin-bottom: 26px;
+  padding-bottom: 22px;
+  border-bottom: 1px dashed var(--rule-soft);
+}
+.dd-section:last-of-type { border-bottom: 0; padding-bottom: 0; }
+
+.dd-section-h {
+  display: flex; align-items: baseline; gap: 10px;
+  margin-bottom: 12px;
+}
+.dd-section-n {
+  font-family: "Inter", system-ui, sans-serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--mc);
+  letter-spacing: 0;
+}
+.dd-section-t {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -.01em;
+  line-height: 1.25;
+}
+.dd-section-b {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--ink-2);
+  letter-spacing: .005em;
+}
+.dd-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex; flex-direction: column;
+  gap: 10px;
+}
+.dd-list li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.dd-list li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 10px;
+  width: 12px; height: 1px;
+  background: var(--mc);
+}
+
+.dd-linked {
+  margin-top: 14px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+}
+.dd-linked-k {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.dd-linked-list { display: flex; flex-direction: column; gap: 6px; }
+.dd-linked-row {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 13.5px;
+  color: var(--ink);
+  transition: all .2s ease;
+}
+.dd-linked-row:hover {
+  background: color-mix(in oklab, var(--mc) 8%, transparent);
+  border-color: var(--mc);
+}
+.dd-linked-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 2px;
+  background: var(--mc);
+  flex: 0 0 8px;
+}
+.dd-linked-t { flex: 1; }
+.dd-linked-mod {
+  font-family: "Inter", system-ui, sans-serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.dd-foot {
+  padding: 16px 28px 24px;
+  border-top: 1px solid var(--rule);
+  background: var(--paper);
+}
+.dd-jump {
+  width: 100%;
+  background: var(--ink);
+  color: var(--paper);
+  border: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 13px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.dd-jump:hover { background: var(--mc); }
+
+/* ============ Clickable cards visual cue ============ */
+.module .card[data-dd] {
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  position: relative;
+}
+.module .card[data-dd]:hover {
+  transform: translateY(-2px);
+  border-color: var(--mc);
+  box-shadow: 0 1px 0 rgba(0,0,0,.06),
+              0 20px 40px -28px color-mix(in oklab, var(--mc) 60%, transparent);
+}
+.module .card[data-dd]::after {
+  content: "+";
+  position: absolute;
+  top: 12px; right: 14px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  color: var(--mc);
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 16px;
+  display: grid; place-items: center;
+  opacity: 0;
+  transform: scale(.8);
+  transition: all .2s ease;
+  font-weight: 500;
+  line-height: 1;
+}
+.module .card[data-dd]:hover::after {
+  opacity: 1;
+  transform: scale(1);
+  background: var(--mc);
+  color: var(--paper);
+  border-color: var(--mc);
+}
+
+/* Dark mode */
+body.dark .dd-drawer { background: var(--paper-2); }
+body.dark .dd-foot   { background: var(--paper-2); }
+body.dark .dd-linked-row { background: var(--paper-3); }
+body.dark .module .card[data-dd]::after { background: var(--paper-2); }
+
+/* Mobile */
+@media (max-width: 720px) {
+  .dd-drawer { width: 100vw; }
+}

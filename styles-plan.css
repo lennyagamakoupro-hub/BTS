@@ -1,0 +1,426 @@
+/* ============ Plan de bataille (tabs + 4 views) ============ */
+
+.pb {
+  flex: 1;
+  display: flex; flex-direction: column;
+  min-height: 0;
+}
+.pb-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 14px;
+}
+.pb-head-eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pb-tabs {
+  display: flex; gap: 4px;
+  background: var(--paper-2);
+  padding: 3px;
+  border-radius: 8px;
+}
+.pb-tab {
+  background: transparent;
+  border: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all .2s ease;
+  letter-spacing: .02em;
+}
+.pb-tab:hover { color: var(--ink); }
+.pb-tab.active {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.pb-body {
+  flex: 1;
+  display: flex; flex-direction: column;
+  justify-content: center;
+  min-height: 240px;
+}
+.pb-foot {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--rule);
+  font-family: "Inter", system-ui, sans-serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ============ Carte view ============ */
+.pb-carte { display: flex; flex-direction: column; gap: 14px; align-items: stretch; }
+.pb-carte-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-areas:
+    "m1 m2 m3 m4"
+    "m5 m6 m6b m8"
+    "m11 m11 syn syn";
+  gap: 6px;
+  min-height: 240px;
+}
+.pb-room {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--mc) 6%, var(--paper-2));
+  border: 1px solid color-mix(in oklab, var(--mc) 35%, var(--rule));
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .2s ease;
+  min-height: 60px;
+}
+.pb-room:hover {
+  transform: translateY(-1px);
+  border-color: var(--mc);
+  box-shadow: 0 6px 12px -6px color-mix(in oklab, var(--mc) 50%, transparent);
+}
+.pb-room-fill {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: color-mix(in oklab, var(--mc) 50%, transparent);
+  transition: height .4s cubic-bezier(.2,.7,.2,1);
+}
+.pb-room.done .pb-room-fill {
+  background: var(--mc);
+}
+.pb-room-content {
+  position: relative;
+  z-index: 1;
+  padding: 8px 10px;
+  height: 100%;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.pb-room-num {
+  font-family: "Inter", system-ui, sans-serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--mc);
+  font-weight: 400;
+}
+.pb-room.done .pb-room-num { color: var(--paper); }
+.pb-room-label {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 11px;
+  color: var(--ink);
+  font-weight: 500;
+  letter-spacing: -.01em;
+}
+.pb-room.done .pb-room-label { color: var(--paper); }
+.pb-room-check {
+  position: absolute;
+  top: 6px; right: 8px;
+  font-size: 11px;
+  color: var(--paper);
+  z-index: 2;
+  font-weight: 600;
+}
+.pb-carte-legend {
+  display: flex; gap: 18px; justify-content: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pb-carte-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.pb-dot {
+  width: 8px; height: 8px; border-radius: 2px;
+  display: inline-block;
+}
+.pb-dot-empty { background: var(--paper-2); border: 1px solid var(--rule); }
+.pb-dot-mid   { background: color-mix(in oklab, var(--accent) 50%, transparent); }
+.pb-dot-full  { background: var(--accent); }
+
+/* ============ Radar view ============ */
+.pb-radar {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 18px;
+  align-items: center;
+  color: var(--ink);
+}
+.pb-radar-svg { display: block; }
+.pb-radar-weak {
+  display: flex; flex-direction: column; gap: 10px;
+}
+.pb-radar-weak-k {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.pb-radar-weak-list {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.pb-radar-weak-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px;
+  background: var(--paper-2);
+  border-radius: 8px;
+  font-size: 13px;
+}
+.pb-radar-weak-name { flex: 1; color: var(--ink); }
+.pb-radar-weak-pct {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* ============ Plan view ============ */
+.pb-plan {
+  display: flex; flex-direction: column; gap: 6px;
+  overflow-y: auto;
+  max-height: 260px;
+  padding-right: 4px;
+}
+.pb-plan::-webkit-scrollbar { width: 4px; }
+.pb-plan::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 2px; }
+
+.pb-day {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rule-soft);
+  align-items: center;
+}
+.pb-day:last-child { border-bottom: 0; }
+.pb-day-marker {
+  display: grid; place-items: center;
+}
+.pb-day-num {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--rule);
+  display: grid; place-items: center;
+  font-family: "Inter", system-ui, sans-serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--muted);
+  background: var(--paper);
+}
+.pb-day.today .pb-day-num {
+  background: var(--accent);
+  color: var(--paper);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 25%, transparent);
+}
+.pb-day.done .pb-day-num {
+  background: var(--forest);
+  color: var(--paper);
+  border-color: var(--forest);
+}
+.pb-day.exam .pb-day-num {
+  background: var(--ink);
+  color: var(--accent-soft);
+  border-color: var(--ink);
+}
+.pb-day-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.pb-day-theme {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--ink);
+  letter-spacing: -.005em;
+}
+.pb-day.today .pb-day-theme { font-style: italic; color: var(--accent); }
+.pb-day-mods { display: flex; gap: 4px; flex-wrap: wrap; }
+.pb-day-chip {
+  background: transparent;
+  border: 1px solid color-mix(in oklab, var(--mc) 40%, var(--rule));
+  color: var(--ink);
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 10.5px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all .15s ease;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.pb-day-chip:hover {
+  background: var(--mc);
+  color: var(--paper);
+  border-color: var(--mc);
+}
+.pb-day-chip.done {
+  background: var(--mc);
+  color: var(--paper);
+  border-color: var(--mc);
+}
+.pb-day-chip-check { font-size: 9px; }
+.pb-day-chip-exam {
+  border-color: var(--ink);
+  color: var(--ink);
+  font-style: italic;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 12px;
+  background: transparent;
+  cursor: default;
+}
+
+/* ============ Timeline view ============ */
+.pb-timeline {
+  display: flex; flex-direction: column; gap: 16px;
+}
+.pb-tl-stats {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  background: var(--paper-2);
+  border-radius: 10px;
+}
+.pb-tl-k {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pb-tl-v {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 16px;
+  color: var(--ink);
+}
+.pb-tl-arrow {
+  color: var(--muted);
+  font-size: 18px;
+}
+.pb-tl-input {
+  background: transparent;
+  border: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 16px;
+  color: var(--ink);
+  cursor: pointer;
+  outline: 0;
+  padding: 0;
+  margin-top: 2px;
+  width: 110px;
+}
+.pb-tl-input::-webkit-calendar-picker-indicator {
+  filter: invert(.4);
+  cursor: pointer;
+}
+.pb-tl-countdown {
+  margin-left: auto;
+  text-align: right;
+}
+.pb-tl-cd-v {
+  font-family: "Inter", system-ui, sans-serif;
+  font-style: italic;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--accent);
+  letter-spacing: -.01em;
+}
+.pb-tl-cd-k {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.pb-tl-track {
+  position: relative;
+  height: 80px;
+  margin: 0 12px;
+}
+.pb-tl-line {
+  position: absolute;
+  top: 36px;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--rule) 0%, var(--accent) 100%);
+}
+.pb-tl-marker {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  cursor: pointer;
+}
+.pb-tl-marker-dot {
+  margin-top: 28px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 2px solid var(--mc, var(--muted));
+  transition: all .2s ease;
+}
+.pb-tl-marker:hover .pb-tl-marker-dot {
+  transform: scale(1.4);
+  background: var(--mc);
+}
+.pb-tl-marker.done .pb-tl-marker-dot {
+  background: var(--mc);
+}
+.pb-tl-marker.pb-tl-today .pb-tl-marker-dot {
+  background: var(--ink);
+  border-color: var(--ink);
+  width: 14px; height: 14px;
+  margin-top: 27px;
+}
+.pb-tl-marker.pb-tl-exam .pb-tl-marker-dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  width: 16px; height: 16px;
+  margin-top: 26px;
+}
+.pb-tl-marker-l {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+  margin-top: 4px;
+}
+.pb-tl-marker.pb-tl-today .pb-tl-marker-l,
+.pb-tl-marker.pb-tl-exam .pb-tl-marker-l {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.pb-tl-hint {
+  text-align: center;
+  font-family: "Inter", system-ui, sans-serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--ink-2);
+  padding: 12px;
+  background: color-mix(in oklab, var(--accent) 6%, transparent);
+  border-radius: 8px;
+}
+.pb-tl-hint strong {
+  font-style: normal;
+  font-family: "Inter", system-ui, sans-serif;
+  color: var(--accent);
+  font-size: 18px;
+  padding: 0 2px;
+}
+
+/* ===== Dark mode adjustments ===== */
+body.dark .pb-tabs { background: var(--paper-3); }
+body.dark .pb-tab.active { background: var(--paper); color: var(--ink); }
+body.dark .pb-room {
+  background: color-mix(in oklab, var(--mc) 12%, var(--paper-2));
+}
+body.dark .pb-tl-stats { background: var(--paper-3); }
+body.dark .pb-day-num { background: var(--paper-3); }
+body.dark .pb-radar-weak-row { background: var(--paper-3); }

@@ -1,0 +1,52 @@
+# LENNY · BTS Transaction
+Plateforme de révision style Netflix — 100 % hors ligne.
+
+## Comment l'ouvrir
+
+1. **Double-clique** sur le fichier "LENNY-BTS-Transaction.html"
+2. Il s'ouvre dans ton navigateur (Chrome, Edge, Safari, Firefox)
+3. Tu n'as **AUCUN BESOIN d'internet** — tout est déjà dedans
+
+## Si tu vois une "page Google" au lieu de l'app
+
+Tu l'as ouvert dans un aperçu Gmail / Drive au lieu du navigateur. Solution :
+
+- **Windows** : clic-droit sur le fichier → "Ouvrir avec" → Chrome / Edge / Firefox
+- **Mac** : clic-droit → "Ouvrir avec" → Safari / Chrome
+- **Téléphone** : ouvre l'app Fichiers, tape sur le fichier, choisis ton navigateur
+
+Astuce : glisse le fichier directement dans un onglet de Chrome ouvert.
+
+## Comment l'utiliser
+
+- **Réviser** (gros bouton blanc sur le hero) → lance le diaporama du Module 11
+- **Cliquer sur n'importe quelle carte** → ouvre la fiche détaillée avec Fiches / Mémos / Quiz / À propos
+- **Bouton BINGE** (en haut à droite) → enchaîne tous les modules à la suite, façon marathon
+- **Loupe 🔍** (en haut à droite, ou ⌘K / Ctrl+K) → recherche un module, un chapitre, une loi, un concept
+
+### Raccourcis dans le diaporama
+- ← → : naviguer entre les diapos
+- Échap : quitter
+- ⌘K / Ctrl+K : ouvrir la recherche
+
+## Contenu
+
+- 10 modules BTS PI complets (Accueil, Entreprises, Prospection, Ratios, Diagnostics, Estimation, Viager, Mandats, Financement, Synthèse)
+- 8 lois clés (Hoguet, ALUR, ELAN, Carrez, Scrivener, Lemoine, Neiertz, Climat)
+- ~50 chapitres rédigés (deep-dives)
+- ~80 flashcards
+- ~50 questions de quiz avec correction
+- 30+ mémos & formules
+
+## Distribution
+
+Le fichier est totalement autonome et anonyme. Tu peux :
+- L'envoyer par mail / WhatsApp / Drive
+- Le copier sur clé USB
+- Le mettre en favori sur ton téléphone
+
+Aucune donnée n'est envoyée nulle part, aucun compte requis.
+
+---
+
+Lenny Agamakou · BTS Professions Immobilières · INSEEC · Promotion 2025-2026

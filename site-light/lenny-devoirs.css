@@ -1,0 +1,400 @@
+/* ============================================
+   LENNY — DEVOIR (épreuve écrite) · overlay « copie d'examen »
+   Esthétique papier : feuille crème, en-tête type sujet d'examen,
+   zones de rédaction. Cohérent avec le reste (rouge LENNY, dark UI).
+   ============================================ */
+#lenny-devoir {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: none;
+}
+#lenny-devoir.open { display: block; }
+
+.dv-backdrop {
+  position: absolute;
+  inset: 0;
+  background: #eceae6;
+}
+
+.dv-shell {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 40px 20px 80px;
+  display: flex;
+  justify-content: center;
+}
+
+.dv-close {
+  position: fixed;
+  top: 18px; right: 22px;
+  z-index: 5;
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(20,16,14,.7);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background .2s, transform .2s;
+}
+.dv-close:hover { background: rgba(201,86,54,.85); transform: rotate(90deg); }
+
+/* ---- La feuille ---- */
+.dv-paper {
+  width: 100%;
+  max-width: 1040px;
+  background: #eceae6;
+  color: #211c16;
+  border-radius: 6px;
+  box-shadow: none;
+  padding: 0 0 6px;
+  font-family: "Inter", system-ui, sans-serif;
+  opacity: 1;
+}
+@media (prefers-reduced-motion: no-preference) {
+  #lenny-devoir.open .dv-paper { animation: dvRise .45s cubic-bezier(.2,.7,.2,1); }
+}
+@keyframes dvRise { from { transform: translateY(26px); } to { transform: none; } }
+
+/* ---- En-tête sujet ---- */
+.dv-head {
+  position: relative;
+  padding: 30px 44px 26px;
+  border-bottom: 2px solid #211c16;
+  background:
+    linear-gradient(90deg, var(--dv-accent, #b8843a) 0 6px, transparent 6px);
+}
+.dv-head-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  font-size: 12px;
+  letter-spacing: .04em;
+  color: #6a6055;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.dv-brand {
+  font-weight: 800;
+  letter-spacing: .18em;
+  color: #211c16;
+}
+.dv-brand-l {
+  display: inline-grid;
+  place-items: center;
+  width: 20px; height: 20px;
+  background: #c1322d;
+  color: #fff;
+  border-radius: 4px;
+  font-weight: 900;
+  transform: translateY(2px);
+  margin-right: 4px;
+}
+.dv-session { font-variant: small-caps; }
+.dv-title {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(26px, 4vw, 38px);
+  line-height: 1.05;
+  margin: 0 0 6px;
+  letter-spacing: -.01em;
+}
+.dv-epreuve {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--dv-accent, #9a6a28);
+  margin-bottom: 16px;
+}
+.dv-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  font-size: 12.5px;
+  color: #4a4239;
+  padding-top: 14px;
+  border-top: 1px solid rgba(33,28,22,.16);
+}
+.dv-meta b { font-weight: 800; color: #211c16; }
+.dv-consigne {
+  margin: 18px 0 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #4a4239;
+  background: rgba(184,132,58,.1);
+  border-left: 3px solid var(--dv-accent, #b8843a);
+  padding: 11px 15px;
+  border-radius: 0 4px 4px 0;
+}
+
+/* ---- Exercice ---- */
+.dv-ex {
+  padding: 28px 44px 8px;
+  border-bottom: 1px dashed rgba(33,28,22,.2);
+}
+.dv-ex:last-of-type { border-bottom: none; }
+.dv-ex-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.dv-ex-num {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #c1322d;
+}
+.dv-ex-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.dv-ex-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: #211c16;
+  color: #f7f3ea;
+}
+.dv-ex-tag.ghost { background: transparent; color: #6a6055; border: 1px solid rgba(33,28,22,.25); }
+.dv-ex-pole {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: var(--dv-accent, #b8843a);
+  color: #fff;
+}
+.dv-ex-title {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 21px;
+  font-weight: 700;
+  margin: 0 0 16px;
+  line-height: 1.2;
+}
+
+/* ---- Contexte ---- */
+.dv-context {
+  background: #ffffff;
+  border: 1px solid rgba(33,28,22,.2);
+  border-radius: 8px;
+  padding: 15px 18px;
+  margin-bottom: 18px;
+  box-shadow: 0 1px 3px rgba(33,28,22,.07);
+}
+.dv-context-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #9a6a28;
+  margin-bottom: 8px;
+}
+.dv-context p {
+  margin: 0 0 9px;
+  font-size: 14px;
+  line-height: 1.62;
+  color: #2e2820;
+  text-wrap: pretty;
+}
+.dv-context p:last-child { margin-bottom: 0; }
+
+/* ---- Questions + copie ---- */
+.dv-questions { display: flex; flex-direction: column; gap: 18px; padding-bottom: 14px; }
+.dv-questions-label {
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--dv-accent, #b8843a);
+  padding: 4px 13px;
+  border-radius: 20px;
+}
+.dv-q {
+  border: 1px solid rgba(33,28,22,.2);
+  border-left: 3px solid var(--dv-accent, #b8843a);
+  border-radius: 0 8px 8px 0;
+  padding: 14px 16px 16px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(33,28,22,.06);
+}
+.dv-q-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.dv-q-num {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--dv-accent, #b8843a);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  margin-top: 1px;
+}
+.dv-q-text {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #1a1611;
+  text-wrap: pretty;
+}
+.dv-copie {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 26px;
+  color: #1c2c4a;
+  background-color: #fcfbf6;
+  background-image: repeating-linear-gradient(
+    transparent, transparent 25px, rgba(40,80,160,.16) 25px, rgba(40,80,160,.16) 26px);
+  border: 1px solid rgba(33,28,22,.22);
+  border-radius: 5px;
+  padding: 4px 14px;
+  resize: vertical;
+  min-height: 86px;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.dv-copie:focus {
+  border-color: var(--dv-accent, #b8843a);
+  box-shadow: 0 0 0 3px rgba(184,132,58,.18);
+}
+.dv-copie::placeholder { color: #b3a892; font-style: italic; }
+
+/* ---- Pied ---- */
+.dv-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 22px 44px 14px;
+  margin-top: 6px;
+  border-top: 2px solid #211c16;
+}
+.dv-corrige {
+  font-size: 13px;
+  color: #4a4239;
+}
+.dv-corrige b { color: #c1322d; }
+.dv-foot-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.dv-btn {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 11px 20px;
+  border-radius: 7px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform .15s, background .2s, box-shadow .2s;
+}
+.dv-btn:active { transform: translateY(1px); }
+.dv-btn.primary { background: #c1322d; color: #fff; box-shadow: 0 6px 18px rgba(193,50,45,.3); }
+.dv-btn.primary:hover { background: #a82923; }
+.dv-btn.ghost { background: transparent; color: #211c16; border-color: rgba(33,28,22,.3); }
+.dv-btn.ghost:hover { background: rgba(33,28,22,.07); }
+
+/* ---- Bouton « Devoir » dans la barre (nav) ---- */
+.devoir-launch {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #f3ead8;
+  background: linear-gradient(135deg, #7a5a1e, #b8843a);
+  border: 1px solid rgba(255,225,170,.3);
+  box-shadow: 0 4px 14px rgba(120,80,20,.3);
+  transition: transform .15s, box-shadow .2s, filter .2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.devoir-launch:hover { transform: translateY(-1px); filter: brightness(1.08); box-shadow: 0 6px 18px rgba(120,80,20,.42); }
+.devoir-launch svg { width: 14px; height: 14px; }
+
+/* ---- Bouton « Devoir du pôle » sur les pages sectorielles ---- */
+.sector-devoir-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 12px 22px;
+  border-radius: 9px;
+  cursor: pointer;
+  color: #f3ead8;
+  background: linear-gradient(135deg, #6e5019, #b8843a);
+  border: 1px solid rgba(255,225,170,.32);
+  box-shadow: 0 8px 22px rgba(110,70,18,.32);
+  transition: transform .15s, filter .2s;
+}
+.sector-devoir-btn:hover { transform: translateY(-2px); filter: brightness(1.07); }
+.sector-devoir-btn svg { width: 16px; height: 16px; }
+
+/* ---- Lisibilité garantie sur le papier crème ----
+   L'app est en thème sombre (body { color: blanc }). Sans couleur explicite,
+   certains textes héritent du blanc et deviennent invisibles sur le papier.
+   On force des couleurs foncées (et on fonce les libellés dorés). --- */
+.dv-paper h2, .dv-paper h3, .dv-paper p, .dv-paper li, .dv-paper span,
+.dv-paper div, .dv-paper strong, .dv-paper b { color: #211c16; }
+.dv-title, .dv-ex-title { color: #1a1611 !important; }
+.dv-context p { color: #2a241d !important; }
+.dv-q-text { color: #161210 !important; }
+.dv-consigne { color: #423b32 !important; }
+.dv-consigne b, .dv-meta b { color: #1a1611 !important; }
+.dv-session, .dv-meta { color: #5a5246 !important; }
+.dv-context-label { color: #7d5418 !important; }   /* doré plus foncé = lisible */
+.dv-epreuve { color: #8a5e1f !important; }
+/* libellés sur fond accent : on garde le blanc */
+.dv-questions-label, .dv-q-num, .dv-ex-pole, .dv-ex-tag:not(.ghost), .dv-brand-l { color: #fff !important; }
+.dv-ex-tag.ghost { color: #6a6055 !important; }
+.dv-ex-num { color: #b23a2f !important; }
+.dv-copie { color: #1c2c4a !important; }
+.dv-copie::placeholder { color: #978a72 !important; }
+
+/* ---- Mobile ---- */
+@media (max-width: 640px) {
+  .dv-shell { padding: 24px 10px 70px; }
+  .dv-head { padding: 24px 22px 20px; }
+  .dv-ex { padding: 22px 22px 6px; }
+  .dv-foot { padding: 20px 22px 12px; flex-direction: column; align-items: stretch; }
+  .dv-foot-actions { justify-content: stretch; }
+  .dv-foot-actions .dv-btn { flex: 1; }
+  .devoir-launch {
+    font-size: 0;
+    gap: 0;
+    padding: 8px;
+    width: 34px; height: 34px;
+    justify-content: center;
+  }
+  .devoir-launch svg { width: 15px; height: 15px; }
+}
+
+/* ---- Impression : sujet propre ---- */
+@media print {
+  body > *:not(#lenny-devoir) { display: none !important; }
+  #lenny-devoir, #lenny-devoir.open { position: static; display: block !important; }
+  .dv-backdrop, .dv-close, .dv-foot-actions { display: none !important; }
+  .dv-shell { position: static; overflow: visible; padding: 0; display: block; }
+  .dv-paper { box-shadow: none; max-width: none; background: #fff; }
+  .dv-copie { background: #fff; min-height: 120px; }
+  .dv-ex { page-break-inside: avoid; }
+}

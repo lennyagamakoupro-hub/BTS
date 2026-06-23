@@ -1,0 +1,179 @@
+/* ============================================
+   LENNY — Tuiles secteurs + vues sectorielles dédiées
+   ============================================ */
+
+/* View switching */
+.view { display: block; }
+.view[hidden] { display: none !important; }
+
+/* ---------- Sector tiles on home ---------- */
+.sectors { padding: 8px 48px 28px; }
+.sector-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  padding: 4px 0 0;
+}
+.sector-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 230px;
+  border-radius: 14px;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--ink);
+  background: var(--bg-2);
+  border: 1px solid var(--rule);
+  transition: transform .25s cubic-bezier(.22,.61,.36,1), box-shadow .25s, border-color .25s;
+}
+.sector-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 50px -22px rgba(0,0,0,.8);
+  border-color: rgba(255,255,255,.28);
+}
+.sector-tile-art {
+  height: 116px;
+  position: relative;
+}
+.st-transaction .sector-tile-art { background: linear-gradient(135deg, #2a1a14 0%, #c95636 100%); }
+.st-syndic .sector-tile-art      { background: linear-gradient(135deg, #14241c 0%, #3d6b48 100%); }
+.st-droit .sector-tile-art       { background: linear-gradient(135deg, #1d1830 0%, #574a86 100%); }
+.sector-tile-art::after {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(135deg, rgba(255,255,255,.05) 0 2px, transparent 2px 11px);
+}
+.sector-tile-body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.sector-tile-kicker {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-3);
+}
+.sector-tile-title { font-family: "Anton", sans-serif; font-size: 30px; letter-spacing: .5px; line-height: 1; }
+.sector-tile-desc { font-size: 13.5px; color: var(--ink-2); line-height: 1.45; margin-top: 2px; }
+.sector-tile-meta {
+  margin-top: auto; padding-top: 12px;
+  font-size: 12px; font-weight: 700; color: var(--ink-3);
+  letter-spacing: .02em;
+}
+.st-transaction:hover .sector-tile-meta { color: #e8a07f; }
+.st-syndic:hover .sector-tile-meta { color: #8fc79c; }
+.st-droit:hover .sector-tile-meta { color: #b3a8e0; }
+
+/* ---------- Dedicated sector view ---------- */
+.sector-view { min-height: 100vh; }
+.sector-hero {
+  position: relative;
+  padding: calc(var(--nav-h) + 56px) 56px 48px;
+  overflow: hidden;
+}
+.sector-hero::before {
+  content: "";
+  position: absolute; inset: 0;
+  opacity: .9;
+  z-index: 0;
+}
+.sector-view[data-sector="transaction"] .sector-hero::before { background: radial-gradient(120% 130% at 12% 0%, #c95636 0%, #2a1a14 52%, #000 100%); }
+.sector-view[data-sector="syndic"] .sector-hero::before      { background: radial-gradient(120% 130% at 12% 0%, #3d6b48 0%, #14241c 52%, #000 100%); }
+.sector-view[data-sector="droit"] .sector-hero::before       { background: radial-gradient(120% 130% at 12% 0%, #574a86 0%, #1d1830 52%, #000 100%); }
+.sector-hero::after {
+  content: "";
+  position: absolute; inset: 0; z-index: 0;
+  background-image: repeating-linear-gradient(135deg, rgba(255,255,255,.04) 0 2px, transparent 2px 13px);
+}
+.sector-back {
+  position: relative; z-index: 2;
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(0,0,0,.4);
+  border: 1px solid rgba(255,255,255,.22);
+  color: var(--ink);
+  font-family: "Inter", system-ui, sans-serif; font-weight: 700; font-size: 14px;
+  padding: 9px 16px; border-radius: 999px; cursor: pointer;
+  transition: background .15s, transform .15s;
+}
+.sector-back:hover { background: rgba(0,0,0,.65); transform: translateX(-2px); }
+.sector-hero-inner { position: relative; z-index: 2; max-width: 720px; margin-top: 26px; }
+.sector-hero-kicker {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 13px; letter-spacing: .2em; text-transform: uppercase;
+  color: rgba(255,255,255,.8);
+  margin-bottom: 12px;
+}
+.sector-hero-title { font-family: "Anton", sans-serif; font-size: clamp(48px, 7vw, 88px); line-height: .95; letter-spacing: 1px; }
+.sector-hero-desc { font-size: 17px; line-height: 1.55; color: var(--ink-2); margin-top: 16px; max-width: 620px; text-wrap: pretty; }
+.sector-hero-actions { display: flex; align-items: center; gap: 18px; margin-top: 26px; flex-wrap: wrap; }
+.sector-hero-meta { font-size: 13.5px; color: var(--ink-3); font-weight: 600; }
+
+/* ---------- Vidéo de fond sur les pages secteur (transaction / syndic / droit) ---------- */
+.sector-hero-video {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; z-index: 1; border: 0; pointer-events: none; background: #000;
+  object-position: center 8%; /* abaisse le sujet (le personnage descend dans le cadre) */
+}
+.sector-hero-scrim {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,.34) 0%, rgba(0,0,0,.08) 42%, rgba(0,0,0,.74) 100%);
+}
+/* sur les 3 secteurs : bannière vidéo seule, sans le texte */
+.sector-view[data-sector] .sector-hero {
+  min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; align-items: flex-start;
+}
+.sector-view[data-sector] .sector-hero-inner { margin-top: auto; width: 100%; }
+.sector-view[data-sector] .sector-hero-kicker,
+.sector-view[data-sector] .sector-hero-title,
+.sector-view[data-sector] .sector-hero-desc,
+.sector-view[data-sector] .sector-hero-meta { display: none; }
+/* bouton « ‹ Accueil » retiré sur les pages secteur */
+.sector-view[data-sector] .sector-back { display: none; }
+
+/* ---------- bouton outils fusionn\u00e9 (discret, en bas) ---------- */
+.sector-tools-btn { display: none; }
+.sector-view[data-sector] .sector-tools-btn {
+  display: inline-grid; place-items: center;
+  position: absolute; left: 20px; bottom: 20px; z-index: 6;
+  width: 42px; height: 42px; border-radius: 50%;
+  background: rgba(0,0,0,.4); border: 1px solid rgba(255,255,255,.18);
+  color: rgba(255,255,255,.7); cursor: pointer; backdrop-filter: blur(6px);
+  transition: background .15s ease, color .15s ease, transform .15s ease;
+}
+.sector-view[data-sector] .sector-tools-btn:hover { background: rgba(0,0,0,.62); color: #fff; }
+.sector-view[data-sector] .sector-tools-btn[aria-expanded="true"] { transform: rotate(45deg); color: #fff; }
+.sector-view[data-sector] .sector-tools-btn svg { width: 19px; height: 19px; }
+
+/* les actions deviennent un petit popover au-dessus du bouton */
+.sector-view[data-sector] .sector-hero-actions {
+  position: absolute; left: 20px; bottom: 72px; z-index: 6;
+  flex-direction: column; align-items: flex-start; gap: 8px;
+  width: max-content; max-width: 260px;
+  opacity: 0; transform: translateY(8px); pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+}
+.sector-view[data-sector] .sector-hero-actions.tools-open { opacity: 1; transform: none; pointer-events: auto; }
+.sector-view[data-sector] .sector-hero-actions .sector-hero-meta {
+  text-align: left; opacity: .7; display: block !important;
+}
+
+.sector-grid-wrap { padding: 36px 56px 80px; }
+.sector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
+}
+/* sector grid cards reuse .card but full-width within grid cell */
+.sector-grid .card { width: 100%; }
+
+/* ---------- Mobile ---------- */
+@media (max-width: 980px) {
+  .sectors { padding: 8px 24px 24px; }
+  .sector-hero { padding: calc(var(--nav-h) + 36px) 24px 32px; }
+  .sector-grid-wrap { padding: 28px 24px 64px; }
+}
+@media (max-width: 760px) {
+  .sector-tiles { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .sectors { padding: 8px 20px 24px; }
+  .sector-hero { padding: calc(var(--nav-h) + 36px) 20px 32px; }
+  .sector-grid-wrap { padding: 28px 20px 64px; }
+}

@@ -1,0 +1,211 @@
+/* ============ Memos overlay ============ */
+.memos-body {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  min-height: 500px;
+  max-height: 70vh;
+}
+
+.memos-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-right: 1px solid var(--rule);
+  padding-right: 12px;
+  overflow-y: auto;
+}
+
+.memos-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  text-align: left;
+  transition: all .15s ease;
+  --mc: var(--accent);
+}
+.memos-nav-item:hover {
+  background: color-mix(in oklab, var(--mc) 8%, transparent);
+}
+.memos-nav-item.active {
+  background: var(--ink);
+  color: var(--paper);
+}
+.memos-nav-item.active .memos-nav-dot {
+  outline: 2px solid var(--paper);
+  outline-offset: 2px;
+}
+.memos-nav-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--mc);
+  flex: 0 0 10px;
+}
+.memos-nav-t {
+  flex: 1;
+  min-width: 0;
+  letter-spacing: -.005em;
+}
+
+.memos-content {
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.memos-content::-webkit-scrollbar { width: 6px; }
+.memos-content::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+
+.memos-section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 26px;
+  color: var(--ink);
+  letter-spacing: -.015em;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+.memos-section-stripe {
+  width: 4px;
+  height: 28px;
+  background: var(--mc);
+  border-radius: 2px;
+}
+
+.memos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.memo-card {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 18px 20px;
+  position: relative;
+  transition: all .2s ease;
+}
+.memo-card:hover {
+  border-color: color-mix(in oklab, var(--mc) 50%, var(--rule));
+  box-shadow: 0 4px 16px -6px color-mix(in oklab, var(--mc) 30%, transparent);
+  transform: translateY(-1px);
+}
+.memo-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 18px;
+  width: 32px;
+  height: 3px;
+  background: var(--mc);
+  border-radius: 0 0 2px 2px;
+}
+
+.memo-card-h {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -.01em;
+  margin-bottom: 12px;
+  margin-top: 4px;
+  line-height: 1.2;
+}
+
+.memo-card-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.memo-card-list li {
+  position: relative;
+  padding-left: 14px;
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+.memo-card-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 8px;
+  height: 1px;
+  background: var(--mc);
+}
+
+/* Specialized variants */
+.memo-card-formula {
+  background: linear-gradient(135deg, var(--paper) 0%, color-mix(in oklab, var(--mc) 4%, var(--paper)) 100%);
+}
+.memo-card-formula .memo-card-list li {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12.5px;
+  letter-spacing: -.005em;
+}
+.memo-card-formula .memo-card-list li:first-child {
+  font-family: "Inter", system-ui, sans-serif;
+  font-style: italic;
+  font-size: 17px;
+  color: var(--mc);
+  font-weight: 500;
+  padding: 8px 12px;
+  background: color-mix(in oklab, var(--mc) 8%, var(--paper-2));
+  border-radius: 6px;
+  margin-bottom: 8px;
+  padding-left: 12px;
+}
+.memo-card-formula .memo-card-list li:first-child::before {
+  display: none;
+}
+
+.memo-card-dates .memo-card-list li {
+  font-variant-numeric: tabular-nums;
+}
+
+.memo-card-numbers .memo-card-list li {
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.memo-card-table .memo-card-list li {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 720px) {
+  .memos-body {
+    grid-template-columns: 1fr;
+    max-height: none;
+  }
+  .memos-nav {
+    flex-direction: row;
+    border-right: 0;
+    border-bottom: 1px solid var(--rule);
+    padding-right: 0;
+    padding-bottom: 8px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+  .memos-nav-item {
+    white-space: nowrap;
+  }
+}
+
+body.dark .memo-card { background: var(--paper-3); }
+body.dark .memo-card-formula {
+  background: linear-gradient(135deg, var(--paper-3) 0%, color-mix(in oklab, var(--mc) 8%, var(--paper-3)) 100%);
+}

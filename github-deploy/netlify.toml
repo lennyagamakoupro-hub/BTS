@@ -1,0 +1,18 @@
+# ============================================
+#  Netlify — Configuration de déploiement
+#  Site STATIQUE (HTML/CSS/JS) — AUCUN build.
+#  Netlify sert directement le dossier "site/".
+# ============================================
+
+[build]
+  # Pas de compilation : on publie les fichiers tels quels.
+  publish = "site"
+  command = ""
+
+# Le site utilise un routage par ancres (#home, #m11, ...).
+# Cette règle renvoie toute URL inconnue vers la page d'accueil
+# pour éviter les erreurs 404 sur rafraîchissement.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

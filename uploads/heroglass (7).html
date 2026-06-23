@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Villa — Intérieur · Extérieur</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #080604; font-family: 'Georgia', serif; }
+
+  #scene { position: fixed; inset: 0; overflow: hidden; }
+
+  /* Wrapper parallaxe : légèrement plus grand pour absorber le décalage */
+  #parallax-wrap {
+    position: absolute;
+    inset: -20px;
+    will-change: transform;
+  }
+
+  .layer {
+    position: absolute; inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    will-change: clip-path;
+  }
+
+  #int-layer {
+    background-image: url("https://d8j0ntlcm91z4.cloudfront.net/user_3EnzGECVHCaL0vMU1S2E4d1Cx9Y/hf_20260607_133935_51ec8b26-b52e-4ad4-b6be-cdf8d8d9e765.png");
+    animation: kbInt 12s ease-in-out infinite alternate, breatheInt 8s ease-in-out infinite;
+    transform-origin: center center;
+  }
+  /* Ken Burns intérieur : zoom doux + léger travelling droite */
+  @keyframes kbInt {
+    0%   { transform: scale(1.10) translate(  0px,   0px); }
+    33%  { transform: scale(1.20) translate(-28px, -12px); }
+    66%  { transform: scale(1.15) translate( 20px,  10px); }
+    100% { transform: scale(1.08) translate(  8px, -18px); }
+  }
+  @keyframes breatheInt {
+    0%,100% { filter: brightness(1.00) saturate(1.00); }
+    40%      { filter: brightness(1.06) saturate(1.05); }
+    70%      { filter: brightness(0.97) saturate(0.98); }
+  }
+
+  #ext-layer {
+    background-image: url("https://d8j0ntlcm91z4.cloudfront.net/user_3EnzGECVHCaL0vMU1S2E4d1Cx9Y/hf_20260607_133938_adce0213-fc90-49c2-9032-e6700aa25ace.png");
+    clip-path: inset(0 100% 0 0);
+    animation: kbExt 14s ease-in-out infinite alternate, breatheExt 11s ease-in-out infinite;
+    transform-origin: center center;
+  }
+  /* Ken Burns extérieur : zoom arrière + panoramique gauche */
+  @keyframes kbExt {
+    0%   { transform: scale(1.16) translate( 22px,  10px); }
+    33%  { transform: scale(1.08) translate(-18px,  -8px); }
+    66%  { transform: scale(1.18) translate( 14px,  16px); }
+    100% { transform: scale(1.12) translate(-24px,   4px); }
+  }
+  @keyframes breatheExt {
+    0%,100% { filter: brightness(1.00) saturate(1.00); }
+    35%      { filter: brightness(1.08) saturate(1.06); }
+    65%      { filter: brightness(0.96) saturate(0.97); }
+  }
+
+  /* Rayon de lumière intérieure (fenêtre) */
+  #light-beam {
+    position: absolute;
+    top: 0; right: 0;
+    width: 55%; height: 100%;
+    pointer-events: none;
+    opacity: 0.12;
+    animation: beamSweep 14s ease-in-out infinite;
+    mix-blend-mode: screen;
+  }
+  @keyframes beamSweep {
+    0%   { background: linear-gradient(108deg, transparent 30%, rgba(255,230,150,0.6) 50%, transparent 70%); opacity: 0.10; }
+    30%  { background: linear-gradient(112deg, transparent 28%, rgba(255,230,150,0.7) 48%, transparent 68%); opacity: 0.14; }
+    60%  { background: linear-gradient(105deg, transparent 32%, rgba(255,210,120,0.5) 52%, transparent 72%); opacity: 0.09; }
+    100% { background: linear-gradient(108deg, transparent 30%, rgba(255,230,150,0.6) 50%, transparent 70%); opacity: 0.10; }
+  }
+
+  /* Lueur bougie (intérieur bas-centre) */
+  #candle-glow {
+    position: absolute;
+    bottom: 28%; left: 20%;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    animation: candleFlicker 3.2s ease-in-out infinite;
+  }
+  @keyframes candleFlicker {
+    0%,100% { transform: scale(1.0);   opacity: 0.18; background: radial-gradient(circle, rgba(255,160,60,0.9) 0%, rgba(255,100,20,0.3) 45%, transparent 70%); }
+    20%      { transform: scale(1.12);  opacity: 0.22; background: radial-gradient(circle, rgba(255,180,80,1.0) 0%, rgba(255,120,30,0.4) 45%, transparent 70%); }
+    45%      { transform: scale(0.92);  opacity: 0.15; background: radial-gradient(circle, rgba(255,140,40,0.8) 0%, rgba(255,80,10,0.2) 45%, transparent 70%); }
+    72%      { transform: scale(1.07);  opacity: 0.20; background: radial-gradient(circle, rgba(255,170,70,0.9) 0%, rgba(255,110,25,0.35) 45%, transparent 70%); }
+  }
+
+  /* Ligne de séparation */
+  #divider {
+    position: absolute; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom,
+      transparent 0%, rgba(255,248,230,0) 8%,
+      rgba(255,248,230,0.9) 30%, rgba(255,255,255,1) 50%,
+      rgba(255,248,230,0.9) 70%, rgba(255,248,230,0) 92%, transparent 100%
+    );
+    transform: translateX(-50%);
+    pointer-events: none;
+    filter: blur(0.5px);
+    mix-blend-mode: screen;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  /* Halo curseur */
+  #cursor-glow {
+    position: absolute;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    mix-blend-mode: screen;
+  }
+
+  /* Canvas animations (poussières, oiseaux, nuages) */
+  #anim-canvas {
+    position: absolute; inset: 0;
+    pointer-events: none;
+  }
+
+  /* Vignette */
+  #vignette {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 38%, rgba(4,3,2,0.58) 100%);
+  }
+
+  /* Labels */
+  #labels {
+    position: fixed; inset: 0;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 52px; pointer-events: none;
+  }
+  .label {
+    font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase;
+    color: rgba(255,245,220,0); transition: color 0.35s ease;
+    user-select: none; text-shadow: 0 1px 12px rgba(0,0,0,0.6);
+  }
+
+  /* Hint */
+  #hint {
+    position: fixed; bottom: 34px; left: 50%; transform: translateX(-50%);
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(255,245,220,0.45); transition: opacity 0.9s ease;
+    pointer-events: none; text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+  }
+</style>
+</head>
+<body>
+
+<div id="scene">
+  <div id="parallax-wrap">
+    <div class="layer" id="int-layer"></div>
+    <div class="layer" id="ext-layer"></div>
+  </div>
+  <div id="light-beam"></div>
+  <div id="candle-glow"></div>
+  <canvas id="anim-canvas"></canvas>
+  <div id="divider"></div>
+  <div id="cursor-glow"></div>
+  <div id="vignette"></div>
+</div>
+
+<div id="labels">
+  <span class="label" id="label-int">Intérieur</span>
+  <span class="label" id="label-ext">Extérieur</span>
+</div>
+<div id="hint">← Déplacez la souris →</div>
+
+<script>
+"use strict";
+
+/* ================================================================
+   SETUP
+   ================================================================ */
+const extLayer   = document.getElementById('ext-layer');
+const divider    = document.getElementById('divider');
+const cursorGlow = document.getElementById('cursor-glow');
+const labelInt   = document.getElementById('label-int');
+const labelExt   = document.getElementById('label-ext');
+const hint       = document.getElementById('hint');
+const cv         = document.getElementById('anim-canvas');
+const ctx        = cv.getContext('2d');
+
+let W = cv.width  = window.innerWidth;
+let H = cv.height = window.innerHeight;
+
+let targetX = W / 2, smoothX = W / 2;
+let active  = false;
+let t       = 0;
+
+/* Parallaxe souris */
+let mouseNX = 0, mouseNY = 0;   /* normalisé -1..1 */
+let plxX = 0, plxY = 0;          /* valeur lissée */
+const PLX_STRENGTH = 12;          /* pixels max de déplacement */
+
+/* ================================================================
+   POUSSIÈRES DORÉES (intérieur)
+   ================================================================ */
+const DUST_COUNT = 55;
+const dust = Array.from({ length: DUST_COUNT }, () => ({
+  x:  Math.random() * W * 0.55,
+  y:  Math.random() * H,
+  r:  0.6 + Math.random() * 1.4,
+  vx: (Math.random() - 0.5) * 0.18,
+  vy: -0.08 - Math.random() * 0.22,
+  a:  Math.random() * Math.PI * 2,
+  da: (Math.random() - 0.5) * 0.008,
+  opacity: 0.15 + Math.random() * 0.5,
+  twinkle: Math.random() * Math.PI * 2,
+  twinkleSpeed: 0.015 + Math.random() * 0.025,
+}));
+
+function updateDust(splitX) {
+  dust.forEach(d => {
+    d.x  += d.vx + Math.sin(d.a) * 0.12;
+    d.y  += d.vy;
+    d.a  += d.da;
+    d.twinkle += d.twinkleSpeed;
+    if (d.y < -4)  { d.y = H + 4; d.x = Math.random() * splitX * 0.9; }
+    if (d.x < 0)   d.x = splitX * 0.9;
+    if (d.x > splitX * 0.95) d.x -= 1.5;
+  });
+}
+
+function drawDust(splitX) {
+  dust.forEach(d => {
+    if (d.x > splitX) return;
+    const alpha = d.opacity * (0.6 + 0.4 * Math.sin(d.twinkle));
+    const fade  = Math.min(1, (splitX - d.x) / 60);
+    ctx.beginPath();
+    ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,220,140,${(alpha * fade).toFixed(2)})`;
+    ctx.fill();
+  });
+}
+
+/* ================================================================
+   NUAGES (extérieur)
+   ================================================================ */
+const CLOUD_COUNT = 4;
+const clouds = Array.from({ length: CLOUD_COUNT }, (_, i) => ({
+  x:   W * 0.5 + Math.random() * W * 0.5,
+  y:   H * (0.04 + i * 0.07),
+  w:   90 + Math.random() * 140,
+  h:   22 + Math.random() * 28,
+  vx:  0.18 + Math.random() * 0.22,
+  opacity: 0.06 + Math.random() * 0.09,
+}));
+
+function updateClouds(splitX) {
+  clouds.forEach(c => {
+    c.x += c.vx;
+    if (c.x - c.w > W) c.x = splitX - c.w * 0.5;
+  });
+}
+
+function drawClouds(splitX) {
+  clouds.forEach(c => {
+    if (c.x + c.w < splitX) return;
+    const fade = Math.min(1, (c.x - splitX) / 80);
+    ctx.save();
+    ctx.globalAlpha = c.opacity * fade;
+    ctx.filter = 'blur(8px)';
+    ctx.fillStyle = 'rgba(255,250,235,1)';
+    ctx.beginPath();
+    ctx.ellipse(c.x, c.y, c.w, c.h, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
+}
+
+/* ================================================================
+   OISEAUX (extérieur)
+   ================================================================ */
+
+/* ================================================================
+   REFLETS SOLEIL SUR PELOUSE (extérieur) — taches lumineuses
+   ================================================================ */
+const SUNSPOTS = 5;
+const sunspots = Array.from({ length: SUNSPOTS }, (_, i) => ({
+  x: W * (0.55 + Math.random() * 0.4),
+  y: H * (0.65 + Math.random() * 0.28),
+  rx: 50 + Math.random() * 90,
+  ry: 12 + Math.random() * 20,
+  phase: Math.random() * Math.PI * 2,
+  speed: 0.004 + Math.random() * 0.006,
+}));
+
+function drawSunspots(splitX) {
+  sunspots.forEach(s => {
+    if (s.x - s.rx > splitX || s.x + s.rx < splitX) {
+      /* entièrement hors split */
+      if (s.x - s.rx < splitX) return;
+    }
+    const pulse = 0.6 + 0.4 * Math.sin(t * s.speed * 60 + s.phase);
+    const fade  = Math.min(1, (s.x - splitX) / 100);
+    ctx.save();
+    ctx.globalAlpha = 0.07 * pulse * fade;
+    ctx.filter = 'blur(14px)';
+    ctx.fillStyle = 'rgba(255,230,130,1)';
+    ctx.beginPath();
+    ctx.ellipse(s.x, s.y, s.rx * pulse, s.ry, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
+}
+
+/* ================================================================
+   BOUCLE PRINCIPALE
+   ================================================================ */
+function glowColor(ratio) {
+  const r = Math.round(255 * (1 - ratio * 0.15));
+  const g = Math.round(220 * (1 - ratio * 0.05));
+  const b = Math.round(160 + ratio * 80);
+  return `radial-gradient(circle, rgba(${r},${g},${b},0.22) 0%, rgba(${r},${g},${b},0.07) 50%, transparent 72%)`;
+}
+
+function frame(ts) {
+  t = ts * 0.001;
+  smoothX += (targetX - smoothX) * 0.07;
+  const splitX = Math.round(smoothX);
+  const pct    = smoothX / W;
+
+  /* -- Clip couche extérieure -- */
+  /* Parallaxe : wrapper se déplace en sens inverse de la souris */
+  plxX += (mouseNX * -PLX_STRENGTH - plxX) * 0.04;
+  plxY += (mouseNY * -PLX_STRENGTH - plxY) * 0.04;
+  const px = plxX.toFixed(2), py = plxY.toFixed(2);
+  document.getElementById('parallax-wrap').style.transform = `translate(${px}px, ${py}px)`;
+
+  extLayer.style.clipPath = `inset(0 ${Math.max(0, W - splitX)}px 0 0)`;
+
+  /* -- Divider & glow -- */
+  divider.style.left      = splitX + 'px';
+  cursorGlow.style.left   = splitX + 'px';
+  cursorGlow.style.background = glowColor(pct);
+
+  /* -- Labels -- */
+  labelInt.style.color = `rgba(255,245,220,${Math.max(0,(0.5-pct)*2).toFixed(2)})`;
+  labelExt.style.color = `rgba(255,245,220,${Math.max(0,(pct-0.5)*2).toFixed(2)})`;
+
+  /* -- Canvas -- */
+  ctx.clearRect(0, 0, W, H);
+
+  updateDust(splitX);
+  drawDust(splitX);
+
+  updateClouds(splitX);
+  drawClouds(splitX);
+
+  drawSunspots(splitX);
+
+
+  requestAnimationFrame(frame);
+}
+
+/* ================================================================
+   EVENTS
+   ================================================================ */
+const onMove = (cx, cy) => {
+  if (!active) {
+    active = true;
+    hint.style.opacity      = '0';
+    divider.style.opacity   = '1';
+    cursorGlow.style.opacity = '1';
+  }
+  targetX  = cx;
+  mouseNX  = (cx / W) * 2 - 1;
+  mouseNY  = (cy / H) * 2 - 1;
+  cursorGlow.style.top = cy + 'px';
+};
+
+window.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
+window.addEventListener('touchmove', e => {
+  e.preventDefault();
+  onMove(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: false });
+
+window.addEventListener('resize', () => {
+  W = cv.width  = window.innerWidth;
+  H = cv.height = window.innerHeight;
+});
+
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

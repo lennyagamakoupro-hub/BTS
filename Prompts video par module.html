@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>BTS Transaction — Prompts vidéo par module</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #e50914;
+    --ink: #1a1613;
+    --ink-2: #5a5249;
+    --ink-3: #8a8076;
+    --paper: #faf7f2;
+    --card: #ffffff;
+    --line: #e7e0d5;
+    --chip: #f1ece2;
+    --tx: #c95636;   /* transaction */
+    --dr: #574a86;   /* droit */
+    --sy: #3f6b4a;   /* synthèse/env */
+    --sd: #2f5d7a;   /* syndic */
+    --gd: #b58430;   /* repères */
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Inter", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 840px; margin: 0 auto; padding: 56px 40px 90px; }
+
+  /* ---- En-tête ---- */
+  .masthead { border-bottom: 3px solid var(--ink); padding-bottom: 26px; margin-bottom: 14px; }
+  .brand {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: "Bebas Neue", sans-serif; font-size: 30px; letter-spacing: .06em;
+    color: var(--red); line-height: 1;
+  }
+  .brand .sq { width: 13px; height: 26px; background: var(--red); display: inline-block; }
+  .doc-title {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: clamp(46px, 8vw, 78px);
+    line-height: .92; letter-spacing: .005em;
+    margin: 20px 0 0; color: var(--ink);
+  }
+  .doc-sub { font-size: 16px; color: var(--ink-2); max-width: 620px; margin: 14px 0 0; }
+  .meta-row { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 20px; font-size: 12.5px; color: var(--ink-3); font-family: "IBM Plex Mono", monospace; }
+  .meta-row b { color: var(--ink); font-weight: 500; }
+
+  /* ---- Mode d'emploi ---- */
+  .howto {
+    margin: 30px 0 8px; padding: 20px 22px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+  }
+  .howto h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--red); margin: 0 0 10px; }
+  .howto p { margin: 0 0 8px; font-size: 14px; color: var(--ink-2); }
+  .howto p:last-child { margin-bottom: 0; }
+  .howto b { color: var(--ink); }
+
+  /* ---- Section pôle ---- */
+  .pole { margin-top: 52px; }
+  .pole-head {
+    display: flex; align-items: baseline; gap: 14px;
+    padding-bottom: 10px; margin-bottom: 8px;
+    border-bottom: 2px solid var(--pc, var(--ink));
+  }
+  .pole-head .ph-title {
+    font-family: "Bebas Neue", sans-serif; font-size: 30px; letter-spacing: .04em;
+    color: var(--pc, var(--ink)); line-height: 1;
+  }
+  .pole-head .ph-count { font-size: 12.5px; color: var(--ink-3); font-family: "IBM Plex Mono", monospace; margin-left: auto; }
+
+  /* ---- Carte module ---- */
+  .mod {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 24px 26px 26px; margin-top: 18px;
+    border-left: 5px solid var(--mc, var(--ink));
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  .mod-top { display: flex; align-items: flex-start; gap: 14px; }
+  .mod-num {
+    flex-shrink: 0;
+    min-width: 46px; height: 46px; padding: 0 8px;
+    display: grid; place-items: center;
+    background: var(--mc, var(--ink)); color: #fff;
+    font-family: "Bebas Neue", sans-serif; font-size: 24px; letter-spacing: .03em;
+    border-radius: 9px;
+  }
+  .mod-head { flex: 1; min-width: 0; }
+  .mod-title { font-size: 21px; font-weight: 700; line-height: 1.2; letter-spacing: -.01em; margin: 2px 0 4px; }
+  .mod-tags { display: flex; flex-wrap: wrap; gap: 6px 10px; font-size: 12px; color: var(--ink-3); font-family: "IBM Plex Mono", monospace; }
+  .mod-tags .t-pole { color: var(--mc, var(--ink)); font-weight: 500; }
+
+  .lab { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-3); margin: 20px 0 8px; font-weight: 600; }
+
+  .prompt {
+    position: relative;
+    background: #faf8f4; border: 1px solid var(--line); border-radius: 10px;
+    padding: 16px 18px; font-size: 14.5px; line-height: 1.62; color: #2c2620;
+  }
+  .prompt .copy {
+    position: absolute; top: 10px; right: 10px;
+    font-family: "Inter", sans-serif; font-size: 11.5px; font-weight: 600;
+    color: var(--ink-3); background: #fff; border: 1px solid var(--line);
+    padding: 5px 10px; border-radius: 7px; cursor: pointer;
+    transition: all .14s ease;
+  }
+  .prompt .copy:hover { color: var(--red); border-color: var(--red); }
+  .prompt .copy.done { color: #2f8a4e; border-color: #2f8a4e; }
+  .prompt p { margin: 0; padding-right: 64px; }
+
+  .facts { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+  .fact {
+    font-size: 12.5px; color: var(--ink); background: var(--chip);
+    border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px;
+    line-height: 1.3;
+  }
+  .fact b { color: var(--mc, var(--ink)); font-weight: 600; }
+
+  footer { margin-top: 64px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--ink-3); font-family: "IBM Plex Mono", monospace; }
+
+  /* ---- Impression ---- */
+  @media print {
+    body { background: #fff; }
+    .wrap { padding: 0 0 20px; max-width: none; }
+    .prompt .copy { display: none; }
+    .mod, .howto { box-shadow: none; }
+    .prompt p { padding-right: 0; }
+    .pole { margin-top: 34px; }
+  }
+  @media (max-width: 600px) {
+    .wrap { padding: 36px 18px 60px; }
+    .prompt p { padding-right: 0; }
+    .prompt .copy { position: static; display: inline-block; margin-bottom: 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ EN-TÊTE ============ -->
+  <header class="masthead">
+    <div class="brand"><span class="sq"></span> LENNY</div>
+    <h1 class="doc-title">Prompts vidéo<br>par module</h1>
+    <p class="doc-sub">Pour chaque module du parcours BTS Professions Immobilières : un prompt prêt à copier-coller (dans ton outil de script ou ta caméra) et les points qu'il ne faut surtout pas oublier de citer.</p>
+    <div class="meta-row">
+      <span><b>22</b> modules</span>
+      <span>·</span>
+      <span>BTS Transaction — PI</span>
+      <span>·</span>
+      <span>Contenu tiré de tes fiches « Essentiel »</span>
+    </div>
+  </header>
+
+  <!-- ============ MODE D'EMPLOI ============ -->
+  <section class="howto">
+    <h2>Comment l'utiliser</h2>
+    <p>Chaque module a un <b>prompt</b> : un texte de cadrage qui décrit l'objectif de la vidéo et tout ce qu'elle doit couvrir. Tu peux le <b>copier tel quel</b> dans un générateur de script, ou t'en servir de plan de tournage.</p>
+    <p>Les <b>pastilles « À citer absolument »</b> sont les chiffres, lois et définitions à mention­ner mot pour mot — ce sont les réflexes attendus le jour de l'examen.</p>
+    <p>L'ordre suit tes pôles : <b>Transaction</b>, <b>Droit</b>, <b>Synthèse &amp; Environnement</b>, <b>Syndic</b>, puis les <b>Repères</b>.</p>
+  </section>
+
+  <!-- ============ PÔLE TRANSACTION ============ -->
+  <section class="pole" style="--pc:var(--tx)">
+    <div class="pole-head"><span class="ph-title">Pôle Transaction</span><span class="ph-count">9 modules · cœur du métier</span></div>
+
+    <!-- M1 -->
+    <article class="mod" style="--mc:var(--tx)">
+      <div class="mod-top">
+        <div class="mod-num">01</div>
+        <div class="mod-head">
+          <div class="mod-title">Accueil &amp; Découverte</div>
+          <div class="mod-tags"><span class="t-pole">Module 1</span> · Semestre 1 · ≈ 8 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo pédagogique d'environ 8 minutes sur l'accueil et la découverte du client en agence immobilière. Objectif : montrer comment réussir le premier contact et cerner précisément le besoin d'un prospect. Explique et illustre la règle des 4×20 (20 premières secondes, 20 premiers gestes, 20 premiers mots, 20 cm du visage), la méthode SONCAS(E) pour décrypter les motivations d'achat, la méthode DIVAS pour l'accueil téléphonique, et les 5 grands types de questions à poser en découverte. Termine par un mini-dialogue d'accueil commenté.</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>4×20</b> : 20 sec · 20 gestes · 20 mots · 20 cm</span>
+        <span class="fact"><b>SONCAS(E)</b> : Sécurité, Orgueil, Nouveauté, Confort, Argent, Sympathie, Écologie</span>
+        <span class="fact"><b>DIVAS</b> (tél.) : Débit, Intonation, Volume, Articulation, Sourire</span>
+        <span class="fact"><b>5 questions</b> : ouverte, fermée, approfondissement, miroir, inductive</span>
+      </div>
+    </article>
+
+    <!-- M2 -->
+    <article class="mod" style="--mc:var(--sd)">
+      <div class="mod-top">
+        <div class="mod-num">02</div>
+        <div class="mod-head">
+          <div class="mod-title">Entreprises &amp; Statuts</div>
+          <div class="mod-tags"><span class="t-pole">Module 2</span> · Semestre 1 · ≈ 12 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 12 minutes sur les formes d'entreprise et les statuts juridiques applicables au secteur immobilier. Objectif : aider l'élève à choisir et distinguer les structures. Compare l'entreprise individuelle (responsabilité illimitée, imposition à l'IR en BIC/BNC) et les sociétés (SARL, SAS, SA), en insistant sur le capital minimum. Explique les trois cartes professionnelles et le statut d'agent commercial. Replace le tout dans la chronologie des grandes lois (Hoguet, ALUR, ELAN).</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>EI</b> : responsabilité illimitée · IR (BIC/BNC)</span>
+        <span class="fact">Capital min. <b>SA = 37 000 €</b> (SARL/SAS : aucun minimum)</span>
+        <span class="fact">Cartes <b>T</b> (Transactions) · <b>G</b> (Gestion) · <b>S</b> (Syndic)</span>
+        <span class="fact"><b>Agent commercial</b> : mandataire indépendant au RSAC, payé à la commission</span>
+        <span class="fact">1970 Hoguet · 2014 ALUR · 2018 ELAN (bail mobilité 1–10 mois)</span>
+      </div>
+    </article>
+
+    <!-- M3 -->
+    <article class="mod" style="--mc:var(--sy)">
+      <div class="mod-top">
+        <div class="mod-num">03</div>
+        <div class="mod-head">
+          <div class="mod-title">La Prospection</div>
+          <div class="mod-tags"><span class="t-pole">Module 3</span> · Semestre 1 · ≈ 10 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 10 minutes sur la prospection immobilière, « la machine à mandats ». Objectif : montrer comment trouver des biens à vendre de façon méthodique. Présente la fixation d'objectifs SMART, la notion de zone primaire (≈ 80 % du chiffre d'affaires potentiel), les 4 méthodes de prospection (statique, dynamique, prospective, digitale) et la différence entre la pige et le phoning. Mentionne les outils modernes : géofarming, suivi CRM.</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>SMART</b> : Spécifique, Mesurable, Atteignable, Réaliste, Temporel</span>
+        <span class="fact"><b>Zone primaire ≈ 80 %</b> du CA potentiel</span>
+        <span class="fact"><b>4 méthodes</b> : statique, dynamique, prospective, digitale</span>
+        <span class="fact"><b>Pige</b> = annonces PAP · <b>Phoning</b> = fichier constitué</span>
+      </div>
+    </article>
+
+    <!-- M4 -->
+    <article class="mod" style="--mc:var(--gd)">
+      <div class="mod-top">
+        <div class="mod-num">04</div>
+        <div class="mod-head">
+          <div class="mod-title">Objectifs &amp; Ratios</div>
+          <div class="mod-tags"><span class="t-pole">Module 4</span> · Semestre 1 · ≈ 8 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 8 minutes, très concrète, sur les calculs et ratios commerciaux du métier. Objectif : que l'élève sache poser les bonnes formules. Démontre, exemple chiffré à l'appui, le calcul du prix net vendeur à partir du FAI, le taux de transformation, le passage du TTC au HT (TVA 20 %), et les ratios de terrain (visites et acquéreurs par vente). Relie ces ratios à la pyramide du closing 20·5·1 et aux objectifs SMART.</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>Net vendeur</b> = FAI ÷ (1 + taux d'honoraires)</span>
+        <span class="fact"><b>Taux de transformation</b> = (ventes ÷ mandats) × 100</span>
+        <span class="fact"><b>HT</b> = TTC ÷ 1,20 (TVA 20 %)</span>
+        <span class="fact">Ratios terrain : ≈ <b>15 visites</b> et <b>3 acquéreurs</b> par vente</span>
+      </div>
+    </article>
+
+    <!-- M5 -->
+    <article class="mod" style="--mc:#7a3a51">
+      <div class="mod-top">
+        <div class="mod-num">05</div>
+        <div class="mod-head">
+          <div class="mod-title">Diagnostics Immobiliers</div>
+          <div class="mod-tags"><span class="t-pole">Module 5</span> · Semestre 2 · ≈ 10 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 10 minutes sur le Dossier de Diagnostics Techniques (DDT) : « sans diagnostic, pas de vente ». Objectif : que l'élève sache quel diagnostic est dû, dans quel cas, et pour combien de temps. Détaille les diagnostics toujours obligatoires (DPE, ERP) puis ceux déclenchés par l'ancienneté du bien (plomb, amiante, gaz, électricité). Précise les durées de validité et les obligations du vendeur. Situe les dates-clés, notamment le DPE devenu opposable en 2021.</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact">Toujours dus : <b>DPE (10 ans)</b> + <b>ERP (6 mois)</b></span>
+        <span class="fact"><b>Plomb (CREP)</b> : avant 1949</span>
+        <span class="fact"><b>Amiante</b> : permis de construire avant le 1ᵉʳ juillet 1997</span>
+        <span class="fact"><b>Gaz &amp; électricité</b> : installation &gt; 15 ans</span>
+        <span class="fact"><b>DPE opposable</b> depuis le 1ᵉʳ juillet 2021</span>
+      </div>
+    </article>
+
+    <!-- M6 -->
+    <article class="mod" style="--mc:var(--tx)">
+      <div class="mod-top">
+        <div class="mod-num">06</div>
+        <div class="mod-head">
+          <div class="mod-title">Estimation &amp; Avis de Valeur</div>
+          <div class="mod-tags"><span class="t-pole">Module 6</span> · Semestre 2 · ≈ 12 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 12 minutes sur l'estimation d'un bien et l'avis de valeur : « le prix juste, ni trop haut ni trop bas ». Objectif : présenter les méthodes d'évaluation et savoir laquelle utiliser. Développe la méthode par comparaison (référence pour un logement) et la méthode par capitalisation (pour l'investisseur locatif), puis cite les 6 méthodes existantes. Explique les pondérations qui ajustent la valeur et évoque les biais d'estimation à éviter.</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>Comparaison</b> : prix moyen au m² × surface</span>
+        <span class="fact"><b>Capitalisation</b> : loyer annuel ÷ taux</span>
+        <span class="fact"><b>6 méthodes</b> : comparaison, capitalisation, sol+construction, indiciaire, coûts, compte à rebours</span>
+        <span class="fact">Pondérations : ascenseur <b>+1 à 2 %</b> · RDC jusqu'à <b>−30 %</b></span>
+      </div>
+    </article>
+
+    <!-- M6 bis -->
+    <article class="mod" style="--mc:#8a3520">
+      <div class="mod-top">
+        <div class="mod-num">06½</div>
+        <div class="mod-head">
+          <div class="mod-title">Viager &amp; Démembrement</div>
+          <div class="mod-tags"><span class="t-pole">Module 6 bis</span> · Semestre 2 · ≈ 10 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 10 minutes sur la vente en viager et le démembrement de propriété : « le pari du temps et du risque ». Objectif : démystifier un montage qui inquiète souvent. Définis le crédirentier et le débirentier, explique le bouquet et la rente, distingue viager occupé et viager libre, puis relie le tout au démembrement (usufruit / nue-propriété). Insiste sur la notion d'aléa et d'espérance de vie.</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>Crédirentier</b> = vendeur (reçoit la rente) · <b>Débirentier</b> = acheteur (paie)</span>
+        <span class="fact"><b>Bouquet</b> ≈ 20 à 30 % de la valeur, comptant</span>
+        <span class="fact"><b>Viager occupé</b> ≈ 95 % des cas</span>
+        <span class="fact"><b>Démembrement</b> : usufruit (usus + fructus) · nue-propriété (abusus)</span>
+      </div>
+    </article>
+
+    <!-- M8 -->
+    <article class="mod" style="--mc:var(--sd)">
+      <div class="mod-top">
+        <div class="mod-num">08</div>
+        <div class="mod-head">
+          <div class="mod-title">Mandats &amp; Dossier</div>
+          <div class="mod-tags"><span class="t-pole">Module 8</span> · Semestre 2 · ≈ 12 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 12 minutes sur le mandat de vente, « le contrat qui lance la mission ». Objectif : montrer pourquoi un mandat mal rédigé fait perdre toute commission. Distingue mandat simple, exclusif et semi-exclusif, détaille les mentions obligatoires (une seule manquante entraîne la nullité), explique le régime du mandat exclusif et le droit de rétractation de la loi Hamon. Termine sur la tenue du registre des mandats.</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>9 mentions obligatoires</b> — 1 manque = nullité = zéro honoraire</span>
+        <span class="fact"><b>Mandat exclusif</b> : irrévocable 3 mois, puis préavis de 15 jours</span>
+        <span class="fact"><b>Loi Hamon</b> : rétractation 14 jours (signature hors établissement)</span>
+        <span class="fact"><b>Registre des mandats</b> : chronologique, sans blanc ni rature</span>
+      </div>
+    </article>
+
+    <!-- M11 -->
+    <article class="mod" style="--mc:var(--sy)">
+      <div class="mod-top">
+        <div class="mod-num">11</div>
+        <div class="mod-head">
+          <div class="mod-title">Financement Immobilier</div>
+          <div class="mod-tags"><span class="t-pole">Module 11</span> · Semestre 2 · ≈ 12 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 12 minutes sur le financement d'un achat immobilier : « les intérêts composés, la huitième merveille ». Objectif : rendre limpides des calculs qui font peur. Oppose intérêts simples et intérêts composés avec leurs formules, explique la différence entre taux proportionnel et taux équivalent, montre le calcul d'une mensualité de prêt, et conclus sur la règle des 35 % d'endettement maximum (HCSF). Utilise un exemple chiffré fil rouge.</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>Intérêts simples</b> : I = C × t × n (linéaire)</span>
+        <span class="fact"><b>Intérêts composés</b> : Cₙ = C₀ × (1 + t)ⁿ (exponentiel)</span>
+        <span class="fact">Taux <b>équivalent</b> toujours &lt; taux proportionnel</span>
+        <span class="fact"><b>Règle HCSF</b> : endettement max 35 % des revenus nets</span>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============ PÔLE DROIT ============ -->
+  <section class="pole" style="--pc:var(--dr)">
+    <div class="pole-head"><span class="ph-title">Pôle Droit</span><span class="ph-count">8 modules · le cadre juridique</span></div>
+
+    <!-- mdroit -->
+    <article class="mod" style="--mc:var(--dr)">
+      <div class="mod-top">
+        <div class="mod-num">D</div>
+        <div class="mod-head">
+          <div class="mod-title">Les Professions de l'Immobilier</div>
+          <div class="mod-tags"><span class="t-pole">Droit</span> · Semestre 1 · ≈ 20 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 20 minutes sur les professions réglementées de l'immobilier, « la clé d'entrée du métier ». Objectif : poser le cadre de la loi Hoguet. Présente les professionnels visés, les conditions d'exercice (carte professionnelle, garantie financière, assurance RCP, compte séquestre) et l'évolution de la réglementation (Hoguet, ALUR). Insiste sur les montants et durées exacts, qui tombent souvent à l'examen.</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>Carte pro</b> : valable 3 ans, délivrée par la CCI · cartes T/G/S</span>
+        <span class="fact"><b>Garantie financière</b> : min. 110 000 € (30 000 € les 2 premières années)</span>
+        <span class="fact"><b>Assurance RCP</b> : min. 76 225 € / an</span>
+        <span class="fact"><b>Compte séquestre</b> : fonds versés sous 3 jours francs</span>
+        <span class="fact">Loi Hoguet n° 70-9 (2 janv. 1970) · ALUR 2014</span>
+      </div>
+    </article>
+
+    <!-- mprop -->
+    <article class="mod" style="--mc:#5a4a7a">
+      <div class="mod-top">
+        <div class="mod-num">P</div>
+        <div class="mod-head">
+          <div class="mod-title">La Propriété Immobilière</div>
+          <div class="mod-tags"><span class="t-pole">Droit</span> · Semestre 1 · ≈ 12 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 12 minutes sur le droit de propriété, « le droit le plus absolu ». Objectif : définir la propriété et son démembrement. Explique les 3 attributs (usus, fructus, abusus), les 3 caractères (absolu, exclusif, perpétuel), la définition de l'article 544 du Code civil et le droit d'accession (art. 546). Termine sur le démembrement usufruit / nue-propriété et l'étendue de la propriété (dessus / dessous).</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>3 attributs</b> : usus (utiliser) · fructus (louer) · abusus (disposer)</span>
+        <span class="fact"><b>3 caractères</b> : absolu · exclusif · perpétuel</span>
+        <span class="fact"><b>Art. 544</b> Code civil : « jouir et disposer… »</span>
+        <span class="fact"><b>Accession</b> (art. 546) · DDHC art. 17 (1789)</span>
+      </div>
+    </article>
+
+    <!-- mdsources -->
+    <article class="mod" style="--mc:var(--dr)">
+      <div class="mod-top">
+        <div class="mod-num">1.3</div>
+        <div class="mod-head">
+          <div class="mod-title">Les Sources du Droit</div>
+          <div class="mod-tags"><span class="t-pole">Droit</span> · Semestre 1 · ≈ 14 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 14 minutes sur les sources du droit, « de la Constitution au règlement ». Objectif : faire comprendre la hiérarchie des normes. Distingue droit objectif et droits subjectifs, droit public et droit privé, et présente les caractères de la règle de droit (générale, obligatoire, sanctionnée par l'État). Détaille les sources nationales dans l'ordre hiérarchique : Constitution de 1958, lois de l'article 34, ordonnances, règlements. Termine sur les sources internationales et la jurisprudence.</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>Hiérarchie</b> : Constitution (1958) &gt; lois (art. 34) &gt; ordonnances &gt; règlements</span>
+        <span class="fact">Droit <b>objectif</b> (la règle) vs droits <b>subjectifs</b> (prérogatives)</span>
+        <span class="fact">Règle de droit : <b>générale, obligatoire, sanctionnée par l'État</b></span>
+      </div>
+    </article>
+
+    <!-- mddeonto -->
+    <article class="mod" style="--mc:#7a3a51">
+      <div class="mod-top">
+        <div class="mod-num">1.4</div>
+        <div class="mod-head">
+          <div class="mod-title">Les Sources Applicables aux Pros</div>
+          <div class="mod-tags"><span class="t-pole">Droit</span> · Semestre 1 · ≈ 16 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 16 minutes sur les sources de droit propres au professionnel de l'immobilier. Objectif : relier la loi Hoguet aux obligations quotidiennes de l'agent. Présente la loi Hoguet (2 janvier 1970) comme socle, puis le Code de commerce et de la consommation, le Code de déontologie (11 articles), le RGPD et la CNIL pour les données, et le dispositif Tracfin (LCB-FT) avec la déclaration de soupçon. Donne un exemple concret d'obligation déontologique.</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>Loi Hoguet</b> : 2 janvier 1970</span>
+        <span class="fact"><b>Code de déontologie</b> : 11 articles</span>
+        <span class="fact"><b>RGPD / CNIL</b> : protection des données</span>
+        <span class="fact"><b>Tracfin</b> (LCB-FT) : lutte anti-blanchiment, déclaration de soupçon</span>
+      </div>
+    </article>
+
+    <!-- mdjustice -->
+    <article class="mod" style="--mc:#8a3520">
+      <div class="mod-top">
+        <div class="mod-num">1.5</div>
+        <div class="mod-head">
+          <div class="mod-title">L'Organisation Judiciaire</div>
+          <div class="mod-tags"><span class="t-pole">Droit</span> · Semestre 1 · ≈ 14 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 14 minutes sur l'organisation judiciaire française, « du tribunal judiciaire à la Cour de cassation ». Objectif : savoir quel juge saisir en cas de litige. Explique la notion de litige et les principes du service public de la justice, distingue les deux ordres (judiciaire et administratif), présente la réforme Belloubet de 2019 (tribunal judiciaire, tribunal de proximité) et les principales juridictions civiles, pénales et d'appel. Termine sur le rôle de la Cour de cassation.</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>2 ordres</b> : judiciaire · administratif</span>
+        <span class="fact"><b>Réforme Belloubet (2019)</b> : tribunal judiciaire + tribunal de proximité</span>
+        <span class="fact"><b>Cour de cassation</b> : juge le droit, pas les faits</span>
+      </div>
+    </article>
+
+    <!-- mdfamille -->
+    <article class="mod" style="--mc:var(--tx)">
+      <div class="mod-top">
+        <div class="mod-num">1.6</div>
+        <div class="mod-head">
+          <div class="mod-title">Régimes Matrimoniaux, PACS &amp; Union Libre</div>
+          <div class="mod-tags"><span class="t-pole">Droit</span> · Semestre 1 · ≈ 16 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 16 minutes sur les modes de conjugalité et leur impact patrimonial — décisif avant toute vente. Objectif : savoir à qui appartient le bien. Présente les trois modes (mariage, PACS, concubinage), détaille les 4 régimes matrimoniaux en partant du régime par défaut, explique le PACS (art. 515-1, séparation des patrimoines par défaut) et le concubinage, puis insiste sur la protection du logement familial (accord des deux époux, cotitularité du bail).</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact">Défaut : <b>communauté légale réduite aux acquêts</b></span>
+        <span class="fact"><b>4 régimes</b> : comm. légale, séparation de biens, comm. universelle, participation aux acquêts</span>
+        <span class="fact"><b>PACS</b> (art. 515-1) : séparation des patrimoines par défaut</span>
+        <span class="fact">Logement familial : <b>accord des 2 époux (art. 215)</b> · cotitularité du bail (art. 1751)</span>
+      </div>
+    </article>
+
+    <!-- mdpreuve -->
+    <article class="mod" style="--mc:var(--gd)">
+      <div class="mod-top">
+        <div class="mod-num">1.7</div>
+        <div class="mod-head">
+          <div class="mod-title">Le Droit de la Preuve</div>
+          <div class="mod-tags"><span class="t-pole">Droit</span> · Semestre 2 · ≈ 12 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 12 minutes sur le droit de la preuve : « pas de droit sans preuve ». Objectif : montrer qu'un droit non prouvé n'est pas protégé. Structure la vidéo autour de trois questions — quoi prouver, à qui revient la charge (art. 1353), comment (admissibilité). Explique la liberté de la preuve (réforme de 2016), les présomptions (simples, mixtes, irréfragables), puis distingue preuves parfaites (qui lient le juge) et preuves imparfaites (appréciées librement).</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>Charge de la preuve</b> : art. 1353</span>
+        <span class="fact"><b>3 présomptions</b> : simples · mixtes · irréfragables</span>
+        <span class="fact"><b>Preuves parfaites</b> : acte authentique, acte sous signature privée, aveu judiciaire, serment décisoire</span>
+        <span class="fact"><b>Imparfaites</b> : témoignage, indices… (intime conviction du juge)</span>
+      </div>
+    </article>
+
+    <!-- mdcontrats -->
+    <article class="mod" style="--mc:var(--sy)">
+      <div class="mod-top">
+        <div class="mod-num">1.8</div>
+        <div class="mod-head">
+          <div class="mod-title">Le Droit des Contrats</div>
+          <div class="mod-tags"><span class="t-pole">Droit</span> · Semestre 2 · ≈ 18 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 18 minutes sur le droit des contrats, « accord de volontés ». Objectif : maîtriser la formation et la validité d'un contrat. Définis l'obligation et le contrat (art. 1101), expose les 3 principes directeurs (liberté contractuelle, force obligatoire, bonne foi), décris la formation (pourparlers, information précontractuelle, offre et acceptation) et surtout les 3 conditions de validité de l'article 1128. Termine sur les vices du consentement et les nullités.</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>Art. 1101</b> : définition du contrat</span>
+        <span class="fact"><b>3 principes</b> : liberté contractuelle (1102) · force obligatoire (1103) · bonne foi (1104)</span>
+        <span class="fact"><b>Validité (art. 1128)</b> : consentement · capacité · contenu licite et certain</span>
+        <span class="fact">Le <b>silence</b> ne vaut pas acceptation</span>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============ PÔLE SYNTHÈSE & ENVIRONNEMENT ============ -->
+  <section class="pole" style="--pc:var(--sy)">
+    <div class="pole-head"><span class="ph-title">Synthèse &amp; Environnement</span><span class="ph-count">3 modules · cadre durable</span></div>
+
+    <!-- mvert -->
+    <article class="mod" style="--mc:#3f6b4a">
+      <div class="mod-top">
+        <div class="mod-num">V</div>
+        <div class="mod-head">
+          <div class="mod-title">Réglementation Environnementale &amp; Valeur Verte</div>
+          <div class="mod-tags"><span class="t-pole">Synthèse</span> · Semestre 1 · ≈ 14 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 14 minutes sur la réglementation environnementale et la valeur verte : « DPE, RE2020, ZAN ». Objectif : comprendre ce qui fait grimper ou chuter la valeur d'un bien. Compare la RE2020 à la RT2012 (ajout du carbone et du confort d'été), explique le calcul de l'énergie primaire et ses coefficients, présente l'objectif ZAN 2050, les certifications (BEPOS, BEPAS, HQE, BBC) et les paliers 2025/2028. Relie le tout au DPE.</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>RE2020</b> vs RT2012 : ajoute carbone + confort d'été (Bbio · DH)</span>
+        <span class="fact"><b>Énergie primaire</b> : électricité × 2,3 · gaz/fioul/bois × 1</span>
+        <span class="fact"><b>ZAN</b> : Zéro Artificialisation Nette à l'horizon 2050</span>
+        <span class="fact">Labels : <b>BEPOS</b> (énergie +) · <b>BEPAS</b> (&lt; 15 kWh/m²/an) · HQE</span>
+      </div>
+    </article>
+
+    <!-- murba -->
+    <article class="mod" style="--mc:#3f6585">
+      <div class="mod-top">
+        <div class="mod-num">U</div>
+        <div class="mod-head">
+          <div class="mod-title">Urbanisme &amp; Construction</div>
+          <div class="mod-tags"><span class="t-pole">Synthèse</span> · Semestre 1 · ≈ 12 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 12 minutes sur l'urbanisme et la construction, « du SCoT au permis ». Objectif : situer les documents et les normes qui encadrent un projet. Présente les documents d'urbanisme (SCoT pivot, PLU/PLUi, carte communale), explique la hiérarchie des normes par degré d'opposabilité (conformité, compatibilité, prise en compte), puis aborde la construction : garantie décennale (art. 1792) et recours obligatoire à l'architecte au-delà de 150 m².</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>SCoT</b> : document pivot, opposable au PLU</span>
+        <span class="fact"><b>Opposabilité</b> (du + au −) : conformité · compatibilité · prise en compte</span>
+        <span class="fact"><b>Garantie décennale</b> (art. 1792) : 10 ans, assurance obligatoire</span>
+        <span class="fact"><b>Architecte obligatoire</b> au-delà de 150 m²</span>
+      </div>
+    </article>
+
+    <!-- mville -->
+    <article class="mod" style="--mc:#2f7d72">
+      <div class="mod-top">
+        <div class="mod-num">E</div>
+        <div class="mod-head">
+          <div class="mod-title">Écoquartier &amp; Ville Durable</div>
+          <div class="mod-tags"><span class="t-pole">Synthèse</span> · Semestre 1 · ≈ 10 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 10 minutes sur l'écoquartier et la ville durable. Objectif : donner une vision d'ensemble du développement durable appliqué à l'aménagement. Présente les 4 piliers du développement durable, le triptyque vivable / viable / équitable qui converge vers le « durable », le label ÉcoQuartier et ses 20 engagements, et les grandes thématiques d'aménagement (énergie, eau, déchets, mobilité douce, biodiversité). Illustre par des exemples français.</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>4 piliers</b> : environnement · social · économique · gouvernance</span>
+        <span class="fact"><b>Triptyque</b> : vivable · viable · équitable → durable</span>
+        <span class="fact"><b>Label ÉcoQuartier</b> : 20 engagements</span>
+        <span class="fact">Exemples : <b>ZAC de Bonne</b> (Grenoble) · <b>La Confluence</b> (Lyon)</span>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============ PÔLE SYNDIC ============ -->
+  <section class="pole" style="--pc:var(--sd)">
+    <div class="pole-head"><span class="ph-title">Pôle Syndic</span><span class="ph-count">1 module · gestion de copropriété</span></div>
+
+    <!-- mperso -->
+    <article class="mod" style="--mc:#2f5d7a">
+      <div class="mod-top">
+        <div class="mod-num">4.4</div>
+        <div class="mod-head">
+          <div class="mod-title">La Gestion du Personnel de la Copropriété</div>
+          <div class="mod-tags"><span class="t-pole">Syndic</span> · Semestre 1 · ≈ 16 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo d'environ 16 minutes sur la gestion du personnel de copropriété (gardiens et employés d'immeuble), où le syndicat des copropriétaires est employeur. Objectif : couvrir tout le cycle du salarié. Aborde la création du poste, l'embauche (visite médicale, non-discrimination), les deux catégories A et B, le contrat de travail et la période d'essai, le service du gardien mesuré en unités de valeur (UV), le calcul du salaire et l'avantage en nature logement, les congés payés, puis la fin du contrat et la suppression du poste.</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>Catégorie A</b> : employé d'immeuble (droit commun, payé au temps)</span>
+        <span class="fact"><b>Catégorie B</b> : gardien (rémunéré en UV)</span>
+        <span class="fact"><b>Salaire</b> = (coefficient × valeur du point) + valeur fixe</span>
+        <span class="fact"><b>Congés payés</b> : 2,5 jours ouvrables / mois (30 j/an)</span>
+        <span class="fact">Service complet du gardien ≈ <b>10 000 UV</b></span>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============ REPÈRES ============ -->
+  <section class="pole" style="--pc:var(--gd)">
+    <div class="pole-head"><span class="ph-title">Repères</span><span class="ph-count">1 module · révision finale</span></div>
+
+    <!-- syn -->
+    <article class="mod" style="--mc:#b58430">
+      <div class="mod-top">
+        <div class="mod-num">✦</div>
+        <div class="mod-head">
+          <div class="mod-title">Synthèse &amp; Règles d'or</div>
+          <div class="mod-tags"><span class="t-pole">Repères</span> · ≈ 6 min</div>
+        </div>
+      </div>
+      <div class="lab">Prompt vidéo</div>
+      <div class="prompt"><button class="copy">Copier</button><p>Réalise une vidéo courte d'environ 6 minutes : l'antisèche finale avant l'examen. Objectif : marteler les réflexes qui rapportent des points. Énonce les règles d'or sous forme de flashs : sans mandat écrit conforme, zéro honoraire ; DPE + ERP toujours obligatoires ; régime du mandat exclusif ; règle des 35 % d'endettement. Ajoute une rapide méthodologie d'examen (gestion du temps, mots-clés attendus, pièges fréquents). Ton dynamique, rythme rapide.</p></div>
+      <div class="lab">À citer absolument</div>
+      <div class="facts">
+        <span class="fact"><b>Règle n°1</b> : sans mandat écrit conforme = zéro honoraire</span>
+        <span class="fact"><b>Diagnostics universels</b> : DPE + ERP</span>
+        <span class="fact"><b>Mandat exclusif</b> : irrévocable 3 mois, préavis 15 jours</span>
+        <span class="fact"><b>HCSF</b> : 35 % des revenus nets maximum</span>
+      </div>
+    </article>
+  </section>
+
+  <footer>
+    LENNY · BTS Professions Immobilières — Document de préparation des vidéos · 22 modules · contenu issu des fiches « Essentiel ».
+  </footer>
+
+</div>
+
+<script>
+  document.querySelectorAll(".prompt .copy").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var p = btn.parentElement.querySelector("p");
+      var text = p ? p.textContent.trim() : "";
+      function ok() {
+        var old = btn.textContent;
+        btn.textContent = "Copié ✓"; btn.classList.add("done");
+        setTimeout(function () { btn.textContent = "Copier"; btn.classList.remove("done"); }, 1600);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(ok).catch(function () {
+          var ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select();
+          try { document.execCommand("copy"); } catch (e) {}
+          ta.remove(); ok();
+        });
+      } else {
+        var ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); } catch (e) {}
+        ta.remove(); ok();
+      }
+    });
+  });
+</script>
+</body>
+</html>

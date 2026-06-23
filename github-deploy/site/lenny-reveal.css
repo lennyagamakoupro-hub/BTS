@@ -1,0 +1,91 @@
+/* ============================================================
+   LENNY — Reveal (après déverrouillage)
+   Fond animé WebGL plein écran, sans texte. z-index sous le portail.
+   ============================================================ */
+
+.lr-stage {
+  position: fixed; inset: 0; z-index: 2147482000;
+  background: #07060a;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity .7s ease;
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+  -webkit-user-select: none; user-select: none;
+  touch-action: none;
+}
+.lr-stage.lr-out { opacity: 0; pointer-events: none; }
+
+/* fond animé (canvas WebGL) */
+.lr-bg {
+  position: absolute; inset: 0; z-index: 0;
+  transform: scale(1.12); transform-origin: center;
+  transition: transform .12s linear;
+}
+.lr-bg .lsb-canvas { width: 100%; height: 100%; display: block; }
+/* repli sans WebGL : dégradé sombre rougeâtre */
+.lr-bg.lsb-nogl { background: radial-gradient(120% 90% at 50% 30%, #2a0a10 0%, #07060a 60%); }
+
+/* voile sombre (se lève avec la progression) */
+.lr-veil {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(120% 100% at 50% 50%, rgba(0,0,0,0) 30%, rgba(0,0,0,.6) 100%);
+  opacity: .55;
+}
+
+/* indice « fais glisser » */
+.lr-hint {
+  position: absolute; left: 0; right: 0; bottom: 40px; z-index: 4;
+  display: flex; flex-direction: column; align-items: center; gap: 9px;
+  color: rgba(255,255,255,.85); font-size: 14px; font-weight: 600; letter-spacing: .02em;
+  text-shadow: 0 2px 12px rgba(0,0,0,.7);
+  transition: opacity .3s ease;
+}
+.lr-hint .lr-mouse {
+  width: 27px; height: 43px; border: 2px solid rgba(255,255,255,.65); border-radius: 14px; position: relative;
+}
+.lr-hint .lr-mouse::after {
+  content: ""; position: absolute; left: 50%; top: 7px; width: 3px; height: 8px; border-radius: 2px;
+  background: #fff; transform: translateX(-50%);
+  animation: lrWheel 1.5s ease-in-out infinite;
+}
+@keyframes lrWheel {
+  0% { opacity: 0; transform: translate(-50%, 0); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, 13px); }
+}
+
+/* barre de progression */
+.lr-prog {
+  position: absolute; left: 0; bottom: 0; height: 3px; z-index: 5; width: 0%;
+  background: linear-gradient(90deg, #ff3a42, #e50914);
+  box-shadow: 0 0 12px rgba(229,9,20,.7);
+}
+
+/* zone bouton Entrer */
+.lr-enter {
+  position: absolute; left: 0; right: 0; bottom: 0; top: 0; z-index: 6;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: translateY(12px) scale(.96); pointer-events: none;
+  transition: opacity .45s ease, transform .45s ease;
+}
+.lr-enter.show { opacity: 1; transform: none; pointer-events: auto; }
+
+/* bouton passer */
+.lr-skip {
+  position: absolute; top: max(16px, env(safe-area-inset-top, 0px)); right: max(14px, env(safe-area-inset-right, 0px)); z-index: 8;
+  font-size: 13px; font-weight: 600; color: rgba(255,255,255,.72);
+  background: rgba(0,0,0,.32); border: 1px solid rgba(255,255,255,.18);
+  padding: 8px 15px; border-radius: 999px; cursor: pointer; white-space: nowrap;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  transition: color .15s ease, background .15s ease;
+}
+.lr-skip:hover { color: #fff; background: rgba(0,0,0,.5); }
+
+@media (max-width: 640px) {
+  .lr-hint { bottom: calc(28px + env(safe-area-inset-bottom, 0px)); }
+  .lr-skip { top: max(12px, env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lr-bg { transition: none; }
+  .lr-hint .lr-mouse::after { animation: none; }
+}
