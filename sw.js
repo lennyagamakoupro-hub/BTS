@@ -1,11 +1,13 @@
 /* ============================================
    LENNY — Service Worker (hors-ligne)
    Stratégie :
-   • Navigation/HTML → réseau d'abord, repli cache (toujours à jour si en ligne).
-   • Autres ressources (CSS/JS/img/vidéo/police) → cache d'abord, sinon réseau
-     puis mise en cache à la volée (stale-while-revalidate léger).
+   • Navigation/HTML → réseau d'abord, repli cache.
+   • Autres ressources (CSS/JS/img/vidéo/police) → STALE-WHILE-REVALIDATE :
+     on sert le cache tout de suite MAIS on refetch en arrière-plan et on
+     met à jour le cache → la prochaine visite a toujours la dernière version.
+   • Bump du numéro de VERSION ci-dessous = purge complète des anciens caches.
    ============================================ */
-const VERSION = "lenny-v1";
+const VERSION = "lenny-v2";
 const CORE = "lenny-core-" + VERSION;
 const RUNTIME = "lenny-runtime-" + VERSION;
 
@@ -51,17 +53,20 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // ressources statiques : cache d'abord
+  // ressources statiques : STALE-WHILE-REVALIDATE
+  // → on renvoie le cache immédiatement (rapide / hors-ligne),
+  //   mais on relance toujours une requête réseau qui met à jour le cache,
+  //   donc une nouvelle version déployée est récupérée dès la visite suivante.
   e.respondWith(
     caches.match(req).then(cached => {
-      if (cached) return cached;
-      return fetch(req).then(res => {
+      const network = fetch(req).then(res => {
         if (res && res.status === 200 && res.type !== "opaque") {
           const copy = res.clone();
           caches.open(RUNTIME).then(c => c.put(req, copy));
         }
         return res;
       }).catch(() => cached);
+      return cached || network;
     })
   );
 });
