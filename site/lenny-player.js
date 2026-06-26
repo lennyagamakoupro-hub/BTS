@@ -94,37 +94,72 @@
   }
 
   // ----- Build slides -----
+  // Pour les modules sans DEEP-DIVE rédigé, on reconstruit des chapitres riches
+  // à partir de l'Essentiel (à-retenir + frise), des fiches et des mémos.
+  function buildFallbackChapters(modId, mod) {
+    const out = [];
+    const ess = (window.ESSENTIALS || {})[modId] || {};
+    const retenir = ess.retenir || [];
+    const timeline = ess.timeline || [];
+    const cards = (window.STUDY || {})[modId]?.cards || [];
+    const memo = (window.MEMOS || []).find(m => m.mod === modId);
+
+    if (retenir.length) {
+      out.push({
+        title: "L'essentiel à retenir",
+        lede: mod.quote || mod.desc || "Les points clés du module.",
+        sections: retenir.map(r => ({ h: r.k, b: r.v })),
+        linked: []
+      });
+    }
+    if (timeline.length) {
+      out.push({
+        title: "Repères & dates clés",
+        lede: "La chronologie et les références à mémoriser.",
+        sections: timeline.map(t => ({ h: t.y, b: t.t })),
+        linked: []
+      });
+    }
+    if (cards.length) {
+      out.push({
+        title: "Les fiches",
+        lede: "Toutes les fiches du module, question par question.",
+        sections: cards.map(c => ({ h: c.q, b: c.a })),
+        linked: []
+      });
+    }
+    if (memo && memo.cards && memo.cards.length) {
+      out.push({
+        title: "Mémo express",
+        lede: "Formules, sigles et règles d'or à garder en tête.",
+        sections: memo.cards.map(c => ({ h: c.h, list: c.items || [] })),
+        linked: []
+      });
+    }
+    if (!out.length) {
+      out.push({ title: mod.title, lede: mod.desc || "", sections: [], linked: [] });
+    }
+    return out;
+  }
+
   function buildScenes(modId, mod) {
-    const dds = Object.values(window.DEEPDIVE || {}).filter(d => d.mod === modId);
+    // Chapitres = deep-dive rédigé si présent, sinon repli (essentiel + fiches + mémos)
+    let chapters = Object.values(window.DEEPDIVE || {}).filter(d => d.mod === modId);
+    if (chapters.length === 0) chapters = buildFallbackChapters(modId, mod);
+
     const scenes = [];
+    scenes.push({ type: "cover", mod, dds: chapters });
 
-    scenes.push({ type: "cover", mod, dds });
-
-    dds.forEach((dd, i) => {
+    chapters.forEach((dd, i) => {
       scenes.push({
         type: "chapter",
-        idx: i + 1, total: dds.length,
+        idx: i + 1, total: chapters.length,
         title: dd.title, lede: dd.lede,
         sections: dd.sections || [], linked: dd.linked || []
       });
     });
 
-    // Fallback to flashcards if no deep-dive
-    if (dds.length === 0) {
-      const cards = (window.STUDY || {})[modId]?.cards || [];
-      if (cards.length) {
-        scenes.push({
-          type: "chapter",
-          idx: 1, total: 1,
-          title: "Fiches du module",
-          lede: "Vue d'ensemble des fiches.",
-          sections: cards.map(c => ({ h: c.q, b: c.a })),
-          linked: []
-        });
-      }
-    }
-
-    scenes.push({ type: "outro", mod, total: dds.length });
+    scenes.push({ type: "outro", mod, total: chapters.length });
     return scenes;
   }
 

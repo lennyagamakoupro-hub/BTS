@@ -15,7 +15,7 @@
       kicker: "L'immeuble & la ville",
       title: "Syndic",
       desc: "La gestion de l'immeuble et l'aménagement durable : copropriété et gestion du personnel d'immeuble, urbanisme et construction, réglementation environnementale, valeur verte et écoquartiers.",
-      ids: ["mperso", "murba", "mvert", "mville"],
+      ids: ["mperso", "murba", "macte1", "macte2", "macte3", "macte4", "macte5", "macte6", "macte7", "macte8", "mvert", "mville"],
     },
     droit: {
       kicker: "Les fondations légales",

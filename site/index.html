@@ -400,10 +400,14 @@
 <script src="glossary-data.js"></script>
 <script src="lenny-droit-data.js?v=2"></script>
 <script src="lenny-syndic-data.js"></script>
+<script src="lenny-acte-data-1.js"></script>
+<script src="lenny-acte-data-2.js"></script>
 <script src="deep-dive-data.js"></script>
 <script src="lenny-droit-deepdive-1.js"></script>
 <script src="lenny-droit-deepdive-2.js"></script>
 <script src="lenny-syndic-deepdive.js"></script>
+<script src="lenny-acte-deepdive-1.js"></script>
+<script src="lenny-acte-deepdive-2.js"></script>
 <script src="lenny-video.js"></script>
 <script src="lenny-api.js?v=2"></script>
 <script src="lenny-feedback.js"></script>
@@ -467,8 +471,15 @@
   })();
 </script>
 <script>
+  // Mode hors-ligne désactivé : on retire toute installation de service worker
+  // et tout cache hérité, pour charger TOUJOURS la dernière version (codes à jour).
   if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+    navigator.serviceWorker.getRegistrations().then(function (rs) {
+      rs.forEach(function (r) { r.unregister(); });
+    }).catch(function () {});
+  }
+  if (window.caches && caches.keys) {
+    caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); }).catch(function () {});
   }
 </script>
 
