@@ -8,7 +8,7 @@
 window.LENNY_VIDEOS = {
   // Mandats & Dossier → le mandat de vente
   m8: {
-    src: "media/mandat-de-vente.mp4",
+    src: "https://github.com/lennyagamakoupro-hub/BTS/releases/download/v1.0-media/mandat-de-vente.mp4",
     title: "Le Mandat de Vente",
     kicker: "Vidéo · Module 8",
     desc: "Le contrat clé de l'agent : mandat simple, exclusif ou semi-exclusif, les mentions obligatoires (loi Hoguet), le registre des mandats et la constitution du dossier vendeur.",
@@ -16,7 +16,7 @@ window.LENNY_VIDEOS = {
   },
   // Viager & Démembrement → vendre/acheter en viager et démembrer la propriété
   m6b: {
-    src: "media/viager-demembrement.mp4",
+    src: "https://github.com/lennyagamakoupro-hub/BTS/releases/download/v1.0-media/viager-demembrement.mp4",
     title: "Viager & Démembrement",
     kicker: "Vidéo · Module 6½",
     desc: "Crédirentier et débirentier, bouquet et rente, aléa, viager occupé ou libre, et le démembrement usufruit / nue-propriété (barème fiscal CGI art. 669).",
@@ -24,7 +24,7 @@ window.LENNY_VIDEOS = {
   },
   // Estimation & Avis de Valeur → méthodes d'estimation d'un bien
   m6: {
-    src: "media/estimation-immobiliere.mp4",
+    src: "https://github.com/lennyagamakoupro-hub/BTS/releases/download/v1.0-media/estimation-immobiliere.mp4",
     title: "Estimation Immobilière",
     kicker: "Vidéo · Module 6",
     desc: "Estimer juste : méthode par comparaison, par le revenu et par sol + construction, choix des références, décote/surcote et rédaction de l'avis de valeur.",
@@ -32,7 +32,7 @@ window.LENNY_VIDEOS = {
   },
   // Diagnostics Immobiliers → décryptage du Dossier de Diagnostic Technique (DDT)
   m5: {
-    src: "media/decryptage-ddt.mp4",
+    src: "https://github.com/lennyagamakoupro-hub/BTS/releases/download/v1.0-media/decryptage-ddt.mp4",
     title: "Décryptage du DDT",
     kicker: "Vidéo · Module 5",
     desc: "Le Dossier de Diagnostic Technique au complet : DPE, amiante, plomb, termites, gaz, électricité, ERP… quels diagnostics, quand, leur durée de validité et leur portée juridique.",
@@ -40,7 +40,7 @@ window.LENNY_VIDEOS = {
   },
   // Objectifs & Ratios → piloter son activité par les chiffres
   m4: {
-    src: "media/objectifs-ratios.mp4",
+    src: "https://github.com/lennyagamakoupro-hub/BTS/releases/download/v1.0-media/objectifs-ratios.mp4",
     title: "Objectifs & Ratios",
     kicker: "Vidéo · Module 4",
     desc: "Piloter son activité par les chiffres : objectifs de mandats et de ventes, taux de transformation, ratios RDV → estimation → mandat → vente. La méthode pour ne rien laisser au hasard.",
@@ -48,7 +48,7 @@ window.LENNY_VIDEOS = {
   },
   // Prospection → la « machine à mandats » : générer et transformer les contacts
   m3: {
-    src: "media/machine-a-mandats.mp4",
+    src: "https://github.com/lennyagamakoupro-hub/BTS/releases/download/v1.0-media/machine-a-mandats.mp4",
     title: "La Machine à Mandats",
     kicker: "Vidéo · Module 3",
     desc: "Construire sa machine à prospecter : sources de contacts, méthode et régularité, transformation des prises de contact en rendez-vous puis en mandats. Le moteur du chiffre d'affaires.",
@@ -56,7 +56,7 @@ window.LENNY_VIDEOS = {
   },
   // Entreprises & Statuts → formes juridiques, statuts et cartes professionnelles
   m2: {
-    src: "media/entreprises-statuts.mp4",
+    src: "https://github.com/lennyagamakoupro-hub/BTS/releases/download/v1.0-media/entreprises-statuts.mp4",
     title: "Entreprises & Statuts",
     kicker: "Vidéo · Module 2",
     desc: "Les formes juridiques (EI · EURL · SARL · SAS · SASU), responsabilités, régimes fiscaux et les statuts du conseiller immobilier. Le squelette de toute entreprise.",
@@ -64,7 +64,7 @@ window.LENNY_VIDEOS = {
   },
   // Accueil & Découverte → la vidéo d'introduction au métier
   m1: {
-    src: "media/accueil-decouverte.mp4",
+    src: "https://github.com/lennyagamakoupro-hub/BTS/releases/download/v1.0-media/accueil-decouverte.mp4",
     title: "Accueil & Découverte",
     kicker: "Vidéo · Module 1",
     desc: "Le premier contact : posture, règle des 4×20, écoute active et découverte des besoins (SONCAS·E). Les fondations du métier d'agent.",
@@ -72,7 +72,7 @@ window.LENNY_VIDEOS = {
   },
   // Réglementation environnementale & valeur verte → Guide Pratique : Bâti & Climat
   mvert: {
-    src: "media/guide-bati-climat.mp4",
+    src: "https://github.com/lennyagamakoupro-hub/BTS/releases/download/v1.0-media/guide-bati-climat.mp4",
     title: "Guide Pratique : Bâti & Climat",
     kicker: "Vidéo · Réglementation environnementale",
     desc: "Risques climatiques du bâti, état des risques (inondation, mouvements de terrain, RGA, sols pollués) et leviers de la valeur verte.",
@@ -81,7 +81,7 @@ window.LENNY_VIDEOS = {
   },
   // Financement immobilier → Masterclass investissement (cas de Versailles)
   m11: {
-    src: "media/masterclass-versaillis.mp4",
+    src: "https://github.com/lennyagamakoupro-hub/BTS/releases/download/v1.0-media/masterclass-versaillis.mp4",
     title: "Masterclass Versaillis",
     kicker: "Vidéo · Stratégie d'investissement",
     desc: "Le cas de Versailles : stratégie d'arbitrage, financement, choix du locataire et méthode R.E.S.P.E.C.T.",
