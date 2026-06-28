@@ -3,6 +3,15 @@
    Réutilise les 8 photos de l'écran de verrouillage avec un fondu
    enchaîné + léger Ken Burns. Chargé après lenny-styles.css.
    ============================================ */
+.hh-video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+  /* plein cadre (cover) : remplit tout l'écran, rognage minime invisible.
+     contraste/saturation/netteté relevés pour le piqué */
+  filter: contrast(1.04) saturate(1.1) brightness(1.12);
+  image-rendering: auto;
+}
 .hh-slides { position: absolute; inset: 0; overflow: hidden; }
 .hh-slide {
   position: absolute; inset: 0;
@@ -26,17 +35,44 @@
   100%  { opacity: 0; transform: scale(1.13) translate(-1.6%, -1.2%); }
 }
 
-/* photos plus présentes : on allège le voile sombre tout en gardant le titre lisible */
+/* voile allégé : juste assez de contraste à gauche pour le titre, vidéo bien visible */
 .hero .hg-scrim {
   background:
     linear-gradient(100deg,
-      rgba(7,5,4,.86) 0%, rgba(7,5,4,.62) 26%,
-      rgba(7,5,4,.24) 52%, rgba(7,5,4,.04) 74%, rgba(7,5,4,0) 90%),
+      rgba(7,5,4,.58) 0%, rgba(7,5,4,.32) 30%,
+      rgba(7,5,4,.08) 58%, rgba(7,5,4,0) 80%),
     linear-gradient(to top,
-      var(--bg) 0%, rgba(7,5,4,.22) 20%, rgba(7,5,4,0) 46%) !important;
+      var(--bg) 0%, rgba(7,5,4,.08) 24%, rgba(7,5,4,0) 54%) !important;
 }
 .hero .hg-vignette {
-  background: radial-gradient(ellipse 82% 86% at 50% 46%, transparent 52%, rgba(4,3,2,.42) 100%) !important;
+  background: radial-gradient(ellipse 86% 90% at 50% 46%, transparent 62%, rgba(4,3,2,.22) 100%) !important;
+}
+
+/* masque le filigrane du générateur dans le coin bas-droit :
+   léger flou + fondu vers le fond, bords adoucis pour rester discret */
+.hero .hg-logo-mask {
+  position: absolute;
+  right: 0; bottom: 0;
+  width: 340px; height: 210px;
+  pointer-events: none;
+  z-index: 3;
+  backdrop-filter: blur(22px) brightness(.72);
+  -webkit-backdrop-filter: blur(22px) brightness(.72);
+  background: radial-gradient(ellipse 110% 110% at 100% 100%,
+              rgba(7,5,4,.72) 0%, rgba(7,5,4,.5) 48%, rgba(7,5,4,0) 84%);
+  -webkit-mask: radial-gradient(ellipse 120% 120% at 100% 100%,
+              #000 0%, #000 60%, transparent 88%);
+  mask: radial-gradient(ellipse 120% 120% at 100% 100%,
+              #000 0%, #000 60%, transparent 88%);
+}
+
+/* mobile : le filigrane est en grande partie rogné par le cover ;
+   on réduit le masque pour ne pas avoir un gros bloc sombre dans le coin */
+@media (max-width: 980px) {
+  .hero .hg-logo-mask { width: 150px; height: 95px; }
+}
+@media (max-width: 560px) {
+  .hero .hg-logo-mask { width: 110px; height: 72px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
