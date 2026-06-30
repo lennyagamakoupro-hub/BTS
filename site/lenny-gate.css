@@ -264,7 +264,7 @@
 /* tablette paysage / petit laptop : on garde 2 colonnes mais on resserre */
 @media (max-width: 1100px) and (min-width: 901px) {
   #lenny-gate { grid-template-columns: 1fr; }
-  .gate-panel { padding: 40px 42px; }
+  .gate-panel { padding-left: 42px; padding-right: 42px; }
   .gate-h1 { font-size: clamp(30px, 4.2vw, 46px); }
   .gate-lead { max-width: 34ch; }
 }
