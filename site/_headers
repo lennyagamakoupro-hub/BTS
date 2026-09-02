@@ -11,3 +11,12 @@
 ## Le portail d'accès ne doit jamais être mis en cache (codes/session).
 /index.html
   Cache-Control: no-store
+
+## La porte elle-meme ne se met pas en cache non plus. Le 02/09, un code
+## remplace n'ouvrait rien : le fichier etait bon sur GitHub ET sur Netlify,
+## mais les navigateurs gardaient `lenny-gate.js?v=15` en cache et le numero de
+## version n'avait pas bouge. Un eleve reste dehors sans qu'aucune erreur ne le
+## dise — il lit seulement « Code invalide ». Le numero de version reste la
+## bonne pratique ; cet en-tete est le filet quand on oublie de l'incrementer.
+/lenny-gate.js
+  Cache-Control: no-store
