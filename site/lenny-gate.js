@@ -65,6 +65,7 @@
     "73ad26c72d7a2d8760e7e2a87096bfd132a0d09889af4e4a1297a75424f6a30b": "Chiara",
     "153374da11bc8d1e1626781ab0923c2568e7360ee68b1b8f492585b9b3778a34": "MKZ",
     "10532603398984b8212c08b13f619f93971400a7af03c133cb90b0e3dc84f6e6": "Mme Rebours · prof",
+    "9e6a629e4684583eac47a3d284107330eb20067e72abfb674e566bcfa07c0ee4": "Clara",
   };
 
   // Empreinte -> "Prénom" affiché dans le menu profil (même principe).
@@ -87,6 +88,7 @@
     "73ad26c72d7a2d8760e7e2a87096bfd132a0d09889af4e4a1297a75424f6a30b": "Chiara",
     "153374da11bc8d1e1626781ab0923c2568e7360ee68b1b8f492585b9b3778a34": "MKZ",
     "10532603398984b8212c08b13f619f93971400a7af03c133cb90b0e3dc84f6e6": "Mme Rebours",
+    "9e6a629e4684583eac47a3d284107330eb20067e72abfb674e566bcfa07c0ee4": "Clara",
   };
 
   const LS_KEY = "lenny-access-v1";
