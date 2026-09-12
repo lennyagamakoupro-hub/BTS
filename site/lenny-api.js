@@ -162,7 +162,9 @@ window.LennyAPI = (function () {
     };
     const hist = read(HIST_KEY, []);
     hist.push(entry);
-    write(HIST_KEY, hist);
+    // Plafond large (5000 résultats) : sert au vrai suivi de progression,
+    // mais ne doit jamais grandir sans fin et saturer le quota du navigateur.
+    write(HIST_KEY, hist.slice(-5000));
 
     if (remote()) {
       const mod = (window.MODULES || []).find(m => m.id === entry.moduleId);

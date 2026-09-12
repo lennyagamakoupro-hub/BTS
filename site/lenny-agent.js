@@ -370,7 +370,10 @@
     // repli local TOUJOURS (pour ne rien perdre)
     try {
       var list = JSON.parse(localStorage.getItem(MSG_KEY) || "[]");
-      list.push(entry); localStorage.setItem(MSG_KEY, JSON.stringify(list));
+      list.push(entry);
+      // repli local seulement (le vrai message part déjà au backend s'il existe) :
+      // plafonné pour ne jamais saturer le quota du navigateur.
+      localStorage.setItem(MSG_KEY, JSON.stringify(list.slice(-300)));
     } catch (e) {}
     // backend si dispo
     if (API) {
