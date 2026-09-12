@@ -225,7 +225,7 @@
             ["Abattement IR appliqué", pct(abatIR(v.annees) * 100, 0)],
             ["Impôt sur le revenu (19 %)", eur(ir)],
             ["Prélèvements sociaux (17,2 %)", eur(ps)],
-            ["Net encaissé après impôt", eur(v.vente - acquMaj - total + pv * 0 + (acquMaj - v.achat) * 0)],
+            ["Net encaissé après impôt", eur(v.vente - total)],
           ],
           verdict: v.annees >= 30
             ? { tone: "ok", text: "Détention ≥ 30 ans : exonération totale (IR + prélèvements sociaux)." }
