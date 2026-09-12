@@ -125,6 +125,7 @@ const LENNY_MODULES = [
     desc: "Mémo final, antisèche, méthodologie d'examen. Tout ce qu'il faut avoir en tête.",
     pct: 96, season: "✦" }
 ];
+window.LENNY_MODULES = LENNY_MODULES;
 
 const LAWS = [
   { id: "hoguet",   num: "70-9",   title: "Loi Hoguet",         year: "1970", desc: "Carte T, registre des mandats, garantie financière.", color: "m2" },

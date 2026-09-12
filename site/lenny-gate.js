@@ -324,6 +324,11 @@
               unlock(label, saved.code, h);
               afterPaint(function () { if (introCtrl && introCtrl.start) introCtrl.start(); });
             });
+          }).catch(function () {
+            // WebCrypto indisponible (HTTPS manquant, navigateur trop vieux…) :
+            // on ne reste pas bloqué sur le portail figé, on repart de zéro.
+            try { store.removeItem(LS_KEY); } catch (e) {}
+            location.reload();
           });
         });
       });
@@ -438,7 +443,7 @@
       const t = loadThrottle();
       t.fails = (t.fails || 0) + 1;
       // à partir de la 10e erreur : 8 s, 16 s … plafonné à 60 s.
-      if (t.fails >= 10) t.until = Date.now() + Math.min(60, (t.fails - 9) * 8) * 1000;
+      if (t.fails >= 5) t.until = Date.now() + Math.min(60, (t.fails - 4) * 8) * 1000;
       saveThrottle(t);
     }
     function clearThrottle() { saveThrottle({ fails: 0, until: 0 }); }
