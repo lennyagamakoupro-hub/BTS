@@ -6,6 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&family=Anton&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<!-- chargées UNIQUEMENT pour leurs jetons --m1..--mdroit etc. sur :root ; aucune règle de mise en page n'est reprise -->
+<link rel="stylesheet" href="../lenny-styles.css">
+<link rel="stylesheet" href="../lenny-modpicker.css">
 <style>
 :root{
   --bg:#000000; --bg-2:#0a0a0a; --card:#131313;
@@ -115,7 +118,6 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Manrope",s
 <nav class="devswitch" id="devswitch"></nav>
 
 <!-- données réelles du site, même ordre de chargement que index.html -->
-<script defer src="../data.js"></script>
 <script defer src="../deep-dive-data.js"></script>
 <script defer src="../lenny-droit-deepdive-1.js"></script>
 <script defer src="../lenny-droit-deepdive-2.js"></script>
@@ -132,9 +134,33 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Manrope",s
     else window.addEventListener('load', fn);
   }
 
+  // LENNY_MODULES est la liste RÉELLEMENT utilisée par le site (lenny-detail.js, lenny-router.js) —
+  // window.MODULES (data.js) en est une copie partielle, 23 entrées contre 29, qui omet les 7
+  // sous-modules Droit/Syndic (mdsources, mddeonto, mdjustice, mdfamille, mdpreuve, mdcontrats, mperso).
+  // On récupère UNIQUEMENT ce littéral, sans exécuter le reste de lenny-app.js (side-effects DOM
+  // non désirés sur cette page autonome).
+  function fetchLennyModules(){
+    return fetch('../lenny-app.js').then(function(r){ return r.text(); }).then(function(txt){
+      var start = txt.indexOf('const LENNY_MODULES = [');
+      var end = txt.indexOf('window.LENNY_MODULES = LENNY_MODULES;');
+      if(start === -1 || end === -1) throw new Error('LENNY_MODULES introuvable dans lenny-app.js');
+      var decl = txt.slice(start, end);
+      // eslint-disable-next-line no-new-func
+      return new Function(decl + '; return LENNY_MODULES;')();
+    });
+  }
+
   ready(function(){
+    fetchLennyModules().then(function(LENNY_MODULES){
+      run(LENNY_MODULES);
+    }).catch(function(err){
+      document.getElementById('lesson').innerHTML = '<div class="empty">Impossible de charger LENNY_MODULES : ' + err.message + '</div>';
+    });
+  });
+
+  function run(LENNY_MODULES){
     var params = new URLSearchParams(location.search);
-    var testIds = ['m1','macte1','mdroit','syn','macte4'];
+    var testIds = ['m1','macte1','mdroit','mddeonto','syn','macte4'];
     var moduleId = params.get('module') || 'macte4';
 
     var switchNav = document.getElementById('devswitch');
@@ -146,7 +172,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Manrope",s
       switchNav.appendChild(a);
     });
 
-    var mod = (window.MODULES || []).find(function(m){ return m.id === moduleId; });
+    var mod = LENNY_MODULES.find(function(m){ return m.id === moduleId; });
     var allDD = window.DEEPDIVE || {};
     var cards = Object.keys(allDD).map(function(k){ return allDD[k]; }).filter(function(d){ return d.mod === moduleId; });
 
@@ -155,10 +181,12 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Manrope",s
     var lessonEnd = document.getElementById('lessonEnd');
 
     if(!mod){
-      lesson.innerHTML = '<div class="empty">Module « ' + moduleId + ' » introuvable dans window.MODULES.</div>';
+      lesson.innerHTML = '<div class="empty">Module « ' + moduleId + ' » introuvable dans LENNY_MODULES.</div>';
       return;
     }
-    document.documentElement.style.setProperty('--mod', mod.color);
+    // couleur : hex direct (#xxxxxx) ou jeton CSS (--m1, --mdroit…) résolu via lenny-styles.css / lenny-modpicker.css
+    var colorValue = /^#/.test(mod.color) ? mod.color : 'var(--' + mod.color + ')';
+    document.documentElement.style.setProperty('--mod', colorValue);
 
     docHeader.innerHTML =
       '<div class="doc-id">' + mod.tag + ' · ' + mod.short + '</div>' +
@@ -294,7 +322,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Manrope",s
       });
     }, {threshold:.4});
     document.querySelectorAll('.num').forEach(function(el){ numIO.observe(el); });
-  });
+  }
 })();
 </script>
 </body>
