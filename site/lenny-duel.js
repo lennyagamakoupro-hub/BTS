@@ -1,10 +1,13 @@
 /* ============================================
    LENNY — Duel hebdomadaire (optionnel) contre un autre code
    • Score de la semaine = XP gagné depuis lundi (snapshot du XP total).
-   • L'adversaire (résolu en prénom via son code) progresse de façon
-     déterministe sur la semaine — même valeur pour tous, recalculée
-     chaque lundi.
-   • Tout est local (localStorage), aucune dépendance réseau.
+   • Deux modes, choisis explicitement, jamais devinés :
+     - "bot"  : rythme simulé, déterministe par code+semaine — étiqueté
+       « Bot » dans l'interface, jamais présenté comme une personne.
+     - "real" : un vrai autre code. Mon score de la semaine est posté sur
+       /api/duel/xp, celui de l'adversaire est lu depuis la même route.
+       S'il n'a rien posté cette semaine → état honnête, jamais un chiffre
+       inventé. Si le réseau échoue → état honnête aussi.
    API : window.LennyDuel.refresh()
    ============================================ */
 (function () {
@@ -13,22 +16,18 @@
   const LS = "lenny-duel-v1";
   const LS_XP = "lenny-duel-xpbase-v1";
 
-  /* ---------- registre des codes connus → prénom ---------- */
+  /* ---------- registre des codes connus → prénom (mode "real" uniquement) ---------- */
   const NAMES = {
     "LENNY71!": "Lenny", "JRMY-7K4": "Jeremy", "THIB-7K2": "Thibaut",
     "EDEN-8P3": "Eden", "MANON-71L": "Manon", "DIANE-5R8": "Diane",
     "JOEL-3M7": "Joël", "JOELLE-9K4": "Joëlle", "EVA-6T2": "Eva",
   };
-  // les codes élèves existent aussi (Élève 01..30) — on les accepte
-  // un code LENNY valide : soit un prénom connu, soit le format à tiret
-  // (élèves "7K9-RZT", prénoms "JRMY-7K4"…), soit le code admin.
   const CODE_RE = /^[0-9A-ZÀ-Ÿ]{2,}-[0-9A-ZÀ-Ÿ]{2,}$/;
   function knownCode(code) {
     return !!NAMES[code] || CODE_RE.test(code) || code === "LENNY71!";
   }
   function nameFor(code) {
     if (NAMES[code]) return NAMES[code];
-    // joli libellé générique
     return "Adversaire";
   }
   function initials(name) {
@@ -56,7 +55,7 @@
     return 7 - day;                                // jours pleins restants
   }
 
-  /* ---------- seed déterministe ---------- */
+  /* ---------- seed déterministe (mode bot) ---------- */
   function hash(str) {
     let h = 2166136261;
     for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
@@ -82,14 +81,36 @@
     return Math.max(0, xp - base.xp);
   }
 
-  /* ---------- score de la semaine (adversaire) ---------- */
-  // rythme hebdo cible déterministe (par code + semaine) puis accumulation
+  /* ---------- score de la semaine (bot — formule simulée, jamais un vrai élève) ---------- */
   function oppWeekScore(code) {
     const wk = isoWeekKey();
     const seed = hash(code + "|" + wk);
     const target = 80 + (seed % 360);             // 80..439 points sur la semaine
     const jitter = ((seed >> 7) % 17) - 8;        // -8..+8
     return Math.max(0, Math.round(target * weekFraction()) + jitter);
+  }
+
+  /* ---------- backend duel réel ---------- */
+  function apiBase() { return (window.LENNY_API_BASE || "").replace(/\/$/, ""); }
+  function myCode() { return (window.LennyAuth && window.LennyAuth.code) || ""; }
+
+  async function postMyXp(code, week, xp) {
+    if (!code) return;
+    try {
+      await fetch(apiBase() + "/api/duel/xp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, week, xp }),
+      });
+    } catch (e) { /* poster mon propre score ne doit jamais bloquer l'affichage */ }
+  }
+  async function fetchOppXp(code, week) {
+    try {
+      const r = await fetch(apiBase() + "/api/duel/xp?code=" + encodeURIComponent(code) + "&week=" + encodeURIComponent(week));
+      if (!r.ok) return { error: true };
+      const d = await r.json();
+      return { xp: (typeof d.xp === "number") ? d.xp : null };
+    } catch (e) { return { error: true }; }
   }
 
   /* ---------- état ---------- */
@@ -134,8 +155,85 @@
     btn.addEventListener("click", () => {
       const d = load();
       if (d && d.code) { clear(); render(); }      // toggle off = retour au classement simple
-      else renderSetup();
+      else renderModePick();
     });
+  }
+
+  // Construit l'arène (deux camps + verdict) selon l'état de l'adversaire :
+  // - opp est un nombre → duel chiffré normal
+  // - state === "pending" → en attente du réseau (mode réel)
+  // - state === "unknown" → adversaire réel, rien posté cette semaine (honnête, pas de chiffre inventé)
+  // - state === "errored" → réseau injoignable (honnête, pas de chiffre inventé)
+  function arenaHtml({ me, myName, opp, oppName, oppTag, state, dl }) {
+    const meAva = `<div class="duel-ava ${state === "normal" && me > opp ? "leader" : ""}">${esc(initials(myName))}</div>`;
+    const meSide = `
+      <div class="duel-side me">
+        ${meAva}
+        <div class="duel-name">${esc(myName)}</div>
+        <div class="duel-score">${me}<small>XP</small></div>
+        <div class="duel-bar"><i style="width:${state === "normal" ? Math.round(me / Math.max(me, opp, 1) * 100) : (state === "pending" ? 0 : 100)}%"></i></div>
+      </div>`;
+
+    let oppScoreHtml, oppBarPct, verdictHtml;
+    if (state === "normal") {
+      const tie = me === opp, meLead = me > opp;
+      oppScoreHtml = `${opp}<small>XP</small>`;
+      oppBarPct = Math.round(opp / Math.max(me, opp, 1) * 100);
+      verdictHtml = tie
+        ? `<span class="duel-verdict tie">Égalité parfaite — tout se joue d'ici dimanche.</span>`
+        : meLead
+          ? `<span class="duel-verdict win">Tu mènes de ${me - opp} XP. Garde le rythme !</span>`
+          : `<span class="duel-verdict lose">${esc(oppName)} mène de ${opp - me} XP. Une session de révision et tu repasses devant.</span>`;
+    } else if (state === "pending") {
+      oppScoreHtml = `<span class="duel-opp-wait">…</span>`;
+      oppBarPct = 0;
+      verdictHtml = `<span class="duel-verdict tie">Lecture du score de ${esc(oppName)}…</span>`;
+    } else if (state === "unknown") {
+      oppScoreHtml = `<span class="duel-opp-wait">—</span>`;
+      oppBarPct = 0;
+      verdictHtml = `<span class="duel-verdict tie">${esc(oppName)} n'a pas encore révisé cette semaine.</span>`;
+    } else { // errored
+      oppScoreHtml = `<span class="duel-opp-wait">—</span>`;
+      oppBarPct = 0;
+      verdictHtml = `<span class="duel-verdict tie">Adversaire injoignable pour l'instant — réessaie plus tard.</span>`;
+    }
+
+    const oppSide = `
+      <div class="duel-side opp">
+        <div class="duel-ava ${state === "normal" && opp > me ? "leader" : ""}">${esc(initials(oppName))}</div>
+        <div class="duel-name">${esc(oppName)}${oppTag ? `<span class="duel-opp-tag">${esc(oppTag)}</span>` : ""}</div>
+        <div class="duel-score">${oppScoreHtml}</div>
+        <div class="duel-bar"><i style="width:${oppBarPct}%"></i></div>
+      </div>`;
+
+    return `
+      <div class="duel-card">
+        <div class="duel-head">
+          <div class="duel-head-title">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3l-1 1M2 14l4.5-4.5M11 5l-6 6M9 3l4 4-2 2-4-4zM3 9l4 4-2 2-2-2z"/></svg>
+            Duel de la semaine
+          </div>
+          <div class="duel-countdown">${dl > 0 ? dl + " j restants" : "Dernier jour"}</div>
+        </div>
+        <div class="duel-arena">${meSide}<div class="duel-vs">VS</div>${oppSide}</div>
+        <div class="duel-foot">
+          ${verdictHtml}
+          <div class="duel-actions">
+            <button class="duel-mini" id="duel-change" type="button">Changer d'adversaire</button>
+            <button class="duel-mini danger" id="duel-stop" type="button">Abandonner</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function paintArena(opts) {
+    const m = mount();
+    if (!m) return;
+    m.innerHTML = arenaHtml(opts);
+    const ch = document.getElementById("duel-change");
+    const st = document.getElementById("duel-stop");
+    if (ch) ch.addEventListener("click", renderModePick);
+    if (st) st.addEventListener("click", () => { clear(); render(); });
   }
 
   function render() {
@@ -145,70 +243,48 @@
     const d = load();
     const wk = isoWeekKey();
     if (!d || !d.code || d.week !== wk) {
-      // pas de duel cette semaine → on n'affiche rien (le Top 10 reste seul)
       if (d && d.code && d.week !== wk) {
-        // semaine changée : on garde l'adversaire mais on repart à zéro
-        save({ code: d.code, week: wk });
+        // semaine changée : on garde l'adversaire et le mode, on repart à zéro
+        save({ code: d.code, name: d.name, mode: d.mode, week: wk });
       }
       m.innerHTML = "";
       return;
     }
+    const mode = d.mode === "real" ? "real" : "bot"; // repli "bot" pour un état enregistré avant ce changement
     const me = myWeekScore();
-    const opp = oppWeekScore(d.code);
-    const oppName = d.name || nameFor(d.code);
     const myName = (window.LennyAuth && window.LennyAuth.name) || "Moi";
-    const max = Math.max(me, opp, 1);
-    const meLead = me > opp, tie = me === opp;
     const dl = daysLeft();
-    const verdict = tie
-      ? `<span class="duel-verdict tie">Égalité parfaite — tout se joue d'ici dimanche.</span>`
-      : meLead
-        ? `<span class="duel-verdict win">Tu mènes de ${me - opp} XP. Garde le rythme !</span>`
-        : `<span class="duel-verdict lose">${esc(oppName)} mène de ${opp - me} XP. Une session de révision et tu repasses devant.</span>`;
 
-    m.innerHTML = `
-      <div class="duel-card">
-        <div class="duel-head">
-          <div class="duel-head-title">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3l-1 1M2 14l4.5-4.5M11 5l-6 6M9 3l4 4-2 2-4-4zM3 9l4 4-2 2-2-2z"/></svg>
-            Duel de la semaine
-          </div>
-          <div class="duel-countdown">${dl > 0 ? dl + " j restants" : "Dernier jour"}</div>
-        </div>
-        <div class="duel-arena">
-          <div class="duel-side me">
-            <div class="duel-ava ${meLead && !tie ? "leader" : ""}">${esc(initials(myName))}</div>
-            <div class="duel-name">${esc(myName)}</div>
-            <div class="duel-score">${me}<small>XP</small></div>
-            <div class="duel-bar"><i style="width:${Math.round(me / max * 100)}%"></i></div>
-          </div>
-          <div class="duel-vs">VS</div>
-          <div class="duel-side opp">
-            <div class="duel-ava ${!meLead && !tie ? "leader" : ""}">${esc(initials(oppName))}</div>
-            <div class="duel-name">${esc(oppName)}</div>
-            <div class="duel-score">${opp}<small>XP</small></div>
-            <div class="duel-bar"><i style="width:${Math.round(opp / max * 100)}%"></i></div>
-          </div>
-        </div>
-        <div class="duel-foot">
-          ${verdict}
-          <div class="duel-actions">
-            <button class="duel-mini" id="duel-change" type="button">Changer d'adversaire</button>
-            <button class="duel-mini danger" id="duel-stop" type="button">Abandonner</button>
-          </div>
-        </div>
-      </div>`;
+    if (mode === "bot") {
+      const opp = oppWeekScore(d.code);
+      paintArena({ me, myName, opp, oppName: "Bot", oppTag: "Bot", state: "normal", dl });
+      return;
+    }
 
-    const ch = document.getElementById("duel-change");
-    const st = document.getElementById("duel-stop");
-    if (ch) ch.addEventListener("click", renderSetup);
-    if (st) st.addEventListener("click", () => { clear(); render(); });
+    // mode réel : afficher un état d'attente pendant la lecture réseau
+    const oppName = d.name || nameFor(d.code);
+    paintArena({ me, myName, opp: 0, oppName, oppTag: null, state: "pending", dl });
+
+    const code = myCode();
+    const wkNow = wk;
+    Promise.all([postMyXp(code, wkNow, me), fetchOppXp(d.code, wkNow)]).then(([, oppRes]) => {
+      // si l'utilisateur a changé d'adversaire/mode entre-temps, ne pas écraser son écran actuel
+      const cur = load();
+      if (!cur || cur.code !== d.code || cur.week !== wkNow || (cur.mode !== "real")) return;
+      if (oppRes.error) {
+        paintArena({ me, myName, opp: 0, oppName, oppTag: null, state: "errored", dl: daysLeft() });
+      } else if (oppRes.xp == null) {
+        paintArena({ me, myName, opp: 0, oppName, oppTag: null, state: "unknown", dl: daysLeft() });
+      } else {
+        paintArena({ me, myName, opp: oppRes.xp, oppName, oppTag: null, state: "normal", dl: daysLeft() });
+      }
+    });
   }
 
-  function renderSetup(prefillErr) {
+  /* ---------- choix explicite du mode, avant tout code ---------- */
+  function renderModePick() {
     const m = mount();
     if (!m) return;
-    const myName = (window.LennyAuth && window.LennyAuth.name) || "toi";
     m.innerHTML = `
       <div class="duel-card">
         <div class="duel-head">
@@ -218,33 +294,80 @@
           </div>
         </div>
         <div class="duel-setup">
-          <div class="duel-setup-lead">Défie un camarade sur l'<b>XP gagné cette semaine</b>. Saisis son code d'accès — c'est <b>${esc(myName)}</b> contre lui jusqu'à dimanche soir.</div>
+          <div class="duel-setup-lead">Choisis ton adversaire cette semaine.</div>
+          <div class="duel-mode-pick">
+            <button class="duel-mode-btn" id="duel-mode-bot" type="button">
+              <span class="duel-mode-btn-t">Défier un bot</span>
+              <span class="duel-mode-btn-d">Rythme simulé — jamais une vraie personne</span>
+            </button>
+            <button class="duel-mode-btn" id="duel-mode-real" type="button">
+              <span class="duel-mode-btn-t">Défier un élève par son code</span>
+              <span class="duel-mode-btn-d">Un vrai score, posté et lu en direct</span>
+            </button>
+          </div>
+          <div class="duel-actions"><button class="duel-mini" id="duel-cancel" type="button">Annuler</button></div>
+        </div>
+      </div>`;
+    const cancel = document.getElementById("duel-cancel");
+    if (cancel) cancel.addEventListener("click", () => render());
+    const bBot = document.getElementById("duel-mode-bot");
+    const bReal = document.getElementById("duel-mode-real");
+    if (bBot) bBot.addEventListener("click", () => renderCodeForm("bot"));
+    if (bReal) bReal.addEventListener("click", () => renderCodeForm("real"));
+  }
+
+  function renderCodeForm(mode, prefillErr) {
+    const m = mount();
+    if (!m) return;
+    const myName = (window.LennyAuth && window.LennyAuth.name) || "toi";
+    const isBot = mode === "bot";
+    m.innerHTML = `
+      <div class="duel-card">
+        <div class="duel-head">
+          <div class="duel-head-title">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3l-1 1M2 14l4.5-4.5M11 5l-6 6M9 3l4 4-2 2-4-4zM3 9l4 4-2 2-2-2z"/></svg>
+            ${isBot ? "Défier un bot" : "Défier un élève"}
+          </div>
+        </div>
+        <div class="duel-setup">
+          <div class="duel-setup-lead">${isBot
+            ? "Le bot avance à un rythme simulé, recalculé chaque semaine."
+            : "Défie un camarade sur l'<b>XP gagné cette semaine</b>. Saisis son code d'accès."
+          } C'est <b>${esc(myName)}</b> contre lui jusqu'à dimanche soir.</div>
           <div class="duel-form">
             <input class="duel-input" id="duel-input" placeholder="Ex. JRMY-7K4" autocomplete="off" spellcheck="false" maxlength="14">
             <button class="duel-go" id="duel-confirm" type="button">Défier</button>
           </div>
           <div class="duel-err" id="duel-err">${prefillErr ? esc(prefillErr) : ""}</div>
-          <div class="duel-hint">Le score repart à zéro chaque lundi. Tu peux changer d'adversaire ou arrêter quand tu veux.</div>
-          <div class="duel-actions"><button class="duel-mini" id="duel-cancel" type="button">Annuler</button></div>
+          <div class="duel-hint">${isBot
+            ? "Le bot n'est pas un élève réel — seul son rythme est simulé."
+            : "Le score repart à zéro chaque lundi. Tu peux changer d'adversaire ou arrêter quand tu veux."
+          }</div>
+          <div class="duel-actions">
+            <button class="duel-mini" id="duel-back" type="button">Changer de mode</button>
+            <button class="duel-mini" id="duel-cancel" type="button">Annuler</button>
+          </div>
         </div>
       </div>`;
 
     const input = document.getElementById("duel-input");
     const err = document.getElementById("duel-err");
     const go = document.getElementById("duel-confirm");
+    const back = document.getElementById("duel-back");
     const cancel = document.getElementById("duel-cancel");
     if (input) { input.focus(); input.addEventListener("input", () => { input.value = input.value.toUpperCase(); }); }
     function confirm() {
       const code = (input.value || "").trim().toUpperCase().replace(/\s+/g, "");
-      const myCode = (window.LennyAuth && window.LennyAuth.code) || "";
+      const myC = myCode();
       if (!code) { if (err) err.textContent = "Entre un code pour lancer le duel."; return; }
-      if (code === myCode) { if (err) err.textContent = "Tu ne peux pas te défier toi-même 🙂"; return; }
+      if (code === myC) { if (err) err.textContent = "Tu ne peux pas te défier toi-même."; return; }
       if (!knownCode(code)) { if (err) err.textContent = "Ce code ne ressemble pas à un code LENNY valide."; return; }
-      save({ code, name: nameFor(code), week: isoWeekKey() });
+      save({ code, name: isBot ? null : nameFor(code), mode, week: isoWeekKey() });
       render();
     }
     if (go) go.addEventListener("click", confirm);
     if (input) input.addEventListener("keydown", (e) => { if (e.key === "Enter") confirm(); });
+    if (back) back.addEventListener("click", () => renderModePick());
     if (cancel) cancel.addEventListener("click", () => { render(); });
   }
 
@@ -262,5 +385,5 @@
   else setTimeout(init, 260);
   document.addEventListener("lenny-auth", () => setTimeout(render, 120));
 
-  window.LennyDuel = { refresh, render, open: renderSetup };
+  window.LennyDuel = { refresh, render, open: renderModePick };
 })();
