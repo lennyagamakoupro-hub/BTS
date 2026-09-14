@@ -1,7 +1,12 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<script>window.LENNY_API_BASE = "https://bts-production-9e73.up.railway.app";</script>
+<!-- LENNY_API_BASE pointait vers un backend Railway mort (essai expiré, code perdu) :
+     toutes les fonctions qui en dépendent (LennyAPI, LennyGate, LennyAgent) sont déjà
+     conçues pour retomber proprement sur localStorage quand elle est absente — c'est
+     ce mode qui tourne réellement depuis 2 mois. On la laisse vide plutôt que de
+     pointer vers du vide : ça arrête les appels réseau morts sur CHAQUE interaction
+     (chat, feedback, verrou de session), pas seulement à la connexion. -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>LENNY · BTS Transaction</title>
