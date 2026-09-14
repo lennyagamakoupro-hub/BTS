@@ -208,6 +208,82 @@
 /* ---------- état honnête (attente réseau / pas encore posté / injoignable) ---------- */
 .duel-opp-wait { color: rgba(255,255,255,.35); font-weight: 800; }
 
+/* temps affiché sous le score, dans le récap du quiz */
+.duel-quiz-time {
+  font: 700 12px/1 "IBM Plex Mono", monospace; color: rgba(255,255,255,.55);
+  margin-top: -2px;
+}
+
+/* ---------- écran de quiz (30 questions, 30s chacune) ---------- */
+.duel-quiz-count {
+  font: 700 11px/1 "IBM Plex Mono", monospace; color: rgba(255,255,255,.62);
+  padding: 5px 10px; border-radius: 999px;
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+}
+/* progression claire à travers les 30 questions, indépendante du minuteur */
+.duel-quiz-progressbar {
+  width: 100%; height: 6px; border-radius: 4px; margin: 2px 0 16px;
+  background: rgba(255,255,255,.08); box-shadow: inset 0 1px 3px rgba(0,0,0,.4); overflow: hidden;
+}
+.duel-quiz-progressbar > i {
+  display: block; height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, var(--duel-gold-deep), var(--duel-gold));
+  transition: width .3s cubic-bezier(.22,.61,.36,1);
+}
+
+/* le décompte — un vrai minuteur visible, pas discret */
+.duel-quiz-timerwrap { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.duel-quiz-timer-track {
+  flex: 1; height: 10px; border-radius: 6px; background: rgba(255,255,255,.08);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.45); overflow: hidden;
+}
+.duel-quiz-timer-fill {
+  display: block; height: 100%; border-radius: 6px; width: 100%;
+  background: linear-gradient(90deg, var(--duel-gold-deep), var(--duel-gold));
+  transition: width .1s linear, background .3s;
+}
+.duel-quiz-timer-fill.low { background: linear-gradient(90deg, #a0271f, var(--red)); }
+.duel-quiz-timer-n {
+  flex: none; width: 40px; text-align: right;
+  font: 800 22px/1 "Manrope", "Inter", system-ui, sans-serif; color: #fff; letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums; transition: color .3s;
+}
+.duel-quiz-timer-n.low { color: var(--red); }
+
+.duel-quiz-tag {
+  display: inline-flex; align-items: center; gap: 6px; margin-bottom: 12px;
+  font: 700 10.5px/1 "IBM Plex Mono", monospace; letter-spacing: .03em; text-transform: uppercase;
+  color: rgba(255,255,255,.55);
+}
+.duel-quiz-tag .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+
+.duel-quiz-q {
+  font: 700 17px/1.35 "Manrope", "Inter", system-ui, sans-serif; color: #fff;
+  margin-bottom: 16px;
+}
+.duel-quiz-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+@media (max-width: 640px) { .duel-quiz-opts { grid-template-columns: 1fr; } }
+.duel-quiz-opt {
+  display: flex; align-items: center; gap: 10px; text-align: left;
+  padding: 12px 14px; border-radius: 11px; cursor: pointer;
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.14);
+  box-shadow: 0 3px 0 0 rgba(255,255,255,.1);
+  color: #f5efe4; font: 600 13.5px/1.35 "Manrope", "Inter", system-ui, sans-serif;
+  transition: transform .1s cubic-bezier(.22,.61,.36,1), box-shadow .1s cubic-bezier(.22,.61,.36,1), border-color .15s, background .15s;
+}
+.duel-quiz-opt:hover:not(:disabled) { border-color: rgba(246,196,81,.45); background: rgba(255,255,255,.08); }
+.duel-quiz-opt:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 0 0 0 rgba(255,255,255,.1); }
+.duel-quiz-opt-l {
+  flex: none; width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center;
+  background: rgba(255,255,255,.09); font: 800 11px/1 "IBM Plex Mono", monospace; color: rgba(255,255,255,.7);
+}
+.duel-quiz-opt:disabled { cursor: default; }
+.duel-quiz-opt.right { border-color: var(--green); background: rgba(70,211,105,.14); box-shadow: 0 3px 0 0 rgba(70,211,105,.35); }
+.duel-quiz-opt.right .duel-quiz-opt-l { background: var(--green); color: #06210c; }
+.duel-quiz-opt.wrong { border-color: var(--red); background: rgba(229,9,20,.14); box-shadow: 0 3px 0 0 rgba(229,9,20,.35); }
+.duel-quiz-opt.wrong .duel-quiz-opt-l { background: var(--red); color: #2b0002; }
+.duel-quiz-opt.dimmed { opacity: .4; }
+
 @media (max-width: 560px) {
   .duel-card { padding: 17px 16px 15px; }
   .duel-score { font-size: 20px; }

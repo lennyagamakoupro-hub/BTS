@@ -124,6 +124,47 @@ exports.handler = async (event) => {
       return json(405, { error: "method not allowed" });
     }
 
+    // ---------------------------------------------------------------
+    // Duel réel — résultat de quiz (30 questions/30s). Asynchrone : chacun
+    // joue quand il veut dans la semaine. Clé = la PAIRE des deux codes
+    // (triés) + la semaine, pour supporter plusieurs duels simultanés.
+    // Jamais de score inventé — {result:null} si l'adversaire n'a pas joué.
+    // ---------------------------------------------------------------
+    if (segs[0] === "duel" && segs[1] === "quiz-result") {
+      const CODE_RE = /^[0-9A-ZÀ-Ÿ!-]{2,20}$/; // couvre aussi les graines "BOT-XXXXXX" du mode bot
+      const validCode = (c) => typeof c === "string" && CODE_RE.test(c);
+      const validWeek = (w) => typeof w === "string" && /^\d{4}-W\d{2}$/.test(w);
+      const pairKey = (a, b, week) => [a, b].sort().join("~") + "|" + week;
+      const store = getStore("duel-quiz");
+
+      if (event.httpMethod === "POST") {
+        const { code, week, opponentCode, score, timeMs } = parseBody(event);
+        if (!validCode(code)) return json(400, { error: "invalid code" });
+        if (!validCode(opponentCode)) return json(400, { error: "invalid opponentCode" });
+        if (!validWeek(week)) return json(400, { error: "invalid week" });
+        const scoreNum = Number(score);
+        const timeNum = Number(timeMs);
+        if (!Number.isInteger(scoreNum) || scoreNum < 0 || scoreNum > 30) return json(400, { error: "invalid score" });
+        if (!Number.isFinite(timeNum) || timeNum < 0 || timeNum > 2000000) return json(400, { error: "invalid timeMs" });
+        const key = pairKey(code, opponentCode, week);
+        const entry = (await store.get(key, { type: "json" })) || {};
+        entry[code] = { score: Math.round(scoreNum), timeMs: Math.round(timeNum), updatedAt: Date.now() };
+        await store.setJSON(key, entry);
+        return json(200, { ok: true });
+      }
+      if (event.httpMethod === "GET") {
+        const { code, opponent, week } = qs;
+        if (!validCode(code)) return json(400, { error: "invalid code" });
+        if (!validCode(opponent)) return json(400, { error: "invalid opponent" });
+        if (!validWeek(week)) return json(400, { error: "invalid week" });
+        const key = pairKey(code, opponent, week);
+        const entry = (await store.get(key, { type: "json" })) || {};
+        const oppResult = entry[opponent];
+        return json(200, { result: oppResult ? { score: oppResult.score, timeMs: oppResult.timeMs } : null });
+      }
+      return json(405, { error: "method not allowed" });
+    }
+
     // quiz-result / stats/radar : pas encore branchés. Le contrat exact attendu
     // par lenny-api.js (getRadar renvoie {period, subjects, current, previous}
     // avec subjects() calculé CÔTÉ CLIENT depuis window.MODULES/QUIZ/STUDY) ne se
