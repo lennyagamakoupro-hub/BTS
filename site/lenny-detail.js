@@ -95,10 +95,10 @@
     });
     // Bind hero actions
     modal.querySelector("[data-action='start']").addEventListener("click", () => {
-      // Close detail and launch the cinematic player (continuation — no splash)
+      // Close detail and launch the lesson (continuation — no splash)
       close(true);
       setTimeout(() => {
-        window.LennyPlayer && window.LennyPlayer.open(STATE.modId);
+        window.LennyLesson && window.LennyLesson.open(STATE.modId);
       }, 200);
     });
     modal.querySelector("[data-action='video']").addEventListener("click", () => {

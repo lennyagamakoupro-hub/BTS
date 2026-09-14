@@ -708,14 +708,14 @@ function lennyInit() {
       return;
     }
 
-    // Card overlay play button → launch player directly
+    // Card overlay play button → launch lesson directly
     const playBtn = e.target.closest(".card-overlay-actions .cbtn.play");
     if (playBtn) {
       const c = playBtn.closest(".card[data-mod]");
       const id = c?.getAttribute("data-mod");
       if (id && LENNY_MODULES.find(m => m.id === id)) {
         e.preventDefault(); e.stopPropagation();
-        window.LennyPlayer && window.LennyPlayer.open(id);
+        window.LennyLesson && window.LennyLesson.open(id);
         return;
       }
     }
