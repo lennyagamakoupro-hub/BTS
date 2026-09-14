@@ -95,6 +95,35 @@ exports.handler = async (event) => {
       return json(200, { up, down, mine: mineEntry ? mineEntry.vote : null });
     }
 
+    // ---------------------------------------------------------------
+    // Duel réel : XP hebdomadaire posté par un code, lu par un autre.
+    // Jamais de valeur inventée — {xp:null} si l'adversaire n'a rien posté.
+    // ---------------------------------------------------------------
+    if (segs[0] === "duel" && segs[1] === "xp") {
+      const CODE_RE = /^[0-9A-ZÀ-Ÿ]{2,}-[0-9A-ZÀ-Ÿ]{2,}$/;
+      const validCode = (c) => typeof c === "string" && c.length <= 20 && (c === "LENNY71!" || CODE_RE.test(c));
+      const validWeek = (w) => typeof w === "string" && /^\d{4}-W\d{2}$/.test(w);
+      const store = getStore("duel-xp");
+
+      if (event.httpMethod === "POST") {
+        const { code, week, xp } = parseBody(event);
+        if (!validCode(code)) return json(400, { error: "invalid code" });
+        if (!validWeek(week)) return json(400, { error: "invalid week" });
+        const xpNum = Number(xp);
+        if (!Number.isFinite(xpNum) || xpNum < 0 || xpNum > 1000000) return json(400, { error: "invalid xp" });
+        await store.setJSON(code + "|" + week, { xp: Math.round(xpNum), updatedAt: Date.now() });
+        return json(200, { ok: true });
+      }
+      if (event.httpMethod === "GET") {
+        const { code, week } = qs;
+        if (!validCode(code)) return json(400, { error: "invalid code" });
+        if (!validWeek(week)) return json(400, { error: "invalid week" });
+        const entry = await store.get(code + "|" + week, { type: "json" });
+        return json(200, entry ? { xp: entry.xp, updatedAt: entry.updatedAt } : { xp: null });
+      }
+      return json(405, { error: "method not allowed" });
+    }
+
     // quiz-result / stats/radar : pas encore branchés. Le contrat exact attendu
     // par lenny-api.js (getRadar renvoie {period, subjects, current, previous}
     // avec subjects() calculé CÔTÉ CLIENT depuis window.MODULES/QUIZ/STUDY) ne se
