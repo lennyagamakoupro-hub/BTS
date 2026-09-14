@@ -312,37 +312,37 @@
     if (cancel) cancel.addEventListener("click", () => render());
     const bBot = document.getElementById("duel-mode-bot");
     const bReal = document.getElementById("duel-mode-real");
-    if (bBot) bBot.addEventListener("click", () => renderCodeForm("bot"));
+    // Le bot ne défie personne de réel : aucun code à saisir, on lance direct.
+    if (bBot) bBot.addEventListener("click", () => {
+      const seed = "BOT-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+      save({ code: seed, name: null, mode: "bot", week: isoWeekKey() });
+      render();
+    });
     if (bReal) bReal.addEventListener("click", () => renderCodeForm("real"));
   }
 
+  // N'est plus appelée qu'en mode "real" — le bot se lance sans aucune saisie
+  // (voir renderModePick). Le paramètre mode reste au cas où, toujours "real" en pratique.
   function renderCodeForm(mode, prefillErr) {
     const m = mount();
     if (!m) return;
     const myName = (window.LennyAuth && window.LennyAuth.name) || "toi";
-    const isBot = mode === "bot";
     m.innerHTML = `
       <div class="duel-card">
         <div class="duel-head">
           <div class="duel-head-title">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3l-1 1M2 14l4.5-4.5M11 5l-6 6M9 3l4 4-2 2-4-4zM3 9l4 4-2 2-2-2z"/></svg>
-            ${isBot ? "Défier un bot" : "Défier un élève"}
+            Défier un élève
           </div>
         </div>
         <div class="duel-setup">
-          <div class="duel-setup-lead">${isBot
-            ? "Le bot avance à un rythme simulé, recalculé chaque semaine."
-            : "Défie un camarade sur l'<b>XP gagné cette semaine</b>. Saisis son code d'accès."
-          } C'est <b>${esc(myName)}</b> contre lui jusqu'à dimanche soir.</div>
+          <div class="duel-setup-lead">Défie un camarade sur l'<b>XP gagné cette semaine</b>. Saisis son code d'accès. C'est <b>${esc(myName)}</b> contre lui jusqu'à dimanche soir.</div>
           <div class="duel-form">
             <input class="duel-input" id="duel-input" placeholder="Ex. JRMY-7K4" autocomplete="off" spellcheck="false" maxlength="14">
             <button class="duel-go" id="duel-confirm" type="button">Défier</button>
           </div>
           <div class="duel-err" id="duel-err">${prefillErr ? esc(prefillErr) : ""}</div>
-          <div class="duel-hint">${isBot
-            ? "Le bot n'est pas un élève réel — seul son rythme est simulé."
-            : "Le score repart à zéro chaque lundi. Tu peux changer d'adversaire ou arrêter quand tu veux."
-          }</div>
+          <div class="duel-hint">Le score repart à zéro chaque lundi. Tu peux changer d'adversaire ou arrêter quand tu veux.</div>
           <div class="duel-actions">
             <button class="duel-mini" id="duel-back" type="button">Changer de mode</button>
             <button class="duel-mini" id="duel-cancel" type="button">Annuler</button>
@@ -362,7 +362,7 @@
       if (!code) { if (err) err.textContent = "Entre un code pour lancer le duel."; return; }
       if (code === myC) { if (err) err.textContent = "Tu ne peux pas te défier toi-même."; return; }
       if (!knownCode(code)) { if (err) err.textContent = "Ce code ne ressemble pas à un code LENNY valide."; return; }
-      save({ code, name: isBot ? null : nameFor(code), mode, week: isoWeekKey() });
+      save({ code, name: nameFor(code), mode: "real", week: isoWeekKey() });
       render();
     }
     if (go) go.addEventListener("click", confirm);
