@@ -76,10 +76,11 @@ window.LENNY_FORMULES = {
             name: "Mensualité de prêt",
             lines: [
               "M = C × tₘ ÷ [ 1 − (1 + tₘ)^(−n) ]",
-              "tₘ = t_annuel ÷ 12     n = durée en MOIS",
-              "Coût du crédit = (M × n) − C",
+              "tₘ = (1 + t_annuel)^(1/12) − 1   ← taux mensuel ÉQUIVALENT (tableau financier du cours)",
+              "n = durée en MOIS     Coût du crédit = (M × n) − C",
+              "Avec le tableau : M = (C ÷ 1 000) × coefficient",
             ],
-            note: "M = mensualité (€), C = capital emprunté. 20 ans = 240 mois. Le coût du crédit n'inclut pas l'assurance.",
+            note: "Corrigé le 20/09/2026 d'après la correction de Mme Rebours (cas de financement du 04/09/2026) : son tableau financier est construit avec le taux mensuel ÉQUIVALENT, c'est ce qui met d'accord la méthode du tableau et celle de la formule. Ex : 481 351,20 € à 3,75 % sur 20 ans → tₘ = 0,3073 %, coefficient 5,896175, M ≈ 2 838,13 €. Avec t ÷ 12 (taux proportionnel) on trouve une mensualité différente : ne l'utiliser que si le sujet le demande.",
           },
           {
             name: "Taux proportionnel vs équivalent",
@@ -87,12 +88,40 @@ window.LENNY_FORMULES = {
               "Proportionnel = t_annuel ÷ nb_périodes",
               "Équivalent = (1 + t)^(1/n) − 1",
             ],
-            note: "L'équivalent est TOUJOURS inférieur au proportionnel. Les banques utilisent en général le proportionnel.",
+            note: "L'équivalent est TOUJOURS inférieur au proportionnel. Les banques utilisent en général le proportionnel, MAIS le tableau financier du cours utilise l'équivalent : en examen, prendre celui du tableau fourni.",
+          },
+          {
+            name: "Plan de financement (ordre du cours)",
+            lines: [
+              "Honoraires TTC = Prix × taux HT × 1,20      (4 % HT = 4,8 % TTC)",
+              "Frais de mutation = Prix HORS honoraires × taux",
+              "Coût total = Prix + honoraires TTC + frais de mutation",
+              "Apport total = apport + placement × (1 + t)ⁿ",
+              "Capital à emprunter = Coût total − apport total",
+            ],
+            note: "Ajouté le 20/09/2026 d'après le cas de financement de Mme Rebours. Ordre à tenir : coût total → apport → capital → mensualité → revenus → endettement → reste à vivre → conseil. L'assiette des frais de mutation est le prix HORS honoraires, pas le coût total.",
+          },
+          {
+            name: "Reste à vivre",
+            lines: [
+              "Reste à vivre = Revenus mensuels − charges de crédit",
+              "Minimum = montant couple + (nb d'enfants × montant par enfant)",
+            ],
+            note: "Ajouté le 20/09/2026. Les minimums sont donnés par le sujet (ex : 1 500 € + 500 € par enfant). Un crédit en cours compte tant qu'il existe, même s'il finit bientôt. Conclure en C.A.C. : Constater, Analyser, Conseiller. Ne jamais écrire « financement refusé » : le négociateur conseille, la banque décide.",
+          },
+          {
+            name: "Capacité d'emprunt (avec le tableau)",
+            lines: [
+              "Mensualité max = (35 % × revenus) − crédits en cours",
+              "Capital max = (Mensualité max ÷ coefficient) × 1 000",
+            ],
+            note: "Ajouté le 20/09/2026. Le coefficient se lit au croisement du taux et de la durée : une seule case correspond.",
           },
           {
             name: "Taux d'endettement (HCSF)",
             lines: [
-              "Taux = (charges + mensualité) ÷ revenus nets × 100",
+              "Taux = (charges de crédit + mensualité) ÷ revenus nets × 100",
+              "Revenu sur 13 mois = salaire × 13 ÷ 12",
             ],
             note: "Plafond HCSF : 35 % des revenus nets. Durée max 25 ans (27 ans neuf/VEFA). Frais de notaire : 7–8 % ancien, 2–3 % neuf.",
           },
