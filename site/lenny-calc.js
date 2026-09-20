@@ -26,14 +26,14 @@
   // mensualité d'un prêt amortissable
   function mensualite(capital, tauxAnnuel, annees) {
     const n = annees * 12;
-    const t = tauxAnnuel / 100 / 12;
+    const t = Math.pow(1 + tauxAnnuel / 100, 1 / 12) - 1; // 20/09/2026 : taux mensuel ÉQUIVALENT, comme le tableau financier du cours (correction de Mme Rebours du 04/09/2026). Avant : tauxAnnuel / 100 / 12 (proportionnel).
     if (t === 0) return capital / n;
     return capital * t / (1 - Math.pow(1 + t, -n));
   }
   // capital empruntable pour une mensualité donnée
   function capitalEmpruntable(mens, tauxAnnuel, annees) {
     const n = annees * 12;
-    const t = tauxAnnuel / 100 / 12;
+    const t = Math.pow(1 + tauxAnnuel / 100, 1 / 12) - 1; // 20/09/2026 : taux mensuel ÉQUIVALENT, comme le tableau financier du cours (correction de Mme Rebours du 04/09/2026). Avant : tauxAnnuel / 100 / 12 (proportionnel).
     if (t === 0) return mens * n;
     return mens * (1 - Math.pow(1 + t, -n)) / t;
   }
