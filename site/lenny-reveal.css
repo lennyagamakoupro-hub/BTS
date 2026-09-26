@@ -89,3 +89,16 @@
   .lr-bg { transition: none; }
   .lr-hint .lr-mouse::after { animation: none; }
 }
+
+/* 25/09 — le film du métro occupe le fond de l'écran de chargement.
+   `object-fit: cover` et non `contain` : on veut que les portes remplissent
+   l'écran, quitte à rogner les bords, comme dans le composant d'origine. */
+.lr-bg { overflow: hidden; background: #05070d; }
+.lr-film {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}

@@ -264,8 +264,33 @@
       "url(\"data:image/svg+xml;utf8," + encodeURIComponent(svg) + "\")";
   }
 
+  /* 25/09 — SUR SA MACHINE, LA PORTE EST OUVERTE.
+     Lenny a passé une demi-journée bloqué devant son propre portail pendant
+     qu'il construisait son site : mot de passe, aperçu qui expire, défilement
+     verrouillé. Un portail sert à retenir un visiteur, pas le propriétaire.
+     Sur 127.0.0.1 il n'y a rien à protéger : la porte s'ouvre toute seule.
+     En ligne, rien ne change. ?portail-force pour le tester quand même. */
+  const PORTE_OUVERTE_EN_LOCAL =
+    ["127.0.0.1", "localhost", "0.0.0.0", "::1"].indexOf(location.hostname) !== -1 &&
+    !/[?&](portail-force|editeur)\b/.test(location.search);
+
+  /* 25/09 — LE TRAIN EMPORTE LA CLASSE, PUIS LA PORTE S'EFFACE.
+     Lenny : « quand le train passe, donc l'écran est déverrouillé, bah je veux
+     plus voir le truc pour taper le mot de passe et le texte du dessous ».
+     Le code est bon : le champ et sa phrase disparaissent (c'est lenny-train.js
+     qui pose la classe), le train arrive, la classe monte, il repart — et
+     SEULEMENT là on retire la porte. Si le train n'est pas là (mouvement
+     réduit, gsap absent), on ne retient personne : on ouvre tout de suite. */
   function unlock(label, code, hash) {
     const gate = document.getElementById("lenny-gate");
+    const suite = () => finirOuverture(gate, label, code, hash);
+    if (gate && window.LennyTrain && window.LennyTrain.partir) {
+      try { window.LennyTrain.partir(suite); return; } catch (e) {}
+    }
+    suite();
+  }
+
+  function finirOuverture(gate, label, code, hash) {
     if (gate) gate.classList.add("hidden");
     applyWatermark(label);
     document.documentElement.style.overflow = "";
@@ -392,8 +417,18 @@
     const h1 = document.querySelector(".gate-h1");
     if (h1 && !h1.dataset.tw) {
       h1.dataset.tw = "1";
+      /* 25/09 — LES PHRASES PARLENT MAINTENANT DE LA CLASSE, pas du métier.
+         Lenny : « pour faire comprendre que l'alternant de l'entreprise rejoint
+         les cours des vrais élèves ». L'ancienne série vendait l'immobilier à
+         quelqu'un qui avait déjà choisi l'immobilier ; celle-ci lui dit qu'il
+         ne sera pas seul. La première phrase reste fixe assez longtemps pour
+         être lue, c'est elle qui porte le message. */
       const phrases = [
-        "Êtes-vous prêt à devenir l'expert que l'immobilier attend ?",
+        "Rejoins notre classe.",
+        "On révise ensemble, tous les soirs.",
+        "Ton alternant ne révisera pas tout seul.",
+        "Une promotion entière prépare le même examen.",
+        "Ici, personne ne révise dans son coin.",
         "Chaque révision vous rapproche du métier.",
         "Derrière chaque porte, une vie qui cherche son décor.",
         "Vendre un bien, c'est ouvrir un nouveau chapitre.",
@@ -409,6 +444,8 @@
         "Derrière chaque transaction, il y a un rêve qui s'accomplit.",
         "Apprendre, c'est déjà bâtir la maison de votre réussite.",
       ];
+      /* 25/09 — le mode éditeur modifie ce tableau en direct (lenny-editeur.js). */
+      window.LennyPhrases = phrases;
       h1.innerHTML = '<span class="gtw"></span><span class="gcaret"></span>';
       const out = h1.querySelector(".gtw");
       const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -416,11 +453,44 @@
         out.textContent = phrases[0];
       } else {
         let p = 0, i = 0, del = false;
+        /* 25/09 — DEUX LIGNES, JAMAIS PLUS. Avant d'écrire une phrase, on la
+           mesure en entier dans un double invisible du titre ; si elle
+           déborde de deux lignes, on réduit la police jusqu'à ce qu'elle
+           tienne. La taille de départ est celle de la feuille de style. */
+        const taillePhrase = (txt) => {
+          h1.style.fontSize = ""; h1.style.maxWidth = "";
+          const cs = getComputedStyle(h1);
+          const base = parseFloat(cs.fontSize);
+          const lh = parseFloat(cs.lineHeight) / base || .96;
+          /* la largeur du titre est en « ch » : elle rétrécirait avec la
+             police. On la fige en pixels, à sa valeur à taille normale. */
+          const larg = h1.clientWidth;
+          const m = h1.cloneNode(false);
+          m.style.cssText = "position:absolute;visibility:hidden;height:auto;min-height:0;top:0;left:0;max-width:none;width:" + larg + "px";
+          m.textContent = txt + "\u00a0";
+          h1.parentNode.appendChild(m);
+          let t = base;
+          for (; t > 14; t -= 1) {
+            m.style.fontSize = t + "px";
+            // hauteur de mise en page (pas l'encre qui déborde des lettres)
+            if (m.offsetHeight <= 2 * lh * t + 2) break;
+          }
+          m.remove();
+          if (t < base) { h1.style.fontSize = t + "px"; h1.style.maxWidth = larg + "px"; }
+        };
+        // la première mesure peut précéder le chargement de la police du site
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => taillePhrase(phrases[p] || ""));
         const tick = () => {
-          const full = phrases[p];
+          if (p >= phrases.length) p = 0;
+          const full = phrases[p] || "";
+          if (!del && i === 0) taillePhrase(full);
           if (!del) {
             out.textContent = full.slice(0, ++i);
-            if (i >= full.length) { del = true; return setTimeout(tick, 3800); }
+            /* 25/09 — la première phrase tient deux fois plus longtemps que les
+             autres : c'est elle qui porte le message (« Rejoins notre classe »),
+             les suivantes ne font que l'entretenir. 3,8 s ne suffisaient pas
+             pour la lire quand elle finissait à peine de s'écrire. */
+          if (i >= full.length) { del = true; return setTimeout(tick, p === 0 ? 6500 : 4200); }
             return setTimeout(tick, 68 + Math.random() * 34);
           }
           out.textContent = full.slice(0, --i);
@@ -507,8 +577,19 @@
             '<svg class="gate-slide-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h11M10 5l5 5-5 5"/></svg>' +
           '</button>' +
         '</div>';
-      btn.style.display = "none";
+      /* 25/09 — UNE SEULE POIGNÉE, PAS DEUX. Le glissement avait remplacé le
+         bouton, mais une surcharge CSS a rendu le bouton visible : on se
+         retrouvait avec le bouton rouge ET le rail gris en dessous, dont
+         Lenny voyait la boîte derrière les personnages. On garde le bouton,
+         qui est celui qu'il utilise, et on lui branche la même validation.
+         Le rail reste dans le DOM pour l'accessibilité au clavier, masqué. */
+      slide.setAttribute("aria-hidden", "true");
+      slide.style.display = "none";
       btn.parentNode.insertBefore(slide, btn.nextSibling);
+      btn.addEventListener("click", function () {
+        if (!ready()) { shake(); return; }
+        commit();
+      });
 
       const track = slide.querySelector(".gate-slide-track");
       const knob = slide.querySelector(".gate-slide-knob");
@@ -575,3 +656,20 @@
     input.focus();
   });
 })();
+
+/* L'ouverture effective, posée tout à la fin pour être sûre que `unlock`
+   existe et que le portail est dans le DOM. */
+(function () {
+  var local = ["127.0.0.1", "localhost", "0.0.0.0", "::1"].indexOf(location.hostname) !== -1;
+  if (!local || /[?&](portail-force|editeur)\b/.test(location.search)) return;
+  function ouvrir() {
+    var g = document.getElementById("lenny-gate");
+    if (g) g.classList.add("hidden");
+    try { document.documentElement.style.overflow = ""; } catch (e) {}
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", ouvrir);
+  else ouvrir();
+  setTimeout(ouvrir, 400);
+  setTimeout(ouvrir, 1500);
+})();
+

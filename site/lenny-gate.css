@@ -25,14 +25,14 @@
   opacity: 0; will-change: transform, opacity;
   animation: gateKen 64s linear infinite;
 }
-.gslide-1 { background-image: url("images/gate-villa.jpg");      animation-delay: 0s; }
-.gslide-2 { background-image: url("images/hero-int.jpg");        animation-delay: 8s; }
-.gslide-3 { background-image: url("images/gate-sea.jpg");        animation-delay: 16s; }
-.gslide-4 { background-image: url("images/gate-provence.jpg");   animation-delay: 24s; }
-.gslide-5 { background-image: url("images/gate-interior2.jpg"); animation-delay: 32s; }
-.gslide-6 { background-image: url("images/gate-interior.jpg");   animation-delay: 40s; }
-.gslide-7 { background-image: url("images/gate-provence2.jpg"); animation-delay: 48s; }
-.gslide-8 { background-image: url("images/hero-ext.jpg");       animation-delay: 56s; }
+.gslide-1 { background-image: url("images-legeres/gate-villa.webp");      animation-delay: 0s; }
+.gslide-2 { background-image: url("images-legeres/hero-int.webp");        animation-delay: 8s; }
+.gslide-3 { background-image: url("images-legeres/gate-sea.webp");        animation-delay: 16s; }
+.gslide-4 { background-image: url("images-legeres/gate-provence.webp");   animation-delay: 24s; }
+.gslide-5 { background-image: url("images-legeres/gate-interior2.webp"); animation-delay: 32s; }
+.gslide-6 { background-image: url("images-legeres/gate-interior.webp");   animation-delay: 40s; }
+.gslide-7 { background-image: url("images-legeres/gate-provence2.webp"); animation-delay: 48s; }
+.gslide-8 { background-image: url("images-legeres/hero-ext.webp");       animation-delay: 56s; }
 @keyframes gateKen {
   0%   { opacity: 0; transform: scale(1.06) translate(0, 0); }
   2%   { opacity: 1; }

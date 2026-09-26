@@ -20,3 +20,8 @@
 ## bonne pratique ; cet en-tete est le filet quand on oublie de l'incrementer.
 /lenny-gate.js
   Cache-Control: no-store
+
+## 23/09/2026 — la page pour les agences ne s'indexe pas : elle se donne par lien,
+## jamais par recherche. Doublon volontaire de la balise meta de la page.
+/pour-les-agences.html
+  X-Robots-Tag: noindex, nofollow, noarchive

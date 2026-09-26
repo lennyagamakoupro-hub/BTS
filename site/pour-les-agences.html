@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  OÙ MODIFIER QUOI — pour que tu n'aies pas à chercher.
+  Le serveur local tourne : http://127.0.0.1:3311/pour-les-agences.html
+  Tu enregistres, tu rafraîchis, tu vois. Rien d'autre à lancer.
+  ═══════════════════════════════════════════════════════════════════════════
+
+  LES COULEURS, toutes au même endroit : le bloc `:root` juste en dessous.
+    --rouge      le rouge des boutons et du logo
+    --encre      le blanc du texte principal
+    --encre-2    le gris des paragraphes
+    --noir       le fond
+
+  LES TAILLES DE TEXTE utilisent `clamp(mini, fluide, maxi)` : le premier
+  chiffre est la taille sur téléphone, le dernier sur grand écran. Pour agrandir
+  un titre partout, touche au dernier chiffre.
+    h1            le titre de l'ouverture
+    h2            les titres de section
+    .accroche     le paragraphe sous le titre
+    .texte        les paragraphes de section
+
+  LES SECTIONS, dans l'ordre du fichier :
+    .ouverture          le plein écran d'entrée (image : `images/gate-interior.jpg`)
+    section (problème)  le paragraphe « Le problème n'est pas son sérieux »
+    #dedans             les quatre cartes — `.carte` pour leur taille
+    #programme          les 23 modules — `.familles` pour les colonnes
+    (qui l'a fait)      `.signature`
+    (questions)         les `<details>`
+    #travelling         les cinq plans du bas — `.travelling .plan` et `.parole`
+    #acces              le bouton final
+
+  LE TRAVELLING : pour changer une image, modifie le `--image:url(...)` de la
+  `<figure class="plan">` correspondante. Pour changer une phrase, le texte du
+  `<p class="parole">` du même `data-plan`. Les deux doivent porter le MÊME
+  numéro de `data-plan`, sinon la phrase ne suit plus son image.
+
+  CE QUE JE NE TOUCHE PLUS : ce fichier est à toi à partir d'ici.
+-->
+<title>Pour les agences · LENNY — révision BTS Professions Immobilières</title>
+<meta name="description" content="Un outil de révision du BTS Professions Immobilières, fait par un étudiant du même BTS. Vos alternants révisent le soir, vous les formez moins le matin.">
+<meta property="og:title" content="Votre alternant révise. Vous ne le formez pas seul.">
+<meta property="og:description" content="Cours, quiz corrigés, glossaire et devoirs pour le BTS Professions Immobilières. Accès de test gratuit.">
+<meta property="og:image" content="https://pibts.netlify.app/images/gate-interior.jpg">
+<meta property="og:type" content="website">
+<!-- 23/09 — CETTE PAGE NE DOIT PAS ÊTRE TROUVÉE. Elle s'ouvre en cliquant sur un lien
+     que Lenny envoie, et par rien d'autre : pas d'index, pas de suivi de liens, et
+     aucune page du site ne pointe dessus (vérifié). Les étudiants déjà inscrits ne
+     doivent jamais tomber sur une page qui parle de prix et de tuteurs. -->
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,500;1,600&display=swap">
+<style>
+:root{
+  --noir:#0c0a09; --noir-2:#141110; --ligne:#241f1d; --ligne-forte:#3a322e;
+  --encre:#f5f1ef; --encre-2:#b9aea8; --sourdine:#8b807a;
+  --rouge:#e50914; --rouge-clair:#ffb3b6;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--noir); color:var(--encre);
+  font-family:Manrope,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:17px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+/* 23/09 — Lenny : « faut que le texte prenne tout l'écran ». La colonne de 1080 px
+   laissait un tiers de vide à droite sur un grand écran. */
+.enveloppe{max-width:1400px; margin:0 auto; padding:0 clamp(20px,5vw,72px)}
+a{color:inherit}
+
+/* ── bandeau ───────────────────────────────────────────────────────────── */
+header.bandeau{
+  position:sticky; top:0; z-index:20; backdrop-filter:blur(14px);
+  background:rgba(12,10,9,.82); border-bottom:1px solid var(--ligne);
+}
+.bandeau .enveloppe{display:flex; align-items:center; justify-content:space-between; height:68px}
+.marque{
+  font-family:Manrope,sans-serif; font-weight:800; letter-spacing:.40em;
+  font-size:15px; color:var(--rouge); text-decoration:none;
+}
+.bandeau .bouton{padding:10px 18px; font-size:14px}
+
+/* ── ouverture ─────────────────────────────────────────────────────────── */
+/* 23/09 — Lenny : « faut que la partie du haut prenne tout l'écran, c'est coupé en bas ».
+   L'ouverture fait maintenant la hauteur de la fenêtre moins le bandeau, et son contenu
+   est centré verticalement. `svh` plutôt que `vh` : sur un téléphone, `vh` compte la barre
+   d'adresse qui se rétracte, et l'image se retrouvait coupée exactement comme ici. */
+.ouverture{position:relative; overflow:hidden; border-bottom:1px solid var(--ligne);
+  min-height:calc(100vh - 68px); min-height:calc(100svh - 68px);
+  display:flex; align-items:center}
+.ouverture .fond{
+  position:absolute; inset:0; background:url("images/gate-interior.jpg") center/cover no-repeat;
+  transform:scale(1.04); filter:saturate(.9);
+}
+.ouverture .voile{
+  position:absolute; inset:0;
+  background:linear-gradient(90deg, rgba(12,10,9,.94) 0%, rgba(12,10,9,.80) 58%, rgba(12,10,9,.30) 100%);
+}
+.ouverture .enveloppe{position:relative; width:100%; padding-top:clamp(40px,7vw,80px); padding-bottom:clamp(40px,7vw,80px)}
+.surtitre{
+  font-family:Manrope,sans-serif; font-size:12.5px; font-weight:700; letter-spacing:.22em;
+  text-transform:uppercase; color:var(--rouge-clair); margin:0 0 22px;
+}
+h1{
+  font-family:"Playfair Display",Georgia,serif; font-style:italic; font-weight:600;
+  font-size:clamp(36px,7.2vw,104px); line-height:1.02; letter-spacing:-.02em;
+  margin:0; max-width:20ch; text-wrap:balance;
+}
+.accroche{margin:30px 0 0; max-width:72ch; color:var(--encre-2); font-size:clamp(17px,1.5vw,22px)}
+.actions{display:flex; flex-wrap:wrap; gap:14px; align-items:center; margin:36px 0 0}
+.bouton{
+  display:inline-flex; align-items:center; gap:10px; background:var(--rouge); color:#fff;
+  border:none; border-radius:9px; padding:15px 26px; font:inherit; font-weight:700;
+  text-decoration:none; cursor:pointer;
+}
+.bouton:hover{background:#ff1420}
+.bouton.fantome{background:transparent; color:var(--encre); border:1px solid var(--ligne-forte); font-weight:600}
+.bouton.fantome:hover{border-color:var(--sourdine); background:rgba(255,255,255,.03)}
+.sous-bouton{margin:16px 0 0; font-size:14.5px; color:var(--sourdine)}
+
+/* ── sections ──────────────────────────────────────────────────────────── */
+section{padding:clamp(60px,8vw,96px) 0; border-bottom:1px solid var(--ligne)}
+h2{
+  font-family:"Playfair Display",Georgia,serif; font-style:italic; font-weight:500;
+  font-size:clamp(28px,4.4vw,56px); line-height:1.1; margin:0 0 30px; letter-spacing:-.018em;
+}
+.texte{max-width:78ch; color:var(--encre-2); font-size:clamp(17px,1.5vw,21px)}
+.texte strong{color:var(--encre); font-weight:600}
+
+/* ── ce qu'il y a dedans ───────────────────────────────────────────────── */
+/* 23/09 — Lenny : « ce qu'il y a dedans, fais plus petit ». Quatre cartes qui
+   tiennent sur une seule ligne, hauteur réduite d'un tiers : ce bloc annonce, il
+   ne raconte pas. Le détail est juste en dessous, dans le programme complet. */
+.grille{display:grid; grid-template-columns:repeat(auto-fit,minmax(196px,1fr)); gap:14px; margin:28px 0 0}
+.carte{
+  position:relative; overflow:hidden; border:1px solid var(--ligne); border-radius:11px;
+  background:var(--noir-2); min-height:158px; display:flex; flex-direction:column; justify-content:flex-end;
+}
+.carte .image{position:absolute; inset:0; background-size:cover; background-position:center; opacity:.26}
+.carte .voile-carte{position:absolute; inset:0; background:linear-gradient(180deg,rgba(12,10,9,.30) 0%,rgba(12,10,9,.95) 70%)}
+.carte .dedans{position:relative; padding:15px 16px}
+.chiffre{
+  font-family:Manrope,sans-serif; font-size:27px; font-weight:800; font-variant-numeric:tabular-nums;
+  color:var(--rouge-clair); line-height:1; display:block; margin:0 0 5px;
+}
+.carte h3{font-size:14.5px; margin:0 0 6px; font-weight:700; letter-spacing:-.005em}
+.carte p{margin:0; font-size:13px; color:var(--encre-2); line-height:1.5}
+
+/* ── tout ce qu'il y a dedans ──────────────────────────────────────────── */
+.fonctions{display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; margin:30px 0 0}
+/* 23/09 — à 834px (tablette), la grille de 20 cases tombe sur 3 colonnes :
+   6 lignes pleines puis 2 cases seules sur la 7e, très déséquilibré (mesuré en
+   capture). 4 colonnes donnent 5 lignes exactement pleines (20÷4), donc on
+   force ce compte sur la plage de largeur où auto-fill choisit 3. */
+@media (min-width:641px) and (max-width:900px){
+  .fonctions{grid-template-columns:repeat(4,1fr)}
+}
+.fonction{display:flex; flex-direction:column; gap:3px; padding:14px 16px; border:1px solid var(--ligne);
+  border-radius:10px; background:var(--noir-2)}
+.f-titre{font-weight:700; font-size:15.5px; letter-spacing:-.005em}
+.f-sous{font-size:13px; color:var(--sourdine)}
+
+/* ── le programme en entier ────────────────────────────────────────────── */
+.familles{display:grid; grid-template-columns:repeat(auto-fit,minmax(310px,1fr)); gap:34px 44px; margin:38px 0 0}
+.tete-famille{display:flex; align-items:baseline; justify-content:space-between; gap:14px;
+  padding-bottom:12px; border-bottom:1px solid var(--ligne-forte)}
+.tete-famille h3{margin:0; font-size:19px; font-weight:800; letter-spacing:-.01em}
+/* 23/09 — Lenny ne voulait plus de la mono sur ces comptes : elle faisait
+   « terminal » au milieu d'une page de vente. Manrope, en petites capitales
+   espacées, avec des chiffres à chasse fixe pour que les durées s'alignent. */
+.compte{font-family:Manrope,sans-serif; font-size:12px; font-weight:700; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--rouge-clair); white-space:nowrap; font-variant-numeric:tabular-nums}
+ul.modules{list-style:none; margin:0; padding:0}
+ul.modules li{display:flex; align-items:baseline; justify-content:space-between; gap:16px;
+  padding:11px 0; border-bottom:1px solid var(--ligne); font-size:15.5px}
+ul.modules li:last-child{border-bottom:none}
+.titre-module{color:var(--encre-2)}
+.duree{font-family:Manrope,sans-serif; font-size:13px; font-weight:500; color:var(--sourdine);
+  white-space:nowrap; font-variant-numeric:tabular-nums}
+
+/* ── le travelling ─────────────────────────────────────────────────────── */
+.travelling{padding:0; border-bottom:1px solid var(--ligne); position:relative}
+.travelling .scene{position:sticky; top:0; height:100vh; overflow:hidden; background:var(--noir)}
+.travelling .plans{position:absolute; inset:0}
+/* 23/09 — les cinq plans montrent le PRODUIT, plus des villas : ce sont de vraies
+   captures du site prises via le mode ?apercu. Une capture se regarde en entier,
+   donc `contain` et non `cover` : recadrer une interface, c'est couper l'information. */
+.travelling .plan{
+  position:absolute; inset:4%; margin:0; background-image:var(--image);
+  background-size:contain; background-position:center; background-repeat:no-repeat; opacity:0;
+  transform:scale(1.14) translate3d(0,0,0);
+  transition:opacity .9s ease, transform 1.6s cubic-bezier(.22,.61,.36,1);
+  will-change:opacity, transform;
+}
+.travelling .plan.vu{opacity:1; transform:scale(1) translate3d(0,-1.6%,0)}
+/* 23/09 — sur téléphone (390px de large), la boîte 92%×92% d'une scène de 100svh
+   est haute et étroite (ratio ~0,46) alors que les captures sont en paysage
+   (1600×1000, ratio 1,6) : en `contain`, l'image est forcément limitée par la
+   LARGEUR, jamais par la hauteur — augmenter la hauteur de la boîte ne change
+   rien à sa taille (vérifié : fillRatio identique avec inset 4% ou 8%).
+   Le seul levier réel est la largeur : on lui laisse presque tout l'écran. */
+@media (max-width:640px){
+  .travelling .plan{inset:2% 1%}
+}
+.travelling .grain{
+  position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 40%, rgba(12,10,9,.18) 0%, rgba(12,10,9,.74) 62%, rgba(12,10,9,.96) 100%);
+}
+.travelling .paroles{position:absolute; inset:0; display:grid; place-items:center; padding:0 clamp(20px,6vw,80px)}
+.travelling .parole{
+  grid-area:1/1; margin:0; max-width:18ch; text-align:center;
+  font-family:"Playfair Display",Georgia,serif; font-style:italic; font-weight:500;
+  font-size:clamp(28px,5vw,58px); line-height:1.12; letter-spacing:-.015em;
+  opacity:0; transform:translate3d(0,26px,0); transition:opacity .7s ease, transform .9s cubic-bezier(.22,.61,.36,1);
+  text-shadow:0 2px 40px rgba(0,0,0,.6);
+}
+.travelling .parole.vu{opacity:1; transform:translate3d(0,0,0)}
+.travelling .rails{position:relative}
+.travelling .rail{height:100vh}
+.travelling .rails .rail:first-child{margin-top:-100vh}
+
+@media (prefers-reduced-motion:reduce){
+  .travelling .plan{transition:opacity .3s linear; transform:none !important}
+  .travelling .parole{transition:opacity .3s linear; transform:none !important}
+}
+/* Sans JavaScript : les cinq plans restent lisibles les uns sous les autres. */
+.travelling:not(.anime) .plan{position:relative; inset:auto; height:58vh; opacity:1; transform:none}
+.travelling:not(.anime) .scene{position:relative; height:auto}
+.travelling:not(.anime) .paroles{position:relative; inset:auto; display:block}
+.travelling:not(.anime) .parole{opacity:1; transform:none; max-width:none; margin:26px auto; grid-area:auto}
+.travelling:not(.anime) .rails{display:none}
+
+/* ── qui l'a fait ──────────────────────────────────────────────────────── */
+.signature{
+  display:grid; grid-template-columns:minmax(0,1fr); gap:26px; align-items:start;
+  border-left:2px solid var(--rouge); padding-left:26px; max-width:70ch;
+}
+.signature p{margin:0 0 16px; color:var(--encre-2)}
+.signature .nom{color:var(--encre); font-weight:700}
+
+/* ── questions ─────────────────────────────────────────────────────────── */
+details{border-top:1px solid var(--ligne); padding:20px 0}
+details:last-of-type{border-bottom:1px solid var(--ligne)}
+summary{cursor:pointer; font-weight:700; font-size:clamp(17px,1.5vw,21px); list-style:none; display:flex; justify-content:space-between; gap:16px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+"; color:var(--rouge); font-weight:700; font-size:22px; line-height:1}
+details[open] summary::after{content:"–"}
+details p{margin:14px 0 0; color:var(--encre-2); max-width:78ch; font-size:17px}
+
+/* ── fin ───────────────────────────────────────────────────────────────── */
+.fin{text-align:center; border-bottom:none}
+.fin h2{margin-inline:auto; max-width:20ch}
+.fin .actions{justify-content:center}
+footer{padding:34px 0 60px; color:var(--sourdine); font-size:14px; text-align:center}
+footer a{color:var(--encre-2)}
+
+@media (max-width:640px){
+  .ouverture .voile{background:linear-gradient(180deg,rgba(12,10,9,.9) 0%,rgba(12,10,9,.94) 100%)}
+  .bandeau .bouton{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="bandeau">
+  <div class="enveloppe">
+    <a class="marque" href="/">LENNY</a>
+    <a class="bouton" href="/?apercu">Voir le site — 15 minutes</a>
+  </div>
+</header>
+
+<section class="travelling" id="travelling" aria-label="Le métier, en cinq plans">
+  <div class="scene">
+    <div class="plans">
+      <figure class="plan" data-plan="0" style="--image:url('images-site/accueil.jpg')"></figure>
+      <figure class="plan" data-plan="1" style="--image:url('images-site/modules.jpg')"></figure>
+      <figure class="plan" data-plan="2" style="--image:url('images-site/module.jpg')"></figure>
+      <figure class="plan" data-plan="3" style="--image:url('images-site/droit.jpg')"></figure>
+      <figure class="plan" data-plan="4" style="--image:url('images-site/syndic.jpg')"></figure>
+    </div>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="paroles">
+      <h1 class="parole" data-plan="0">Voilà l'outil.</h1>
+      <p class="parole" data-plan="1">Il révise ça.</p>
+      <p class="parole" data-plan="2">Le soir, chez lui.</p>
+      <p class="parole" data-plan="3">Vous, vous ne faites rien.</p>
+      <p class="parole" data-plan="4">Et il arrive en sachant.</p>
+    </div>
+  </div>
+  <div class="rails" aria-hidden="true">
+    <div class="rail" data-plan="0"></div><div class="rail" data-plan="1"></div>
+    <div class="rail" data-plan="2"></div><div class="rail" data-plan="3"></div>
+    <div class="rail" data-plan="4"></div>
+  </div>
+</section>
+
+
+<section>
+  <div class="enveloppe">
+    <h2>Le problème n'est pas son sérieux, c'est votre temps.</h2>
+    <!-- 23/09 — raccourci. -->
+    <p class="texte">
+      Vous n'avez pas trois heures par semaine pour réexpliquer la VEFA, les
+      mandats ou la loi Hoguet.
+      <strong>Ce que vous n'expliquez pas maintenant, vous l'expliquerez plus
+      tard — sur un vrai dossier, avec un client en face.</strong>
+    </p>
+  </div>
+</section>
+
+<section id="dedans">
+  <div class="enveloppe">
+    <h2>Ce qu'il y a dedans</h2>
+    <div class="grille">
+
+      <article class="carte">
+        <div class="image" style="background-image:url('images/mod-interieur.jpg')"></div>
+        <div class="voile-carte"></div>
+        <div class="dedans">
+          <span class="chiffre">30</span>
+          <h3>modules de cours</h3>
+          <!-- 23/09 — raccourci. -->
+          <p>Accueil, mandats, financement, acte de construire. Chacun affiche sa durée.</p>
+        </div>
+      </article>
+
+      <article class="carte">
+        <div class="image" style="background-image:url('images/mod-estimation.jpg')"></div>
+        <div class="voile-carte"></div>
+        <div class="dedans">
+          <span class="chiffre">1 014</span>
+          <h3>questions corrigées</h3>
+          <p>Chacune avec sa correction expliquée.</p>
+        </div>
+      </article>
+
+      <article class="carte">
+        <div class="image" style="background-image:url('images/mod-justice.jpg')"></div>
+        <div class="voile-carte"></div>
+        <div class="dedans">
+          <span class="chiffre">44 · 24</span>
+          <h3>définitions et devoirs</h3>
+          <!-- 23/09 — raccourci. -->
+          <p>Hoguet, ALUR, DPE, VEFA. Et 24 mises en situation.</p>
+        </div>
+      </article>
+
+      <article class="carte">
+        <div class="image" style="background-image:url('images/mod-ratios.jpg')"></div>
+        <div class="voile-carte"></div>
+        <div class="dedans">
+          <span class="chiffre">8</span>
+          <h3>calculatrices, et le duel</h3>
+          <!-- 23/09 — raccourci. -->
+          <p>Prêt, HCSF, rendement, viager. Et un duel hebdomadaire entre deux
+             étudiants, pour situer son alternant sans le tester soi-même.</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── QUI S'EN SERT DÉJÀ ───────────────────────────────────────────────────
+     Le chiffre n'est pas une estimation : `lenny-gate.js` déclare 49 codes d'accès,
+     dont un d'administration — donc 48 accès étudiants ouverts. On dit « ouverts »
+     et pas « utilisateurs actifs », parce que c'est ce qu'on peut prouver.
+     Un gérant ne croit pas un produit qui n'a servi à personne. -->
+<section id="deja">
+  <div class="enveloppe">
+    <h2>Il ne sort pas de nulle part.</h2>
+    <!-- 23/09 — raccourci. -->
+    <p class="texte">
+      <strong>48 accès sont ouverts</strong> pour des étudiants de BTS Professions
+      Immobilières, la promotion de Lenny à l'INSEEC. Pas un projet d'école : l'outil
+      qu'ils utilisent vraiment, tous les jours.
+    </p>
+  </div>
+</section>
+
+<!-- ── TOUT CE QU'IL Y A DEDANS ────────────────────────────────────────────
+     Vingt fonctions, deux ou trois mots chacune. Lenny, le 23/09 : « les tuteurs
+     n'ont pas le temps, il faut pas beaucoup de texte ». Une grille se balaie en
+     cinq secondes ; un paragraphe demande qu'on s'assoie.
+     Chaque ligne correspond à un fichier réel du site (lenny-*.js) — rien d'inventé. -->
+<section id="fonctions">
+  <div class="enveloppe">
+    <h2>Tout ce qu'il y a dedans</h2>
+    <div class="fonctions">
+      <div class="fonction"><span class="f-titre">Cours</span><span class="f-sous">30 modules, 6 h 44</span></div>
+      <div class="fonction"><span class="f-titre">Quiz</span><span class="f-sous">1 014 questions</span></div>
+      <div class="fonction"><span class="f-titre">Examen blanc</span><span class="f-sous">chronométré</span></div>
+      <div class="fonction"><span class="f-titre">Devoirs</span><span class="f-sous">24 sujets</span></div>
+      <div class="fonction"><span class="f-titre">Exercices</span><span class="f-sous">20 dossiers de calcul</span></div>
+      <div class="fonction"><span class="f-titre">Calculatrices</span><span class="f-sous">prêt, HCSF, viager</span></div>
+      <div class="fonction"><span class="f-titre">Révisions du jour</span><span class="f-sous">répétition espacée</span></div>
+      <div class="fonction"><span class="f-titre">Le moment formule</span><span class="f-sous">30 niveaux</span></div>
+      <div class="fonction"><span class="f-titre">Duel</span><span class="f-sous">deux étudiants</span></div>
+      <div class="fonction"><span class="f-titre">Points et niveaux</span><span class="f-sous">séries, badges</span></div>
+      <div class="fonction"><span class="f-titre">Assistant</span><span class="f-sous">il répond aux questions</span></div>
+      <div class="fonction"><span class="f-titre">Glossaire</span><span class="f-sous">44 définitions</span></div>
+      <div class="fonction"><span class="f-titre">Formulaire</span><span class="f-sous">toutes les formules</span></div>
+      <div class="fonction"><span class="f-titre">Vidéos</span><span class="f-sous">10 vidéos</span></div>
+      <div class="fonction"><span class="f-titre">Approfondissements</span><span class="f-sous">68 chapitres</span></div>
+      <div class="fonction"><span class="f-titre">Recherche</span><span class="f-sous">dans tout le site</span></div>
+      <div class="fonction"><span class="f-titre">Ma progression</span><span class="f-sous">radar par matière</span></div>
+      <div class="fonction"><span class="f-titre">Documents</span><span class="f-sous">programme officiel</span></div>
+      <div class="fonction"><span class="f-titre">Nouveautés</span><span class="f-sous">ce qui vient d'arriver</span></div>
+      <div class="fonction"><span class="f-titre">Mémos</span><span class="f-sous">15 fiches de synthèse</span></div>
+      <div class="fonction"><span class="f-titre">Fiches d'étude</span><span class="f-sous">262 cartes à réviser</span></div>
+      <div class="fonction"><span class="f-titre">Avis</span><span class="f-sous">pouce vert, pouce rouge</span></div>
+    </div>
+  </div>
+</section>
+<!-- ── LE PROGRAMME, EN ENTIER ──────────────────────────────────────────────
+     Les 30 modules réels, lus dans `lenny-app.js` (window.LENNY_MODULES), la liste
+     que l'application utilise vraiment. `data.js` n'en déclare que 23 : c'est celle-là
+     que j'avais prise au premier jet, et sept modules manquaient (trouvé par Lenny,
+     confirmé par lyncee le 23/09/2026).
+     Quatre familles décidées par Lenny. Les huit modules tagués « Acte de construire »
+     sont rangés en Transaction : un négociateur vend en VEFA, lit des plans et vérifie
+     des surfaces. C'est un choix éditorial, pas une lecture du fichier. -->
+<!-- ── LE TRAVELLING — 23/09 : ramené de cinq plans à deux.
+     Mes cinq captures montraient toutes le MÊME écran du site : cinq écrans de
+     défilement pour une seule information. Deux suffisent, et le lecteur arrive
+     plus vite au bouton.
+     ── ancien commentaire ────────────────────────────────────────────────────────
+     Deux plans qui se croisent pendant que la page descend. La caméra ne saute
+     jamais : chaque image dérive lentement (échelle et translation), et le
+     fondu se fait sur le défilement, pas sur une minuterie — donc le lecteur
+     mène le mouvement, il ne le subit pas.
+     Tout est en CSS et en transform : aucune image n'est redimensionnée à
+     chaque image de l'animation, c'est le compositeur qui travaille. Sans
+     JavaScript, on voit quand même les cinq plans les uns sous les autres.
+     `prefers-reduced-motion` coupe la dérive : une belle page qui donne mal au
+     cœur n'est pas une belle page. -->
+<section id="programme">
+  <div class="enveloppe">
+    <h2>Le programme, en entier</h2>
+    <p class="texte">30 modules, 6 h 44 de lecture. Chacun se lit seul, dans l'ordre qu'il veut.</p>
+
+    <div class="familles">
+
+      <div class="famille">
+        <div class="tete-famille">
+          <h3>Transaction</h3>
+          <span class="compte">17 modules · 3 h 44</span>
+        </div>
+        <ul class="modules">
+          <li><span class="titre-module">Accueil &amp; Découverte</span><span class="duree">8 min</span></li>
+          <li><span class="titre-module">Entreprises &amp; Statuts</span><span class="duree">12 min</span></li>
+          <li><span class="titre-module">Les Intervenants à l'Acte de Construire</span><span class="duree">16 min</span></li>
+          <li><span class="titre-module">Les Assurances de la Construction</span><span class="duree">18 min</span></li>
+          <li><span class="titre-module">Contrats &amp; Passation des Marchés</span><span class="duree">14 min</span></li>
+          <li><span class="titre-module">La VEFA — Vente en État Futur d'Achèvement</span><span class="duree">14 min</span></li>
+          <li><span class="titre-module">Les Plans</span><span class="duree">14 min</span></li>
+          <li><span class="titre-module">Les Différentes Surfaces</span><span class="duree">12 min</span></li>
+          <li><span class="titre-module">Les Contraintes à l'Acte de Construire</span><span class="duree">20 min</span></li>
+          <li><span class="titre-module">L'Acte de Construire — Autorisations &amp; Normes</span><span class="duree">22 min</span></li>
+          <li><span class="titre-module">La Prospection</span><span class="duree">10 min</span></li>
+          <li><span class="titre-module">Objectifs &amp; Ratios</span><span class="duree">8 min</span></li>
+          <li><span class="titre-module">Diagnostics Immobiliers</span><span class="duree">10 min</span></li>
+          <li><span class="titre-module">Estimation &amp; Avis de Valeur</span><span class="duree">12 min</span></li>
+          <li><span class="titre-module">Viager &amp; Démembrement</span><span class="duree">10 min</span></li>
+          <li><span class="titre-module">Mandats &amp; Dossier</span><span class="duree">12 min</span></li>
+          <li><span class="titre-module">Financement Immobilier</span><span class="duree">12 min</span></li>
+        </ul>
+      </div>
+
+      <div class="famille">
+        <div class="tete-famille">
+          <h3>Syndic</h3>
+          <span class="compte">1 module · 16 min</span>
+        </div>
+        <ul class="modules">
+          <li><span class="titre-module">La Gestion du Personnel de la Copropriété</span><span class="duree">16 min</span></li>
+        </ul>
+      </div>
+
+      <div class="famille">
+        <div class="tete-famille">
+          <h3>Droit</h3>
+          <span class="compte">8 modules · 2 h 02</span>
+        </div>
+        <ul class="modules">
+          <li><span class="titre-module">Les Professions de l'Immobilier</span><span class="duree">20 min</span></li>
+          <li><span class="titre-module">La Propriété Immobilière</span><span class="duree">12 min</span></li>
+          <li><span class="titre-module">Les Sources du Droit</span><span class="duree">14 min</span></li>
+          <li><span class="titre-module">Les Sources Applicables aux Pros</span><span class="duree">16 min</span></li>
+          <li><span class="titre-module">L'Organisation Judiciaire</span><span class="duree">14 min</span></li>
+          <li><span class="titre-module">Régimes Matrimoniaux, PACS &amp; Union Libre</span><span class="duree">16 min</span></li>
+          <li><span class="titre-module">Le Droit de la Preuve</span><span class="duree">12 min</span></li>
+          <li><span class="titre-module">Le Droit des Contrats</span><span class="duree">18 min</span></li>
+        </ul>
+      </div>
+
+      <div class="famille">
+        <div class="tete-famille">
+          <h3>Synthèse</h3>
+          <span class="compte">4 modules · 42 min</span>
+        </div>
+        <ul class="modules">
+          <li><span class="titre-module">Réglementation Environnementale &amp; Valeur Verte</span><span class="duree">14 min</span></li>
+          <li><span class="titre-module">Urbanisme &amp; Construction</span><span class="duree">12 min</span></li>
+          <li><span class="titre-module">Écoquartier &amp; Ville Durable</span><span class="duree">10 min</span></li>
+          <li><span class="titre-module">Synthèse &amp; Règles d'or</span><span class="duree">6 min</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="enveloppe">
+    <h2>Qui l'a fait</h2>
+    <div class="signature">
+      <!-- 23/09 — raccourci. -->
+      <p><span class="nom">Lenny Agamakou</span>, étudiant en BTS Professions
+         Immobilières à l'INSEEC, promotion 2025-2026. Construit pour réviser son
+         propre examen, ouvert ensuite à d'autres étudiants du même BTS.</p>
+      <p>Pas écrit par quelqu'un qui a lu le programme de loin : par quelqu'un qui
+         le passe. PNV et FAI, DPE et ERP — il les a confondues lui aussi, avant de
+         les fixer.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="enveloppe">
+    <h2>Trois questions qu'on nous pose</h2>
+
+    <details>
+      <summary>Est-ce que ça remplace la formation qu'on lui donne en agence ?</summary>
+      <!-- 23/09 — raccourci. -->
+      <p>Non. C'est un support de révision, pas un tuteur : il apprend le métier
+         avec vous, l'outil s'occupe de la théorie à retenir pour l'examen.</p>
+    </details>
+
+    <details>
+      <summary>Un accès peut-il être partagé entre plusieurs alternants ?</summary>
+      <p>Un code, un appareil. S'il sert ailleurs, le précédent se déconnecte.</p>
+    </details>
+
+    <details>
+      <summary>Qu'est-ce qu'on peut suivre de son côté ?</summary>
+      <!-- 23/09 — raccourci. -->
+      <p>Le duel hebdomadaire compare deux étudiants. Les devoirs se font dans
+         l'outil mais ne sont pas encore notés automatiquement. Pas un tableau de
+         supervision : pensé pour l'étudiant.</p>
+    </details>
+  </div>
+</section>
+
+
+
+<!-- 23/09 — L'ACTION FINALE EST DE REGARDER, PAS D'ÉCRIRE. Un gérant qui doit
+     rédiger un mail pour voir un produit ne le voit jamais. Le mail reste, en
+     second, pour celui qui a déjà vu et qui veut la suite. -->
+<section class="fin" id="acces">
+  <div class="enveloppe">
+    <h2>Quinze minutes suffisent à vous faire un avis.</h2>
+    <p class="texte" style="margin-inline:auto">
+      Le site s'ouvre sans compte ni mot de passe. Donnez le lien à votre alternant.
+    </p>
+    <div class="actions">
+      <a class="bouton" href="/?apercu">Voir le site — 15 minutes</a>
+      <a class="bouton fantome" href="mailto:lenny.agamakou.pro@gmail.com?subject=Acc%C3%A8s%20pour%20notre%20alternant%20-%20BTS%20Professions%20Immobili%C3%A8res&amp;body=Bonjour%2C%0A%0AJe%20souhaite%20un%20acc%C3%A8s%20pour%20notre%20alternant.%0A%0AAgence%20%3A%20%0AVille%20%3A%20%0A%0AMerci.">Écrire à Lenny</a>
+    </div>
+    <p class="sous-bouton">Rien à installer, rien à remplir.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="enveloppe">
+    <a href="/">pibts.netlify.app</a> · Lenny Agamakou · BTS Professions Immobilières
+  </div>
+</footer>
+
+<script>
+/* LE TRAVELLING — un plan par rail traversé.
+   On n'écoute pas l'événement de défilement : un IntersectionObserver coûte
+   moins cher et ne bloque pas le fil principal. Chaque rail fait la hauteur de
+   l'écran ; quand son milieu croise le milieu de la fenêtre, son plan et sa
+   phrase prennent la main. Le mouvement de caméra est porté par la transition
+   CSS, donc c'est le compositeur qui travaille, pas le JavaScript. */
+(function () {
+  var section = document.getElementById("travelling");
+  if (!section || !("IntersectionObserver" in window)) return;   // sans lui, la version empilée reste lisible
+  section.classList.add("anime");
+
+  var plans = section.querySelectorAll(".plan");
+  var paroles = section.querySelectorAll(".parole");
+  var rails = section.querySelectorAll(".rail");
+  var courant = -1;
+
+  function montrer(i) {
+    if (i === courant) return;
+    courant = i;
+    for (var k = 0; k < plans.length; k++) {
+      plans[k].classList.toggle("vu", k === i);
+      paroles[k].classList.toggle("vu", k === i);
+    }
+  }
+  montrer(0);
+
+  var guetteur = new IntersectionObserver(function (entrees) {
+    entrees.forEach(function (e) {
+      if (e.isIntersecting) montrer(Number(e.target.dataset.plan));
+    });
+  }, { rootMargin: "-50% 0px -50% 0px", threshold: 0 });
+
+  for (var i = 0; i < rails.length; i++) guetteur.observe(rails[i]);
+})();
+</script>
+
+<!-- Le mode édition ne se charge QUE si l'adresse contient « ?edition ».
+     Les visiteurs de pibts.netlify.app n'en voient pas une ligne. -->
+<script src="edition.js" defer></script>
+
+</body>
+</html>
