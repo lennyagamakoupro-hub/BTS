@@ -76,9 +76,43 @@
     // 26/09 — Lenny : « retire les petits commentaires, pôle syndic, S1, 16 min,
     // toutes ces infos » : le crédit, les infos et le compteur ne s'affichent plus.
     ".hc-credit,.hc-meta,.hc-rail{display:none!important}",
+    // 26/09 — Lenny : « la barre de navigation avec les cartes, on va la retirer,
+    // mets des flèches à la place à gauche et à droite, et le sommaire juste avec
+    // le nom de chaque module à un endroit qui gêne pas ». La bande reste dans le
+    // code, cachée ; on glisse désormais sur toute la scène.
+    ".hc-bande{display:none!important}",
+    ".hc{touch-action:pan-y}",
+    ".hc-fl{all:unset;position:absolute;top:50%;z-index:4;width:52px;height:52px;margin-top:-26px;border-radius:50%;cursor:pointer;",
+    "display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.35);",
+    "-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:opacity .25s ease,background .15s ease,transform .15s ease}",
+    ".hc-fl:hover{background:rgba(0,0,0,.5);transform:scale(1.06)}",
+    ".hc-fl:focus-visible{outline:2px solid #fff;outline-offset:3px}",
+    ".hc-fl[disabled]{opacity:0;pointer-events:none}",
+    ".hc-fl.g{left:20px}.hc-fl.d{right:20px}",
+    ".hc-som{position:absolute;z-index:4;right:24px;top:calc(var(--nav-h,68px) + 22px);margin:0;padding:0;list-style:none;text-align:right;",
+    "max-height:calc(50% - var(--nav-h,68px) - 60px);overflow:auto;scrollbar-width:none}",
+    ".hc-som::-webkit-scrollbar{display:none}",
+    ".hc-som button{all:unset;cursor:pointer;display:block;padding:3px 0;font:500 13px/1.3 Inter,system-ui,sans-serif;color:rgba(255,255,255,.55);",
+    "text-shadow:0 1px 6px rgba(0,0,0,.6);transition:color .2s ease}",
+    ".hc-som button:hover{color:#fff}",
+    ".hc-som button[aria-current=true]{color:#fff;font-weight:700}",
+    ".hc-som button:focus-visible{outline:1px solid #fff;outline-offset:2px}",
+    ".hc-som-btn{display:none}",
+    // téléphone : le sommaire se replie derrière un petit bouton, en haut à droite
+    "@media (max-width:820px){",
+    ".hc-fl{width:42px;height:42px;margin-top:-21px}.hc-fl.g{left:10px}.hc-fl.d{right:10px}",
+    ".hc-som-btn{all:unset;position:absolute;z-index:5;right:14px;top:calc(var(--nav-h,68px) + 14px);display:block;padding:7px 14px;border-radius:999px;",
+    "font:600 13px/1 Inter,system-ui,sans-serif;color:#fff;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.3);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}",
+    ".hc-som{display:none;right:14px;top:calc(var(--nav-h,68px) + 52px);max-height:55%;padding:10px 14px;border-radius:12px;background:rgba(0,0,0,.72);",
+    "-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}",
+    ".hc.som-ouvert .hc-som{display:block}",
+    ".hc-som button{font-size:14px;padding:6px 0;text-shadow:none}",
+    "}",
     ".hc-bande{position:absolute;left:0;right:0}",
     ".hc-piste{display:flex;align-items:flex-start;cursor:grab;will-change:transform;touch-action:pan-y}",
     ".sector-view[data-sector] .sector-hero.hc-plein{min-height:100vh;min-height:100dvh}",
+    // la grille est cachée : son cadre vide ne doit pas laisser une bande à faire défiler (Lyncée, 26/09)
+    ".sector-hero.hc-plein~.sector-grid-wrap{display:none}",
     ".hc-piste.glisse{cursor:grabbing}",
     ".hc-carte{all:unset;position:relative;flex-shrink:0;overflow:hidden;background:rgba(255,255,255,.05);cursor:inherit;",
     "transition:height .55s " + RESSORT + "}",
@@ -131,6 +165,9 @@
       '<div class="hc-tete"><div class="hc-ligne-tete"><h2 class="hc-titre"></h2><p class="hc-credit hc-mono"></p><div class="hc-meta"></div></div>' +
       '<div class="hc-actions"><button type="button" class="hc-go"><svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M3 1.5 10 6 3 10.5Z" fill="currentColor"/></svg>Démarrer</button></div></div>' +
       '<div class="hc-bande"><div class="hc-piste"></div></div>' +
+      '<button type="button" class="hc-fl g" aria-label="Module précédent"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M15 5 8 12l7 7" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
+      '<button type="button" class="hc-fl d" aria-label="Module suivant"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
+      '<button type="button" class="hc-som-btn" aria-expanded="false">Sommaire</button><ol class="hc-som" aria-label="Sommaire"></ol>' +
       '<div class="hc-rail hc-mono"><div class="chiffres"><span class="ici"></span><span class="tout"></span></div><div class="piste-rail"><div class="curseur"></div></div></div>';
     hote.appendChild(st);
     var fond = st.querySelector(".hc-fond"), tete = st.querySelector(".hc-tete"), titre = st.querySelector(".hc-titre");
@@ -140,6 +177,34 @@
     st.querySelector(".hc-go").addEventListener("click", function () {
       if (opts.onOpen) opts.onOpen(items[index], index);
     });
+
+    var flG = st.querySelector(".hc-fl.g"), flD = st.querySelector(".hc-fl.d");
+    flG.addEventListener("click", function () { aller(index - 1); });
+    flD.addEventListener("click", function () { aller(index + 1); });
+    var som = st.querySelector(".hc-som"), somBtn = st.querySelector(".hc-som-btn");
+    var lignes = items.map(function (it, i) {
+      var li = document.createElement("li"), b = document.createElement("button");
+      b.type = "button"; b.textContent = it.title;
+      b.addEventListener("click", function () { aller(i); ouvrirSom(false); });
+      li.appendChild(b); som.appendChild(li);
+      return b;
+    });
+    function ouvrirSom(o) { st.classList.toggle("som-ouvert", o); somBtn.setAttribute("aria-expanded", o ? "true" : "false"); }
+    somBtn.addEventListener("click", function () { ouvrirSom(!st.classList.contains("som-ouvert")); });
+
+    // Glisser sur toute la scène (la bande n'est plus là) : au-delà de 50 px
+    // à l'horizontale, on passe au module voisin.
+    var geste = null;
+    st.addEventListener("pointerdown", function (e) {
+      if (e.target.closest && e.target.closest("button,ol")) return;
+      geste = { x: e.clientX, y: e.clientY };
+    });
+    st.addEventListener("pointerup", function (e) {
+      if (!geste) return;
+      var dx = e.clientX - geste.x, dy = e.clientY - geste.y; geste = null;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) aller(index + (dx < 0 ? 1 : -1));
+    });
+    st.addEventListener("pointercancel", function () { geste = null; });
 
     var cartes = items.map(function (it, i) {
       var b = document.createElement("button");
@@ -167,7 +232,7 @@
       // tout en bas (Lenny, 26/09), au-dessus de la barre d'onglets du téléphone
       var mtb = document.getElementById("mobile-toolbar");
       var bas = mtb && mtb.offsetHeight ? mtb.offsetHeight + 14 : 0;
-      G.haut = Math.max(0, h - G.fullH - bas);
+      G.haut = Math.max(0, h - bas - Math.max(Math.round(h * 0.04), bas ? 0 : 72));  // au-dessus du bouton rond des outils
       bande.style.top = G.haut + "px"; bande.style.height = G.fullH + "px";
       piste.style.gap = G.gap + "px";
       cartes.forEach(function (c, i) {
@@ -246,6 +311,7 @@
       cur.style.width = 100 / n + "%"; cur.style.left = (index / n) * 100 + "%";
     }
 
+    var attenteFond = 0;
     function aller(i, force) {
       var n = clamp(i, 0, Math.max(0, last));
       if (n === index && !force) { placer(); return; }
@@ -256,7 +322,16 @@
         c.style.height = (k === index ? G.fullH : G.halfH) + "px";
       });
       placer();
-      fondPour(items[index]);
+      // on attend que le doigt se pose : parcourir cinq modules vite ne doit pas
+      // télécharger cinq vidéos (Lyncée, 26/09 : 4,6 Mo pour rien)
+      clearTimeout(attenteFond);
+      var cible = items[index];
+      attenteFond = setTimeout(function () { fondPour(cible); }, force ? 0 : 280);
+      flG.disabled = index === 0; flD.disabled = index === last;
+      lignes.forEach(function (b, k) { b.setAttribute("aria-current", k === index ? "true" : "false"); });
+      if (lignes[index] && lignes[index].scrollIntoView && som.scrollHeight > som.clientHeight) {
+        som.scrollTop = lignes[index].offsetTop - som.clientHeight / 2;
+      }
       ecrire(items[index]);
     }
 
@@ -332,15 +407,17 @@
     aller(opts.defaultIndex || 0, true);
 
     return {
-      destroy: function () { ro.disconnect(); if (st.parentNode) st.parentNode.removeChild(st); }
+      index: function () { return index; },
+      destroy: function () { clearTimeout(attenteFond); ro.disconnect(); if (st.parentNode) st.parentNode.removeChild(st); }
     };
   }
   window.LennyHeroCarrousel = HeroCarrousel;
 
   /* ── branchement sur les pages de secteur ─────────────────────────────── */
-  var instance = null, hoteHc = null, attente = 0;
+  var instance = null, hoteHc = null, attente = 0, secteurHc = "", memoire = {};
 
   function retirer() {
+    if (instance && secteurHc) memoire[secteurHc] = instance.index();
     if (instance) { instance.destroy(); instance = null; }
     if (hoteHc && hoteHc.parentNode) hoteHc.parentNode.removeChild(hoteHc);
     hoteHc = null;
@@ -373,11 +450,13 @@
     });
     grille.classList.add("hc-cachee");
     hero.classList.add("hc-plein");
+    secteurHc = nom;
     hoteHc = document.createElement("div");
     hoteHc.style.cssText = "position:absolute;inset:0;z-index:3";
     hero.appendChild(hoteHc);
     instance = HeroCarrousel(hoteHc, items, {
       label: nom,
+      defaultIndex: Math.min(memoire[nom] || 0, items.length - 1),
       onOpen: function (it) { ouvrirModule(it.id); }
     });
   }
@@ -391,6 +470,13 @@
     new MutationObserver(planifier).observe(g, { childList: true });
     new MutationObserver(function () { if (vue.hidden) retirer(); }).observe(vue, { attributes: true, attributeFilter: ["hidden"] });
     if (!vue.hidden) planifier();
+    // la vidéo de l'accueil tournait en boucle derrière les autres pages (Lyncée, 26/09)
+    var home = document.getElementById("view-home");
+    if (home) new MutationObserver(function () {
+      home.querySelectorAll("video").forEach(function (v) {
+        if (home.hidden) v.pause(); else { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+      });
+    }).observe(home, { attributes: true, attributeFilter: ["hidden"] });
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", demarrer);

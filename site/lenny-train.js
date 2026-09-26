@@ -419,17 +419,20 @@
         if (g) g.classList.add("train-passe");   // le texte et le champ s'effacent
       });
 
-      tl.to(train, { duration: 3.0, p: 1, ease: "power3.out" }, 0);
-      tl.to(voile, { duration: 1.3, foule: 0, ease: "power2.in" }, 0);
+      /* 26/09, Lenny : « faut que toute la foule soit déjà partie » quand le
+         train passe, et « laisse plus de temps au train avant de passer sur
+         le site, ça laisse le temps de tout charger ». Donc : le quai se vide
+         d'abord, la rame n'entre qu'une fois la foule partie, l'arrêt dure
+         deux secondes, et le site ne s'ouvre qu'en fin de départ. */
+      tl.to(voile, { duration: 0.9, foule: 0, ease: "power2.out" }, 0);
+      tl.to(train, { duration: 3.0, p: 1, ease: "power3.out" }, 1.0);
 
-      tl.to({}, { duration: 0.9 });              // l'arrêt en gare
+      tl.to({}, { duration: 2.0 });              // l'arrêt en gare
 
-      tl.call(function () {
-        /* Il repart : on lève le rideau tout de suite, le site se découvre
-           derrière elle au lieu d'attendre qu'elle soit sortie du cadre. */
-        if (typeof window.__trainFini === "function") window.__trainFini();
-      });
       tl.to(train, { duration: 2.2, p: 2, ease: "power2.in" });
+      tl.call(function () {
+        if (typeof window.__trainFini === "function") window.__trainFini();
+      }, null, "-=0.7");
       tl.call(function () { train.visible = false; videosEnMarche(false); });
 
       return tl;
