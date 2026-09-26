@@ -1,0 +1,263 @@
+/* lenny-affiches-modules.css — L'IMAGE DE LA CARTE EST LA PREMIÈRE IMAGE DE SA VIDÉO.
+ *
+ * Demandé par Lenny le 25/09/2026 : « j'aimerais que tous les modules aient
+ * l'image de leur vidéo comme première image, celle qu'on voit quand on
+ * feuillette les cartes, et que tu supprimes les anciennes images ».
+ *
+ * POURQUOI CE N'EST PAS QU'UNE QUESTION DE GOÛT : la vignette montrait une
+ * photo, et au survol la vidéo démarrait sur une tout autre image. Le saut se
+ * voyait. Maintenant l'affiche EST l'image 1 du film : la vidéo se lance sans
+ * qu'on voie de changement.
+ *
+ * L'IMAGE EST POSÉE SUR `.card-art`, PAS SUR `.card-photo`. Premier essai :
+ * seules 19 cartes sur 30 ont changé, parce que onze modules n'avaient jamais
+ * eu de photo — ils affichaient un dessin au trait, et l'élément `.card-photo`
+ * n'existait même pas chez eux. `.card-art`, lui, est toujours là.
+ *
+ * Les anciennes photos restent sur le disque : retirer ce fichier de
+ * index.html les fait toutes revenir.
+ */
+
+[data-mod="m1"] .card-art,
+[data-mod="m1"] .top-art {
+  background-image: url("videos-modules/m1.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="m11"] .card-art,
+[data-mod="m11"] .top-art {
+  background-image: url("videos-modules/m11.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="m2"] .card-art,
+[data-mod="m2"] .top-art {
+  background-image: url("videos-modules/m2.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="m3"] .card-art,
+[data-mod="m3"] .top-art {
+  background-image: url("videos-modules/m3.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="m4"] .card-art,
+[data-mod="m4"] .top-art {
+  background-image: url("videos-modules/m4.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="m5"] .card-art,
+[data-mod="m5"] .top-art {
+  background-image: url("videos-modules/m5.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="m6"] .card-art,
+[data-mod="m6"] .top-art {
+  background-image: url("videos-modules/m6.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="m6b"] .card-art,
+[data-mod="m6b"] .top-art {
+  background-image: url("videos-modules/m6b.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="m8"] .card-art,
+[data-mod="m8"] .top-art {
+  background-image: url("videos-modules/m8.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="macte1"] .card-art,
+[data-mod="macte1"] .top-art {
+  background-image: url("videos-modules/macte1.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="macte2"] .card-art,
+[data-mod="macte2"] .top-art {
+  background-image: url("videos-modules/macte2.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="macte3"] .card-art,
+[data-mod="macte3"] .top-art {
+  background-image: url("videos-modules/macte3.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="macte4"] .card-art,
+[data-mod="macte4"] .top-art {
+  background-image: url("videos-modules/macte4.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="macte5"] .card-art,
+[data-mod="macte5"] .top-art {
+  background-image: url("videos-modules/macte5.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="macte6"] .card-art,
+[data-mod="macte6"] .top-art {
+  background-image: url("videos-modules/macte6.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="macte7"] .card-art,
+[data-mod="macte7"] .top-art {
+  background-image: url("videos-modules/macte7.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="macte8"] .card-art,
+[data-mod="macte8"] .top-art {
+  background-image: url("videos-modules/macte8.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="mdcontrats"] .card-art,
+[data-mod="mdcontrats"] .top-art {
+  background-image: url("videos-modules/mdcontrats.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="mddeonto"] .card-art,
+[data-mod="mddeonto"] .top-art {
+  background-image: url("videos-modules/mddeonto.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="mdfamille"] .card-art,
+[data-mod="mdfamille"] .top-art {
+  background-image: url("videos-modules/mdfamille.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="mdjustice"] .card-art,
+[data-mod="mdjustice"] .top-art {
+  background-image: url("videos-modules/mdjustice.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="mdpreuve"] .card-art,
+[data-mod="mdpreuve"] .top-art {
+  background-image: url("videos-modules/mdpreuve.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="mdroit"] .card-art,
+[data-mod="mdroit"] .top-art {
+  background-image: url("videos-modules/mdroit.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="mdsources"] .card-art,
+[data-mod="mdsources"] .top-art {
+  background-image: url("videos-modules/mdsources.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="mperso"] .card-art,
+[data-mod="mperso"] .top-art {
+  background-image: url("videos-modules/mperso.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="mprop"] .card-art,
+[data-mod="mprop"] .top-art {
+  background-image: url("videos-modules/mprop.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="murba"] .card-art,
+[data-mod="murba"] .top-art {
+  background-image: url("videos-modules/murba.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="mvert"] .card-art,
+[data-mod="mvert"] .top-art {
+  background-image: url("videos-modules/mvert.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="mville"] .card-art,
+[data-mod="mville"] .top-art {
+  background-image: url("videos-modules/mville.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="syn"] .card-art,
+[data-mod="syn"] .top-art {
+  background-image: url("videos-modules/syn.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+/* Les huit LOIS, ajoutées le 25/09 : elles n'avaient jamais eu d'image,
+   seulement un aplat de couleur. */
+[data-mod="alur"] .card-art,
+[data-mod="alur"] .top-art {
+  background-image: url("videos-modules/alur.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="carrez"] .card-art,
+[data-mod="carrez"] .top-art {
+  background-image: url("videos-modules/carrez.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="climat"] .card-art,
+[data-mod="climat"] .top-art {
+  background-image: url("videos-modules/climat.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="elan"] .card-art,
+[data-mod="elan"] .top-art {
+  background-image: url("videos-modules/elan.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="hoguet"] .card-art,
+[data-mod="hoguet"] .top-art {
+  background-image: url("videos-modules/hoguet.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="lemoine"] .card-art,
+[data-mod="lemoine"] .top-art {
+  background-image: url("videos-modules/lemoine.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="neiertz"] .card-art,
+[data-mod="neiertz"] .top-art {
+  background-image: url("videos-modules/neiertz.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-mod="scrivener"] .card-art,
+[data-mod="scrivener"] .top-art {
+  background-image: url("videos-modules/scrivener.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+/* Les anciennes couches se retirent : la photo d'avant, son voile de couleur,
+   et le dessin au trait qui servait aux modules sans image. */
+[data-mod] .card-photo { display: none !important; }
+[data-mod] .card-wash { opacity: .14 !important; }
+[data-mod] .card-art > svg,
+[data-mod] .top-art > svg,
+[data-mod] .art-glyph { display: none !important; }
+
+/* Le numéro et le titre restent lisibles par-dessus la photo. */
+[data-mod] .card-num,
+[data-mod] .art-title-top { position: relative; z-index: 2; text-shadow: 0 2px 12px rgba(12,10,9,.9); }

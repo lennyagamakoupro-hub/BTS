@@ -1,0 +1,377 @@
+/* lenny-porte-classe.css — LA PORTE DEVIENT UNE COUR DE RÉCRÉ.
+ *
+ * Demandé par Lenny le 25/09/2026 : remplacer l'écran d'authentification par
+ * une foule qui marche, avec « Rejoins notre classe » dessus, pour faire
+ * comprendre à l'alternant d'une entreprise qu'il rejoint les cours de VRAIS
+ * élèves.
+ *
+ * LE CHOIX QUI DEMANDE UNE EXPLICATION : cet écran passe en clair, alors que
+ * tout le site est noir. Ce n'est pas une incohérence, c'est la porte. Les
+ * personnages sont dessinés au trait noir pour un fond clair ; sur du #0c0a09
+ * ils disparaissent. Et le contraste entre la cour lumineuse et la salle
+ * sombre qui s'ouvre derrière donne exactement la sensation qu'on entre.
+ *
+ * Cette feuille se charge APRÈS lenny-gate.css et ne fait que la recouvrir :
+ * on retire la ligne d'index.html et l'ancienne porte revient intacte.
+ */
+
+/* ── le fond passe en clair ─────────────────────────────────────────────── */
+#lenny-gate {
+  background: #f6f2ed !important;
+  color: #14100e;
+}
+
+/* L'ancien diaporama d'images de biens n'a plus lieu d'être : on ne vend plus
+   des appartements, on montre une classe. */
+#lenny-gate .gate-stage,
+#lenny-gate .gate-slides,
+#lenny-gate .gate-veil { display: none !important; }
+
+/* ── la foule ───────────────────────────────────────────────────────────── */
+#gate-foule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 78vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── le texte par-dessus ────────────────────────────────────────────────── */
+#lenny-gate .gate-top,
+#lenny-gate .gate-panel { position: relative; z-index: 2; }
+
+#lenny-gate .gate-brand { color: #e50914; }
+
+#lenny-gate .gate-h1 {
+  font-family: Manrope, ui-sans-serif, sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.4rem, 8vw, 5.2rem);
+  line-height: .96;
+  letter-spacing: -.035em;
+  color: #14100e;
+  margin: 0 0 14px;
+  text-wrap: balance;
+}
+
+#lenny-gate .gate-sous {
+  font-family: Manrope, ui-sans-serif, sans-serif;
+  font-size: clamp(.98rem, 2.4vw, 1.18rem);
+  font-weight: 500;
+  color: #6b625c;
+  margin: 0;
+  max-width: 34ch;
+  margin-inline: auto;
+}
+
+/* ── le champ et le bouton, relus pour le fond clair ────────────────────── */
+#lenny-gate .gate-field {
+  background: #fff;
+  border: 1px solid #ddd4cb;
+  box-shadow: 0 1px 2px rgba(20, 16, 14, .06);
+}
+#lenny-gate .gate-input { color: #14100e; }
+#lenny-gate .gate-input::placeholder { color: #a79c94; }
+#lenny-gate .gate-eye { color: #6b625c; }
+
+#lenny-gate .gate-btn {
+  background: #e50914;
+  color: #fff;
+  border: none;
+  box-shadow: 0 10px 24px -10px rgba(229, 9, 20, .7);
+}
+#lenny-gate .gate-btn:hover { filter: brightness(1.08); }
+
+#lenny-gate .gate-msg { color: #b3121b; }
+
+#lenny-gate .gate-foot-badge {
+  color: #6b625c;
+  border-color: #ddd4cb;
+  background: rgba(255, 255, 255, .7);
+}
+
+/* L'attribution à Skiper UI : la licence libre l'exige, elle n'est pas
+   décorative. Discrète, mais présente et cliquable. */
+#lenny-gate .gate-credit {
+  display: block;
+  margin-top: 10px;
+  font: 500 .68rem/1 Manrope, sans-serif;
+  letter-spacing: .06em;
+  color: #a79c94;
+  text-decoration: none;
+}
+#lenny-gate .gate-credit:hover { color: #6b625c; text-decoration: underline; }
+
+/* Sur un téléphone la foule prend moins de place, sinon elle mange le champ. */
+@media (max-width: 720px) {
+  #gate-foule { height: 52vh; }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   LISIBILITÉ, deuxième passe.
+   Premier essai : la foule mangeait le champ de code et le bouton, le titre
+   se lisait à moitié, et l'ancien bandeau de modules défilait encore derrière
+   les personnages. Une belle porte qu'on ne sait pas ouvrir n'est pas une
+   porte.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* 1. La foule descend et s'éclaircit : elle reste le décor, elle cesse d'être
+      l'obstacle. Les personnages n'occupent plus que le bas de l'écran. */
+/* 25/09, correction — LE FONDU COUPAIT LES TÊTES. Lenny : « y a un flou
+   au-dessus d'eux qui coupe leur tête ». Le dégradé effaçait les 22 % du haut
+   de la toile, et c'est exactement la hauteur où se trouvent les visages des
+   personnages du premier rang. La toile était en plus trop courte pour eux :
+   une silhouette fait environ 42 % de la hauteur d'écran, la toile en faisait
+   40. On la rallonge, et le fondu se réduit à une lisière. */
+#gate-foule {
+  height: 64vh;
+  /* 25/09 — PLEINE OPACITÉ. Les 8 % de transparence servaient à adoucir la
+     foule derrière le texte ; c'est le halo qui fait ce travail maintenant.
+     En attendant, ils délavaient aussi le noir du train : ses fenêtres
+     sortaient gris ardoise au lieu de noir. */
+  opacity: 1;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 7%, #000 100%);
+          mask-image: linear-gradient(to bottom, transparent 0%, #000 7%, #000 100%);
+}
+
+/* 2. Le panneau remonte au-dessus de la foule et pose son propre fond.
+      Le dégradé vers le haut évite la découpe nette d'une boîte blanche. */
+#lenny-gate .gate-panel {
+  position: relative;
+  z-index: 3;
+  padding-bottom: clamp(28px, 10vh, 90px);
+  background: linear-gradient(to bottom,
+              rgba(246, 242, 237, 0) 0%,
+              rgba(246, 242, 237, .92) 18%,
+              rgba(246, 242, 237, .98) 42%,
+              rgba(246, 242, 237, 0) 100%);
+}
+
+/* 3. Le titre garde sa place même pendant qu'il s'écrit.
+      Sans hauteur minimale, la machine à écrire fait sauter tout le bloc à
+      chaque lettre et le champ danse sous les doigts. */
+#lenny-gate .gate-hero { min-height: clamp(7rem, 15vh, 11rem); display: grid; align-content: center; }
+#lenny-gate .gate-h1 { font-size: clamp(2rem, 6.2vw, 4rem); }
+
+/* 4. Le champ et le bouton reprennent du contraste et de l'ombre : ils
+      flottent au-dessus de la cour au lieu de s'y fondre. */
+#lenny-gate .gate-field {
+  background: #fff;
+  border: 1.5px solid #cdc2b8;
+  box-shadow: 0 18px 40px -18px rgba(20, 16, 14, .45),
+              0 2px 6px rgba(20, 16, 14, .08);
+}
+#lenny-gate .gate-field.focus { border-color: #e50914; }
+#lenny-gate .gate-btn {
+  box-shadow: 0 20px 44px -16px rgba(229, 9, 20, .75),
+              0 2px 6px rgba(20, 16, 14, .12);
+}
+
+/* 5. L'ancien bandeau de titres de modules défilait sous les personnages :
+      deux animations qui se croisent, on n'en garde qu'une. */
+#lenny-gate .gate-marquee,
+#lenny-gate .gate-ticker,
+#lenny-gate .gate-strip,
+#lenny-gate .gate-bottom { display: none !important; }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   LE FOND BLANC BIZARRE, troisième passe.
+   Lenny : « ouais y a un fond blanc chelou ». Il avait raison : mon dégradé
+   posé sur `.gate-panel` dessinait un rectangle clair à bords nets au milieu
+   de la foule — on voyait la boîte. Un voile doit se sentir, pas se voir.
+   On le remplace par un halo qui part du centre et s'éteint sans bord.
+   ────────────────────────────────────────────────────────────────────────── */
+#lenny-gate .gate-panel {
+  background: none;
+}
+
+/* Le halo vit dans son propre calque, sous le texte, au-dessus de la foule. */
+#lenny-gate .gate-panel::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(900px, 96vw);
+  height: min(620px, 78vh);
+  background: radial-gradient(ellipse at center,
+              rgba(246, 242, 237, .97) 0%,
+              rgba(246, 242, 237, .9) 38%,
+              rgba(246, 242, 237, .55) 62%,
+              rgba(246, 242, 237, 0) 82%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Le bouton était masqué par un style en ligne posé au chargement : sans lui,
+   la porte n'a plus de poignée. */
+#lenny-gate .gate-btn {
+  display: inline-flex !important;
+  width: 100%;
+  margin-top: 14px;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   TROISIÈME RÉGLAGE DE LA PORTE, sur deux remarques de Lenny le 25/09 :
+   « remonte l'endroit où il faut mettre le mot de passe » et « fais en sorte
+   que le texte se coupe pas trop ».
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* 1. LE CHAMP REMONTE. Il était calé au milieu, donc noyé dans la foule qui
+      arrive par le bas. On pousse tout le bloc vers le haut de l'écran :
+      on lit le titre, puis on tape, et les personnages restent au sol. */
+#lenny-gate .gate-panel {
+  justify-content: flex-start;
+  padding-top: clamp(80px, 14vh, 150px);
+}
+
+/* 2. LE TITRE NE SE COUPE PLUS EN PLEIN MOT. `text-wrap: balance` répartit les
+      lignes à peu près également au lieu de laisser un mot seul en bas, et la
+      largeur maximale l'empêche de s'étirer jusqu'aux bords.
+      La machine à écrire ajoute une lettre à la fois : sans hauteur réservée,
+      le bloc entier sautait à chaque caractère. */
+#lenny-gate .gate-hero {
+  min-height: clamp(8rem, 18vh, 13rem);
+  align-content: start;
+}
+#lenny-gate .gate-h1 {
+  max-width: 16ch;
+  margin-inline: auto;
+  text-wrap: balance;
+  hyphens: none;
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
+#lenny-gate .gate-sous {
+  max-width: 30ch;
+  text-wrap: balance;
+}
+
+/* 3. La toile garde sa hauteur : c'est la position de marche, pas la découpe,
+      qui dégage la zone de saisie. */
+#gate-foule { height: 64vh; }
+
+@media (max-width: 720px) {
+  #lenny-gate .gate-panel { padding-top: clamp(50px, 10vh, 90px); }
+  #lenny-gate .gate-h1 { max-width: 12ch; }
+  #gate-foule { height: 56vh; }
+}
+
+/* Quand le train passe, le code est déjà bon : le champ, le bouton et la
+   phrase du dessous n'ont plus de raison d'exister. On ne garde que le titre,
+   pour que le regard aille sur la classe qui monte. */
+#lenny-gate.train-passe .gate-form,
+#lenny-gate.train-passe .gate-sous,
+#lenny-gate.train-passe .gate-foot {
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity .45s ease, transform .45s ease;
+  pointer-events: none;
+}
+#lenny-gate.train-passe .gate-panel::before { opacity: .35; transition: opacity .5s ease; }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   QUATRIÈME RÉGLAGE, 25/09 — LE CODE PASSE AU-DESSUS DES TÊTES.
+   Lenny : « faut que tu montes plus haut le truc du mot de passe », puis
+   « qu'il soit large, plus haut que leur tête ». La toile de la foule occupe
+   les 64 % du bas de l'écran ; tant que le champ vivait au milieu, il tombait
+   au milieu des visages et se battait avec eux. On le remonte AU-DESSUS de la
+   ligne des têtes, et on l'élargit pour qu'il tienne le centre tout seul.
+   ────────────────────────────────────────────────────────────────────────── */
+#lenny-gate .gate-panel {
+  padding-top: clamp(28px, 4vh, 54px);
+  padding-bottom: 0;
+}
+#lenny-gate .gate-hero {
+  min-height: 0;
+  margin-bottom: clamp(14px, 2.4vh, 26px);
+}
+#lenny-gate .gate-form {
+  width: min(680px, 92vw);
+  margin-inline: auto;
+}
+#lenny-gate .gate-field { width: 100%; }
+#lenny-gate .gate-btn { width: 100%; }
+#lenny-gate .gate-sous { margin-bottom: clamp(10px, 1.6vh, 18px); }
+
+/* Le bloc remonte pour de bon : au-dessus de la ligne des têtes, qui commence
+   vers 52 % de la hauteur. Les marges héritées valaient une centaine de
+   pixels à elles seules — c'est elles qui retenaient le champ en bas. */
+#lenny-gate .gate-panel { padding-top: clamp(16px, 2vh, 30px); }
+#lenny-gate .gate-h1 { margin-bottom: 0; }
+#lenny-gate .gate-hero { margin-bottom: 4px; }
+#lenny-gate .gate-sous { margin-top: 0; margin-bottom: 10px; }
+#lenny-gate .gate-form { margin-top: 0; }
+#lenny-gate .gate-btn { margin-top: 10px; }
+
+/* La rame entre en gare : TOUT le reste s'en va. Lenny : « quand il arrive en
+   gare, les gens du dessous disparaissent, et même tout disparaît, le texte
+   etc. ». Le titre part avec le reste — ce qui restait à l'écran se battait
+   avec la rame, et c'est ce qui faisait ce voile sur les visages. */
+#lenny-gate.train-passe .gate-hero,
+#lenny-gate.train-passe .gate-h1,
+#lenny-gate.train-passe .gate-top,
+#lenny-gate.train-passe .gate-form,
+#lenny-gate.train-passe .gate-field,
+#lenny-gate.train-passe .gate-btn,
+#lenny-gate.train-passe .gate-msg,
+#lenny-gate.train-passe .gate-foot,
+#lenny-gate.train-passe .gate-panel::before {
+  opacity: 0;
+  transition: opacity .55s ease;
+  pointer-events: none;
+}
+
+/* ── 25/09 soir — LES RÉGLAGES DE LENNY, FIGÉS ────────────────────────────
+   Faits par Lenny lui-même dans l'éditeur (?editeur), puis collés : titre à
+   41 px, case du code à 354 px, bouton à 344 px, chacun posé où il l'a mis.
+   Mesuré : son écran de déverrouillage est centré, donc ces décalages tombent
+   au même endroit sur 1280, 1440 et 1512 de large. Sur téléphone on ne touche
+   à rien : il n'a réglé que l'ordinateur.
+
+   LE TITRE TIENT TOUJOURS SUR DEUX LIGNES (Lenny : « que le texte qui s'écrit
+   tienne sur 2 lignes tout le temps »). Sa hauteur est fixée à deux lignes,
+   donc la case et le bouton ne sautent plus quand une phrase change de
+   longueur ; et lenny-gate.js réduit la taille des phrases trop longues. */
+@media (min-width: 900px) {
+  #lenny-gate .gate-h1 {
+    font-size: 41px;
+    width: min(640px, 90vw);
+    max-width: none;
+    margin-inline: auto;
+    height: calc(2 * .96em);
+    overflow: hidden;
+    position: relative;
+    left: -50px;
+    top: -159px;   /* mesuré contre l'éditeur de Lenny, feuille d'origine */
+  }
+  #lenny-gate .gate-field {
+    position: relative;
+    left: 71px;
+    top: -133px;
+    width: 354px;
+    max-width: none;
+  }
+  #lenny-gate .gate-btn {
+    position: relative;
+    left: 29px;
+    top: -116px;
+    width: 344px;
+    max-width: none;
+  }
+}
+
+/* 25/09 soir — PLUS DE FLOU BLANC. Lenny : « y a de nouveau le flou blanc ».
+   Deux coupables : le halo clair derrière le texte (il délavait la foule au
+   milieu de l'écran) et l'ombre floue du titre, pensée pour l'ancien fond
+   sombre, qui bavait en gris sur le fond clair. Le champ et le bouton sont
+   opaques : ils se lisent sans voile. */
+#lenny-gate .gate-panel::before { display: none; }
+#lenny-gate .gate-h1 { text-shadow: none; }
+
+/* Le titre a une largeur fixe à toutes les tailles d'écran : sur téléphone il
+   prenait la largeur de son texte, vide au moment où l'on mesure la phrase
+   suivante, et la mesure le réduisait à rien. */
+#lenny-gate .gate-h1 { width: min(640px, 90vw); max-width: none; margin-inline: auto; }

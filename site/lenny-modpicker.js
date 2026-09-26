@@ -270,7 +270,12 @@
     // 📱 Sur téléphone : pas de carrousel 3D (illisible au doigt). On laisse
     // la vraie grille visible — chaque module/titre est lisible — et on
     // garde le popover d'actions du secteur.
-    if (isMobile()) {
+    /* 25/09 — ET SUR ORDINATEUR NON PLUS. Lenny : il veut les cartes façon
+       télé quand on clique sur Transaction, Syndic et Droit. La grille reste
+       donc visible et lenny-cartes-tv.css en fait une rangée d'affiches.
+       Remettre CARROUSEL_3D à true rend le carrousel 3D. */
+    var CARROUSEL_3D = false;
+    if (isMobile() || !CARROUSEL_3D) {
       teardown();
       grid.style.display = "";
       wireTools();

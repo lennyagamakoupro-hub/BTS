@@ -1,0 +1,28 @@
+/* lenny-nav-bas.css — LA BARRE DE NAVIGATION EN BAS DE L'ÉCRAN.
+ *
+ * Lenny, le 26/09/2026 : « mets la barre de navigation en bas ».
+ * Ordinateur seulement : sur téléphone la barre d'outils du bas existe déjà.
+ * Tout ce qui s'ouvrait vers le bas depuis la barre s'ouvre maintenant vers
+ * le haut, et ce qui était posé en bas de l'écran remonte d'une barre.
+ * Retirer ce fichier de index.html remet la barre en haut.
+ */
+@media (min-width: 821px) {
+  .nav {
+    top: auto;
+    bottom: 0;
+    background: linear-gradient(to top, rgba(24,9,10,.72) 0%, rgba(14,7,8,.4) 70%, rgba(0,0,0,0) 100%);
+  }
+  .nav .nav-links a.active::after,
+  .nav .nav-links a.active::before { top: auto; bottom: -8px; }
+
+  /* les menus de la barre s'ouvrent vers le haut */
+  .nav-folder-menu { top: auto; bottom: calc(100% + 10px); transform-origin: bottom right; }
+  .nu-panel { top: auto !important; bottom: calc(var(--nav-h) + 10px) !important; transform-origin: bottom right; }
+
+  /* ce qui vivait au ras du bas remonte au-dessus de la barre */
+  .lag-fab { bottom: calc(var(--nav-h) + 16px); }
+  .lag-nudge { bottom: calc(var(--nav-h) + 26px); }
+  .lag-panel { bottom: calc(var(--nav-h) + 88px); max-height: calc(100vh - var(--nav-h) - 110px); }
+  .sector-tools-btn { bottom: calc(var(--nav-h) + 20px) !important; }
+  .hc-rail { bottom: calc(var(--nav-h) + 16px) !important; }
+}

@@ -1,0 +1,108 @@
+/* lenny-cartes-tv.css — LES CARTES À LA FORME DE LA TÉLÉ.
+ *
+ * Posé le 25/09/2026, après avoir zoomé sur la vidéo que Lenny a filmée de son
+ * téléviseur. Ce qu'on y voit, et qui ne se devine pas :
+ *
+ *   — les cartes NON sélectionnées sont des AFFICHES VERTICALES, étroites ;
+ *   — la carte sélectionnée s'ÉLARGIT en un panneau horizontal, environ trois
+ *     fois plus large que ses voisines ;
+ *   — elle ne grossit pas en zoomant par-dessus les autres : elle pousse la
+ *     rangée. C'est ce qui donne la sensation de sélection à la télécommande.
+ *
+ * Son site faisait l'inverse : toutes les cartes en 16/9 de 280 px, et un zoom
+ * de 1,12 au survol qui passait par-dessus les voisines.
+ *
+ * Ce fichier se charge APRÈS les autres et ne remplace rien : on peut le
+ * retirer d'une ligne dans index.html et tout revient comme avant.
+ */
+
+@media (min-width: 821px) {
+
+  /* --- au repos : une affiche verticale --- */
+  .row-scroll .card,
+  .cards .card {
+    width: 168px;
+    aspect-ratio: 2 / 3;
+    border-radius: 10px;
+    /* La largeur s'anime, donc la rangée s'écarte au lieu de se faire
+       recouvrir. C'est tout le geste de la télé. */
+    transition: width .34s cubic-bezier(.22,.61,.36,1),
+                aspect-ratio .34s cubic-bezier(.22,.61,.36,1),
+                box-shadow .26s ease;
+  }
+
+  /* --- sélectionnée : un panneau horizontal --- */
+  .row-scroll .card:hover,
+  .cards .card:hover {
+    width: 470px;
+    aspect-ratio: 16 / 9;
+    /* On annule le zoom d'origine : il faisait chevaucher les voisines, alors
+       que la télé les écarte. */
+    transform: none !important;
+    z-index: 5;
+    box-shadow: 0 30px 70px -18px rgba(0, 0, 0, .85),
+                inset 0 0 0 2px rgba(229, 9, 20, .9);
+  }
+
+  /* LE TOP 10 AUSSI, demandé par Lenny le 25/09 : « fais pareil sur toutes les
+     rangées ». Il est plus large au repos parce qu'il porte le chiffre géant à
+     gauche de l'affiche — ce chiffre EST son identité, on ne le supprime pas.
+     Il garde donc la même logique, avec ses propres mesures : une affiche un
+     peu plus large au repos, et le même panneau horizontal au survol. */
+  .row-scroll .card.top10 { width: 232px; aspect-ratio: 5 / 6; }
+  .row-scroll .card.top10:hover { width: 520px; aspect-ratio: 16 / 9; }
+  .row-scroll .card.top10 .top-art { height: 100%; }
+
+  /* La photo doit suivre la bascule verticale → horizontale sans se déformer. */
+  .row-scroll .card .card-art,
+  .cards .card .card-art,
+  .sector-grid .card .card-art { width: 100%; height: 100%; }
+  .row-scroll .card .card-photo,
+  .cards .card .card-photo,
+  .sector-grid .card .card-photo { background-size: cover; background-position: center; }
+
+  /* Au repos, l'affiche verticale n'a la place que de son titre ; le reste
+     n'apparaît qu'une fois la carte élargie. */
+  .row-scroll .card .card-overlay,
+  .cards .card .card-overlay { opacity: 0; transition: opacity .22s ease .1s; }
+  .row-scroll .card:hover .card-overlay,
+  .cards .card:hover .card-overlay { opacity: 1; }
+
+  .row-scroll { gap: 10px; align-items: stretch; }
+
+  /* 25/09 — LES PAGES TRANSACTION, SYNDIC ET DROIT PASSENT EN CARTES TÉLÉ.
+     Leur grille devient une rangée qui défile, comme à l'accueil : affiches
+     verticales, et celle qu'on survole s'élargit en poussant les autres. */
+  .sector-grid {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    padding: 30px 48px 40px 0;
+    margin-top: -26px;
+  }
+  .sector-grid::-webkit-scrollbar { display: none; }
+  .sector-grid .card { flex: 0 0 auto; }
+
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   CE QUI EST HORS DE PORTÉE DE CETTE FEUILLE.
+   25/09 — Lenny : « quand je clique sur Syndic, l'animation des cartes qui
+   survolent est déplacée ». Il avait raison : le carrousel en trois dimensions
+   de la page Matière (`.modpick-stage`, celui où les cartes tournent autour
+   d'une île) positionne chaque carte au pixel près avec ses propres transformées.
+   Mes largeurs de rangée les arrachaient de leur orbite.
+   Une feuille qui redessine les rangées d'accueil n'a rien à faire là-dedans. */
+.modpick-stage .card,
+.modpick-stage .card:hover,
+.modpick .card,
+.modpick .card:hover {
+  width: revert-layer !important;
+  aspect-ratio: revert-layer !important;
+  transform: revert-layer !important;
+  transition: revert-layer !important;
+}

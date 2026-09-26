@@ -4,7 +4,7 @@
    ============================================ */
 /* Visuels conservés (stock) */
 .photo-cles          { background-image: url('images/mod-cles.jpg'); }
-.photo-interieur     { background-image: url('images/mod-interieur.jpg'); }
+.photo-interieur     { background-image: url('images-legeres/mod-interieur.webp'); }
 .photo-aerien        { background-image: url('images/mod-aerien.jpg'); }
 .photo-villa-moderne { background-image: url('images/mod-villa-moderne.jpg'); }
 
@@ -14,14 +14,14 @@
 .photo-hotel         { background-image: url('images/mod-hotel.jpg'); }
 .photo-eco           { background-image: url('images/mod-eco.jpg'); }
 .photo-lac           { background-image: url('images/mod-lac.jpg'); }
-.photo-ratios        { background-image: url('images/mod-ratios.jpg'); }
-.photo-estimation    { background-image: url('images/mod-estimation.jpg'); }
+.photo-ratios        { background-image: url('images-legeres/mod-ratios.webp'); }
+.photo-estimation    { background-image: url('images-legeres/mod-estimation.webp'); }
 .photo-provence-g    { background-image: url('images/mod-provence-g.jpg'); }
 .photo-mandat        { background-image: url('images/mod-mandat.jpg'); }
 .photo-finance       { background-image: url('images/mod-finance.jpg'); }
 .photo-synthese      { background-image: url('images/mod-synthese.jpg'); }
 
 /* Visuels modules Droit (S1/S2) */
-.photo-sources-droit { background-image: url('images/mod-sources-droit.jpg'); }
-.photo-sources-pro   { background-image: url('images/mod-sources-pro.jpg'); }
-.photo-justice       { background-image: url('images/mod-justice.jpg'); }
+.photo-sources-droit { background-image: url('images-legeres/mod-sources-droit.webp'); }
+.photo-sources-pro   { background-image: url('images-legeres/mod-sources-pro.webp'); }
+.photo-justice       { background-image: url('images-legeres/mod-justice.webp'); }

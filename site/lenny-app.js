@@ -137,6 +137,10 @@ const LAWS = [
   { id: "neiertz",  num: "NEIERTZ",title: "Loi Neiertz",        year: "1989", desc: "Surendettement des particuliers, commission BdF.", color: "m4" },
   { id: "climat",   num: "CLIMAT", title: "Loi Climat & Résilience", year: "2021", desc: "Interdiction location passoires énergétiques G/F/E.", color: "m5" }
 ];
+/* 25/09 — exposé pour que le mécanisme de survol reconnaisse les lois au
+   même titre que les modules. Aucune autre ligne ne change. */
+window.LENNY_LAWS = LAWS;
+
 
 // ============================================
 // Outro splash — pulses LENNY logo on exit
