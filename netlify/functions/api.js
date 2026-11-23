@@ -8,7 +8,7 @@
 // les réponses depuis le navigateur d'un élève.
 
 const crypto = require("crypto");
-const { getStore } = require("@netlify/blobs");
+const { connectLambda, getStore } = require("@netlify/blobs");
 
 const HEADERS = { "Content-Type": "application/json" };
 const SESSION_TTL_MS = 90 * 1000; // 3x l'intervalle de heartbeat (30s) côté client
@@ -65,6 +65,9 @@ exports.handler = async (event) => {
   const route = (event.path || "").replace(/^\/\.netlify\/functions\/api/, "").replace(/^\/api(?=\/|$)/, "") || "/";
   const qs = event.queryStringParameters || {};
   const segs = route.split("/").filter(Boolean); // ex: ["session","claim"]
+  // Fonction au format classique (exports.handler) : Netlify Blobs a besoin du contexte de
+  // l'appel avant tout getStore (README de @netlify/blobs). Sans lui : internal_error partout.
+  if (event.blobs) connectLambda(event);
 
   try {
     // ---------------------------------------------------------------
