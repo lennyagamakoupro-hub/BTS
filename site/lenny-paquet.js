@@ -8903,8 +8903,9 @@ window.LENNY_VIDEOS = {
 /* ============================================
    LENNY — Couche de données enfichable
    • Par défaut : persistance locale (localStorage) → tout marche hors-ligne.
-   • Si window.LENNY_API_BASE est défini (ex: "https://api.monsite.fr"),
-     bascule automatiquement sur le backend FastAPI + MongoDB.
+   • Si window.LENNY_API_BASE est défini, les avis passent aussi par les
+     fonctions Netlify (netlify/functions/api.js) ; toute erreur retombe en local.
+   • Le radar et l'historique des quiz restent locaux : le serveur ne les sert pas.
    Toutes les méthodes renvoient des Promises.
    Dépend de : MODULES, window.QUIZ / window.STUDY (pour la liste des matières)
    ============================================ */
@@ -8919,8 +8920,6 @@ window.LennyAPI = (function () {
     try {
       const a = auth();
       if (a && a.code) return "u_" + a.code;
-      const fromGate = localStorage.getItem("lenny-access-code");
-      if (fromGate) return "u_" + fromGate;
       let u = localStorage.getItem("lenny-uid");
       if (!u) { u = "u_" + Math.random().toString(36).slice(2, 10); localStorage.setItem("lenny-uid", u); }
       return u;
@@ -9016,7 +9015,9 @@ window.LennyAPI = (function () {
   async function getFeedbackAdmin() {
     if (remote()) {
       try {
-        const r = await fetch(base() + "/api/feedback/admin?user_id=" + encodeURIComponent(userId()));
+        // Le serveur vérifie lui-même que ce code est celui de l'admin.
+        const a = auth();
+        const r = await fetch(base() + "/api/feedback/admin", { headers: { "X-Lenny-Code": (a && a.code) || "" } });
         if (r.ok) {
           const d = await r.json();
           (d.rows || []).forEach(row => {
@@ -9067,17 +9068,6 @@ window.LennyAPI = (function () {
     // Plafond large (5000 résultats) : sert au vrai suivi de progression,
     // mais ne doit jamais grandir sans fin et saturer le quota du navigateur.
     write(HIST_KEY, hist.slice(-5000));
-
-    if (remote()) {
-      const mod = (window.MODULES || []).find(m => m.id === entry.moduleId);
-      try {
-        await fetch(base() + "/api/quiz-result", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...entry, subject: mod ? mod.short : entry.moduleId, user_id: userId(), date: new Date(entry.ts).toISOString() }),
-        });
-      } catch (e) {}
-    }
     return entry;
   }
 
@@ -9100,12 +9090,6 @@ window.LennyAPI = (function () {
 
   async function getRadar(period) {
     const p = parseInt(period, 10) || 14;
-    if (remote()) {
-      try {
-        const r = await fetch(base() + "/api/stats/radar?period=" + p + "&user_id=" + encodeURIComponent(userId()));
-        if (r.ok) return await r.json();
-      } catch (e) {}
-    }
     const hist = read(HIST_KEY, []);
     const now = Date.now();
     const curStart = now - p * DAY;
@@ -13487,19 +13471,13 @@ if (document.readyState === "loading") {
   const QUIZ_LEN = 30;
   const QUESTION_MS = 30000;
 
-  /* ---------- registre des codes connus → prénom (mode "real" uniquement) ---------- */
-  const NAMES = {
-    "LENNY71!": "Lenny", "JRMY-7K4": "Jeremy", "THIB-7K2": "Thibaut",
-    "EDEN-8P3": "Eden", "MANON-71L": "Manon", "DIANE-5R8": "Diane",
-    "JOEL-3M7": "Joël", "JOELLE-9K4": "Joëlle", "EVA-6T2": "Eva",
-  };
-  const CODE_RE = /^[0-9A-ZÀ-Ÿ]{2,}-[0-9A-ZÀ-Ÿ]{2,}$/;
-  function knownCode(code) {
-    return !!NAMES[code] || CODE_RE.test(code) || code === "LENNY71!";
-  }
-  function nameFor(code) {
-    if (NAMES[code]) return NAMES[code];
-    return "Adversaire";
+  /* ---------- code adverse → prénom (mode "real" uniquement) ----------
+     23/11 : ce fichier listait neuf codes EN CLAIR (dont l'admin), servis à
+     tout visiteur. Le prénom vient maintenant de la table d'empreintes du
+     portail (LennyGateName, lenny-gate.js) : un code inconnu est refusé. */
+  async function lookupName(code) {
+    try { return window.LennyGateName ? await window.LennyGateName(code) : null; }
+    catch (e) { return null; }
   }
   function initials(name) {
     const p = name.trim().split(/\s+/);
@@ -13833,7 +13811,7 @@ if (document.readyState === "loading") {
       return;
     }
 
-    const oppName = d.name || nameFor(d.code);
+    const oppName = d.name || "Adversaire";
     paint({ opp: null, oppName, oppTag: null, state: "pending" });
 
     const code = myCode();
@@ -13852,7 +13830,7 @@ if (document.readyState === "loading") {
   function paintReady(d) {
     const m = mount();
     if (!m) return;
-    const oppLabel = d.mode === "bot" ? "un bot" : esc(d.name || nameFor(d.code));
+    const oppLabel = d.mode === "bot" ? "un bot" : esc(d.name || "Adversaire");
     m.innerHTML = `
       <div class="duel-card">
         <div class="duel-head">
@@ -13953,7 +13931,7 @@ if (document.readyState === "loading") {
         <div class="duel-setup">
           <div class="duel-setup-lead">Défie un camarade sur un <b>quiz de 30 questions, 30 secondes chacune</b>. Saisis son code d'accès. C'est <b>${esc(myName)}</b> contre lui jusqu'à dimanche soir.</div>
           <div class="duel-form">
-            <input class="duel-input" id="duel-input" placeholder="Ex. JRMY-7K4" autocomplete="off" spellcheck="false" maxlength="14">
+            <input class="duel-input" id="duel-input" placeholder="Ex. ABCD-12" autocomplete="off" spellcheck="false" maxlength="14">
             <button class="duel-go" id="duel-confirm" type="button">Défier</button>
           </div>
           <div class="duel-err" id="duel-err">${prefillErr ? esc(prefillErr) : ""}</div>
@@ -13971,13 +13949,14 @@ if (document.readyState === "loading") {
     const back = document.getElementById("duel-back");
     const cancel = document.getElementById("duel-cancel");
     if (input) { input.focus(); input.addEventListener("input", () => { input.value = input.value.toUpperCase(); }); }
-    function confirm() {
+    async function confirm() {
       const code = (input.value || "").trim().toUpperCase().replace(/\s+/g, "");
       const myC = myCode();
       if (!code) { if (err) err.textContent = "Entre un code pour lancer le duel."; return; }
       if (code === myC) { if (err) err.textContent = "Tu ne peux pas te défier toi-même."; return; }
-      if (!knownCode(code)) { if (err) err.textContent = "Ce code ne ressemble pas à un code LENNY valide."; return; }
-      save({ code, name: nameFor(code), mode: "real", week: isoWeekKey(), myResult: null });
+      const name = await lookupName(code);
+      if (!name) { if (err) err.textContent = "Ce code n'est pas un code LENNY valide."; return; }
+      save({ code, name, mode: "real", week: isoWeekKey(), myResult: null });
       render();
     }
     if (go) go.addEventListener("click", confirm);
@@ -18656,7 +18635,7 @@ window.LennyStats = (function () {
       const sat = r.satisfaction;
       const satCls = sat == null ? "" : sat >= 70 ? "good" : sat >= 40 ? "mid" : "bad";
       const chips = r.voters.map(v =>
-        `<span class="lfa-voter ${v.vote}">${v.vote === "up" ? "👍" : "👎"} ${esc(v.name)}</span>`).join("");
+        `<span class="lfa-voter ${v.vote === "up" ? "up" : "down"}">${v.vote === "up" ? "👍" : "👎"} ${esc(v.name)}</span>`).join("");
       return `
         <details class="lfa-row" ${i === 0 ? "open" : ""}>
           <summary class="lfa-sum">

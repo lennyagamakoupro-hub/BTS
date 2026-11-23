@@ -68,29 +68,6 @@
     "9e6a629e4684583eac47a3d284107330eb20067e72abfb674e566bcfa07c0ee4": "Clara",
   };
 
-  // Empreinte -> "Prénom" affiché dans le menu profil (même principe).
-  const NAME_HASHES = {
-    "e31c4b96ef01828d1ca82127b3880473b36eac12994e764aa8a967d8e4c06076": "Lenny",
-    "e7b72602fe4a8b4ed868e1303962871c43b7ae713408923de43eccf364c68fd8": "Jeremy",
-    "29cb7e9878086cf25a27cbc9d9456d407724e44857fe7e307cbcf8d6813e1517": "Thibaut",
-    "d320dd77dcac577818aef529667401ec39543d777df807a038b306613c78c916": "Eden",
-    "7a5ea942cacf6c1518801262a9d57fa0cc81bd3ed910c7a8f164d5dd81232cc3": "Manon",
-    "fb398927e00d71777071052efbc2ca1a02adb854ef73c8500d7768ccfff34ad6": "Diane",
-    "5576fa44fa410b41dddb0d5a19f9a2df9786b7af65cc072b2f4aea3bed14cd78": "Joël",
-    "a0d38d2bf7b8825d6dc81644fd26ebc20e9dd9fff32062cdc7e577033b9826bf": "Joëlle",
-    "fbf4273aa85348295a1250181855ad599585a78f452baa45b47d994d96fd080c": "Eva",
-    "28d809d9897085032a51236f0da788cb694852daee9f0273ea1f610019c7c470": "Thomas",
-    "73e9b19f678d90c10d704562a5b74e61ff9ceb157d665c599f81678fa35144ce": "Inès",
-    "495b2bf2d4d80d36eba3b35973593b6b9a8ed393b4e258619d632fdb57395f6b": "Maxime",
-    "dff0bae485a0f6483b699cc6b46fe0050bc832f4f4b2aab938505ebb6bfd86b7": "Quevin",
-    "e94931680806536e97fb58c77354863f57f4097de63c4f7cbb22151d1ee8d79f": "Marie",
-    "642f6c8b44246bba1ea98846cc596040315e92ab1f4a4ac5b07878d26c4c7cc3": "Antoine",
-    "73ad26c72d7a2d8760e7e2a87096bfd132a0d09889af4e4a1297a75424f6a30b": "Chiara",
-    "153374da11bc8d1e1626781ab0923c2568e7360ee68b1b8f492585b9b3778a34": "MKZ",
-    "10532603398984b8212c08b13f619f93971400a7af03c133cb90b0e3dc84f6e6": "Mme Rebours",
-    "9e6a629e4684583eac47a3d284107330eb20067e72abfb674e566bcfa07c0ee4": "Clara",
-  };
-
   const LS_KEY = "lenny-access-v1";
   // Stockage de session : le code d'accès est effacé dès qu'on ferme l'onglet
   // ou qu'on quitte le site -> reconnexion obligatoire à chaque visite.
@@ -135,6 +112,11 @@
   }
   // Outil de maintenance (console) : await LennyGateHash("NOUVEAU-CODE")
   window.LennyGateHash = async (c) => { const h = await derive(c); console.log(c, "→", h); return h; };
+
+  // Libellé sans suffixe (« Lenny · admin » → « Lenny »).
+  const nameOf = (label) => (label || "").replace(/\s*·.*$/, "");
+  // Prénom d'un code, ou null s'il n'existe pas (duel contre un camarade).
+  window.LennyGateName = async (c) => { const label = CODE_HASHES[await derive(c)]; return label ? nameOf(label) : null; };
 
   /* ============================================================
      Verrou mono-appareil : un même code ne peut pas être actif
@@ -240,40 +222,6 @@
     setTimeout(run, 120);
   }
 
-  function applyWatermark(label) {
-    // Filigrane désactivé — on retire tout filigrane existant et on n'en crée pas.
-    const existing = document.getElementById("lenny-wm");
-    if (existing) existing.remove();
-    return;
-    /* eslint-disable no-unreachable */
-    let wm = document.getElementById("lenny-wm");
-    if (!wm) {
-      wm = document.createElement("div");
-      wm.id = "lenny-wm";
-      document.body.appendChild(wm);
-    }
-    const text = label + "  ·  LENNY";
-    const svg =
-      "<svg xmlns='http://www.w3.org/2000/svg' width='360' height='210'>" +
-      "<text x='10' y='110' transform='rotate(-28 180 105)' " +
-      "fill='rgba(130,130,130,0.10)' font-family='Helvetica,Arial,sans-serif' " +
-      "font-size='17' font-weight='700' letter-spacing='1'>" +
-      text.replace(/&/g, "&amp;").replace(/</g, "&lt;") +
-      "</text></svg>";
-    wm.style.backgroundImage =
-      "url(\"data:image/svg+xml;utf8," + encodeURIComponent(svg) + "\")";
-  }
-
-  /* 25/09 — SUR SA MACHINE, LA PORTE EST OUVERTE.
-     Lenny a passé une demi-journée bloqué devant son propre portail pendant
-     qu'il construisait son site : mot de passe, aperçu qui expire, défilement
-     verrouillé. Un portail sert à retenir un visiteur, pas le propriétaire.
-     Sur 127.0.0.1 il n'y a rien à protéger : la porte s'ouvre toute seule.
-     En ligne, rien ne change. ?portail-force pour le tester quand même. */
-  const PORTE_OUVERTE_EN_LOCAL =
-    ["127.0.0.1", "localhost", "0.0.0.0", "::1"].indexOf(location.hostname) !== -1 &&
-    !/[?&](portail-force|editeur)\b/.test(location.search);
-
   /* 25/09 — LE TRAIN EMPORTE LA CLASSE, PUIS LA PORTE S'EFFACE.
      Lenny : « quand le train passe, donc l'écran est déverrouillé, bah je veux
      plus voir le truc pour taper le mot de passe et le texte du dessous ».
@@ -281,20 +229,19 @@
      qui pose la classe), le train arrive, la classe monte, il repart — et
      SEULEMENT là on retire la porte. Si le train n'est pas là (mouvement
      réduit, gsap absent), on ne retient personne : on ouvre tout de suite. */
-  function unlock(label, code, hash) {
+  function unlock(label, code) {
     const gate = document.getElementById("lenny-gate");
-    const suite = () => finirOuverture(gate, label, code, hash);
+    const suite = () => finirOuverture(gate, label, code);
     if (gate && window.LennyTrain && window.LennyTrain.partir) {
       try { window.LennyTrain.partir(suite); return; } catch (e) {}
     }
     suite();
   }
 
-  function finirOuverture(gate, label, code, hash) {
+  function finirOuverture(gate, label, code) {
     if (gate) gate.classList.add("hidden");
-    applyWatermark(label);
     document.documentElement.style.overflow = "";
-    const name = ((hash && NAME_HASHES[hash]) || label || "").replace(/\s*·\s*admin/i, "");
+    const name = nameOf(label);
     const isAdmin = /admin/i.test(label || "");
     window.LennyAuth = {
       code: code || null,
@@ -309,18 +256,6 @@
     startHeartbeat(code);   // surveille qu'aucun autre appareil ne prenne le code
   }
 
-  // Joue le « reveal » scroll-expand par-dessus l'app révélée.
-  // Renvoie un contrôleur { start } : monté gelé, on appelle start() APRÈS
-  // la reconstruction de l'app (le scroll-expand devient alors interactif).
-  function playIntro(sound) {
-    try {
-      if (window.LennyReveal && window.LennyReveal.play) {
-        return window.LennyReveal.play({ manualStart: true });
-      }
-    } catch (e) {}
-    return null;
-  }
-
   // Purge l'ancien stockage permanent (versions pr\u00e9c\u00e9dentes) -> force la reconnexion.
   try { localStorage.removeItem(LS_KEY); } catch (e) {}
 
@@ -331,9 +266,6 @@
       // hide gate ASAP to avoid flash
       document.documentElement.style.setProperty("--gate-skip", "1");
       ready(() => {
-        // Au rechargement d'une session déjà ouverte : pas de reveal (il ne joue
-        // qu'à la vraie saisie du code), on révèle directement l'app.
-        var introCtrl = null;
         afterPaint(function () {
           // Revalide l'empreinte du code mémorisé, puis le verrou mono-appareil.
           derive(saved.code).then(function (h) {
@@ -346,8 +278,7 @@
                 location.reload();
                 return;
               }
-              unlock(label, saved.code, h);
-              afterPaint(function () { if (introCtrl && introCtrl.start) introCtrl.start(); });
+              unlock(label, saved.code);
             });
           }).catch(function () {
             // WebCrypto indisponible (HTTPS manquant, navigateur trop vieux…) :
@@ -512,7 +443,7 @@
     function registerFail() {
       const t = loadThrottle();
       t.fails = (t.fails || 0) + 1;
-      // à partir de la 10e erreur : 8 s, 16 s … plafonné à 60 s.
+      // à partir de la 5e erreur : 8 s, 16 s … plafonné à 60 s.
       if (t.fails >= 5) t.until = Date.now() + Math.min(60, (t.fails - 4) * 8) * 1000;
       saveThrottle(t);
     }
@@ -552,11 +483,7 @@
       if (msg) { msg.classList.add("ok"); msg.textContent = "Accès accordé"; }
       const gate = document.getElementById("lenny-gate");
       if (gate) gate.classList.add("ok");
-      var introCtrl = playIntro(true);
-      afterPaint(function () {
-        unlock(label, code, h);
-        afterPaint(function () { if (introCtrl && introCtrl.start) introCtrl.start(); });
-      });
+      afterPaint(function () { unlock(label, code); });
       return true;
     }
     // Déverrouillage UNIQUEMENT via la flèche « glisser pour entrer ».
@@ -657,8 +584,11 @@
   });
 })();
 
-/* L'ouverture effective, posée tout à la fin pour être sûre que `unlock`
-   existe et que le portail est dans le DOM. */
+/* 25/09 — SUR SA MACHINE, LA PORTE EST OUVERTE.
+   Lenny a passé une demi-journée bloqué devant son propre portail pendant
+   qu'il construisait son site. Un portail sert à retenir un visiteur, pas le
+   propriétaire : sur 127.0.0.1 la porte s'ouvre toute seule. En ligne, rien
+   ne change. ?portail-force pour la tester quand même. */
 (function () {
   var local = ["127.0.0.1", "localhost", "0.0.0.0", "::1"].indexOf(location.hostname) !== -1;
   if (!local || /[?&](portail-force|editeur)\b/.test(location.search)) return;

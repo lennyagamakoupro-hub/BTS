@@ -156,7 +156,7 @@ window.LennyStats = (function () {
       const sat = r.satisfaction;
       const satCls = sat == null ? "" : sat >= 70 ? "good" : sat >= 40 ? "mid" : "bad";
       const chips = r.voters.map(v =>
-        `<span class="lfa-voter ${v.vote}">${v.vote === "up" ? "👍" : "👎"} ${esc(v.name)}</span>`).join("");
+        `<span class="lfa-voter ${v.vote === "up" ? "up" : "down"}">${v.vote === "up" ? "👍" : "👎"} ${esc(v.name)}</span>`).join("");
       return `
         <details class="lfa-row" ${i === 0 ? "open" : ""}>
           <summary class="lfa-sum">
