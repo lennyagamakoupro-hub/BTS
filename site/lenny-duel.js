@@ -22,19 +22,13 @@
   const QUIZ_LEN = 30;
   const QUESTION_MS = 30000;
 
-  /* ---------- registre des codes connus → prénom (mode "real" uniquement) ---------- */
-  const NAMES = {
-    "LENNY71!": "Lenny", "JRMY-7K4": "Jeremy", "THIB-7K2": "Thibaut",
-    "EDEN-8P3": "Eden", "MANON-71L": "Manon", "DIANE-5R8": "Diane",
-    "JOEL-3M7": "Joël", "JOELLE-9K4": "Joëlle", "EVA-6T2": "Eva",
-  };
-  const CODE_RE = /^[0-9A-ZÀ-Ÿ]{2,}-[0-9A-ZÀ-Ÿ]{2,}$/;
-  function knownCode(code) {
-    return !!NAMES[code] || CODE_RE.test(code) || code === "LENNY71!";
-  }
-  function nameFor(code) {
-    if (NAMES[code]) return NAMES[code];
-    return "Adversaire";
+  /* ---------- code adverse → prénom (mode "real" uniquement) ----------
+     23/11 : ce fichier listait neuf codes EN CLAIR (dont l'admin), servis à
+     tout visiteur. Le prénom vient maintenant de la table d'empreintes du
+     portail (LennyGateName, lenny-gate.js) : un code inconnu est refusé. */
+  async function lookupName(code) {
+    try { return window.LennyGateName ? await window.LennyGateName(code) : null; }
+    catch (e) { return null; }
   }
   function initials(name) {
     const p = name.trim().split(/\s+/);
@@ -368,7 +362,7 @@
       return;
     }
 
-    const oppName = d.name || nameFor(d.code);
+    const oppName = d.name || "Adversaire";
     paint({ opp: null, oppName, oppTag: null, state: "pending" });
 
     const code = myCode();
@@ -387,7 +381,7 @@
   function paintReady(d) {
     const m = mount();
     if (!m) return;
-    const oppLabel = d.mode === "bot" ? "un bot" : esc(d.name || nameFor(d.code));
+    const oppLabel = d.mode === "bot" ? "un bot" : esc(d.name || "Adversaire");
     m.innerHTML = `
       <div class="duel-card">
         <div class="duel-head">
@@ -488,7 +482,7 @@
         <div class="duel-setup">
           <div class="duel-setup-lead">Défie un camarade sur un <b>quiz de 30 questions, 30 secondes chacune</b>. Saisis son code d'accès. C'est <b>${esc(myName)}</b> contre lui jusqu'à dimanche soir.</div>
           <div class="duel-form">
-            <input class="duel-input" id="duel-input" placeholder="Ex. JRMY-7K4" autocomplete="off" spellcheck="false" maxlength="14">
+            <input class="duel-input" id="duel-input" placeholder="Ex. ABCD-12" autocomplete="off" spellcheck="false" maxlength="14">
             <button class="duel-go" id="duel-confirm" type="button">Défier</button>
           </div>
           <div class="duel-err" id="duel-err">${prefillErr ? esc(prefillErr) : ""}</div>
@@ -506,13 +500,14 @@
     const back = document.getElementById("duel-back");
     const cancel = document.getElementById("duel-cancel");
     if (input) { input.focus(); input.addEventListener("input", () => { input.value = input.value.toUpperCase(); }); }
-    function confirm() {
+    async function confirm() {
       const code = (input.value || "").trim().toUpperCase().replace(/\s+/g, "");
       const myC = myCode();
       if (!code) { if (err) err.textContent = "Entre un code pour lancer le duel."; return; }
       if (code === myC) { if (err) err.textContent = "Tu ne peux pas te défier toi-même."; return; }
-      if (!knownCode(code)) { if (err) err.textContent = "Ce code ne ressemble pas à un code LENNY valide."; return; }
-      save({ code, name: nameFor(code), mode: "real", week: isoWeekKey(), myResult: null });
+      const name = await lookupName(code);
+      if (!name) { if (err) err.textContent = "Ce code n'est pas un code LENNY valide."; return; }
+      save({ code, name, mode: "real", week: isoWeekKey(), myResult: null });
       render();
     }
     if (go) go.addEventListener("click", confirm);

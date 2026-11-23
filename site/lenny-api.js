@@ -1,8 +1,9 @@
 /* ============================================
    LENNY — Couche de données enfichable
    • Par défaut : persistance locale (localStorage) → tout marche hors-ligne.
-   • Si window.LENNY_API_BASE est défini (ex: "https://api.monsite.fr"),
-     bascule automatiquement sur le backend FastAPI + MongoDB.
+   • Si window.LENNY_API_BASE est défini, les avis passent aussi par les
+     fonctions Netlify (netlify/functions/api.js) ; toute erreur retombe en local.
+   • Le radar et l'historique des quiz restent locaux : le serveur ne les sert pas.
    Toutes les méthodes renvoient des Promises.
    Dépend de : MODULES, window.QUIZ / window.STUDY (pour la liste des matières)
    ============================================ */
@@ -17,8 +18,6 @@ window.LennyAPI = (function () {
     try {
       const a = auth();
       if (a && a.code) return "u_" + a.code;
-      const fromGate = localStorage.getItem("lenny-access-code");
-      if (fromGate) return "u_" + fromGate;
       let u = localStorage.getItem("lenny-uid");
       if (!u) { u = "u_" + Math.random().toString(36).slice(2, 10); localStorage.setItem("lenny-uid", u); }
       return u;
@@ -114,7 +113,9 @@ window.LennyAPI = (function () {
   async function getFeedbackAdmin() {
     if (remote()) {
       try {
-        const r = await fetch(base() + "/api/feedback/admin?user_id=" + encodeURIComponent(userId()));
+        // Le serveur vérifie lui-même que ce code est celui de l'admin.
+        const a = auth();
+        const r = await fetch(base() + "/api/feedback/admin", { headers: { "X-Lenny-Code": (a && a.code) || "" } });
         if (r.ok) {
           const d = await r.json();
           (d.rows || []).forEach(row => {
@@ -165,17 +166,6 @@ window.LennyAPI = (function () {
     // Plafond large (5000 résultats) : sert au vrai suivi de progression,
     // mais ne doit jamais grandir sans fin et saturer le quota du navigateur.
     write(HIST_KEY, hist.slice(-5000));
-
-    if (remote()) {
-      const mod = (window.MODULES || []).find(m => m.id === entry.moduleId);
-      try {
-        await fetch(base() + "/api/quiz-result", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...entry, subject: mod ? mod.short : entry.moduleId, user_id: userId(), date: new Date(entry.ts).toISOString() }),
-        });
-      } catch (e) {}
-    }
     return entry;
   }
 
@@ -198,12 +188,6 @@ window.LennyAPI = (function () {
 
   async function getRadar(period) {
     const p = parseInt(period, 10) || 14;
-    if (remote()) {
-      try {
-        const r = await fetch(base() + "/api/stats/radar?period=" + p + "&user_id=" + encodeURIComponent(userId()));
-        if (r.ok) return await r.json();
-      } catch (e) {}
-    }
     const hist = read(HIST_KEY, []);
     const now = Date.now();
     const curStart = now - p * DAY;
