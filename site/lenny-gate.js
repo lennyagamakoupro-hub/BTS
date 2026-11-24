@@ -67,6 +67,7 @@
     "10532603398984b8212c08b13f619f93971400a7af03c133cb90b0e3dc84f6e6": "Mme Rebours · prof",
     "9e6a629e4684583eac47a3d284107330eb20067e72abfb674e566bcfa07c0ee4": "Clara",
     "3106feb6f47780061517d879a3c2b048ef8898a70850303523cebbb744722334": "Emmanuel",
+    "d4b7a309cdee1450ee7ef54b2b514600ac79b956cbc819d1971c6d3374508a9d": "Perrine",
   };
 
   const LS_KEY = "lenny-access-v1";
